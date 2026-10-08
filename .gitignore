@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+.pytest_cache/
+
+# COMSOL model files are large binaries; keep them out of git (or move to Git LFS)
+*.mph
+*.mph.lock
+*.recovery
+comsol/**/*.mphbin
+comsol/**/*.mphtxt
+
+# Raw COMSOL exports can be large; commit only small, curated exports
+data/comsol_exports/*
+!data/comsol_exports/README.md
+!data/comsol_exports/examples/
+data/raw/*
+!data/raw/README.md
+
+# Generated plots
+plots/*
+!plots/README.md
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/

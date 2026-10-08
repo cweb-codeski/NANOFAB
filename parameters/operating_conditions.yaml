@@ -1,0 +1,48 @@
+# Operating conditions and published reference values for the vaartstra2019 replication.
+# Project design targets live in design_targets.yaml, never here.
+
+vapor_temperature:
+  value: 100
+  unit: degC
+  provenance: PRIMARY_SOURCE
+  source: vaartstra2019
+  source_location: "Sec. 3.1-3.3 ('pure water vapor at 100 C'; T_sat = 100 C)"
+  notes: >
+    Saturated vapor: p_v = p_sat(T_v), liquid supplied at T_sat (Sec. 2). The validation data
+    (adera2016) were at 3 kPa (Sec. 3.4).
+
+unit_cell_heat_flux:
+  value: 50
+  unit: W/cm2
+  provenance: PRIMARY_SOURCE
+  source: vaartstra2019
+  source_location: "Sec. 3.1 ('q''_in was set to 50 W/cm2 for both parametric sweeps in Fig. 3')"
+  notes: "Sec. 3.1: a 10% change of q''_in changes h_e by 0.082% on average."
+
+reference_dryout_heat_flux:
+  value: 82
+  unit: W/cm2
+  provenance: PRIMARY_SOURCE
+  source: vaartstra2019
+  source_location: "Sec. 3.2 ('82 W/cm2, which is the dryout heat flux for the given set of geometry')"
+  notes: "A published RESULT used as a replication target, not a model input."
+
+accommodation_coefficient:
+  value: 0.052
+  unit: "-"
+  provenance: PRIMARY_SOURCE
+  source: vaartstra2019
+  source_location: "Sec. 2.2 and Sec. 3.4 (fitted to adera2016 data set A1)"
+  sweep: [0.03, 1.0]
+  notes: >
+    A fitted parameter, not a measured property (the thesis says so explicitly). vaartstra2020
+    Sec. III C reports values for water spanning 0.001-1 and uses 1 and 0.31 in its own model.
+    Sweep it for anything beyond exact replication.
+
+gravity:
+  value: 9.81
+  unit: m/s2
+  provenance: AUTHORITATIVE_DATABASE
+  source: nist_si_constants
+  source_location: "standard acceleration of gravity g_n"
+  notes: "Rounded from g_n = 9.80665 m/s2 (exact). Only used in Bond-number estimates; effect negligible."

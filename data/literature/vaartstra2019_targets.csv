@@ -1,0 +1,26 @@
+# Replication targets for the baseline micropillar model.
+# provenance: PRIMARY_SOURCE = stated in the paper text/table; PROJECT_DERIVED = inferred or digitized by us.
+# MODEL_CALCULATED values must never appear in this file (enforced by tests/test_provenance.py).
+# Rows with an empty value are planned digitizations (PROJECT_DERIVED once filled, note the figure).
+case,quantity,value,unit,comparison,provenance,source,source_location,d_m,l_m,h_m,L_m,t_s_m,conditions,notes
+baseline_device,q_dryout,82e4,W/m^2,equal,PRIMARY_SOURCE,vaartstra2019,Sec. 3.2,10e-6,30e-6,25e-6,5e-3,100e-6,pure water vapor at 100 C; uniform q_in; fed from two edges,
+baseline_device,h_e,60e3,W/m^2K,greater_than,PRIMARY_SOURCE,vaartstra2019,Sec. 3.2,10e-6,30e-6,25e-6,5e-3,100e-6,at q_in = 82 W/cm^2,"text: 'he > 60 kW/m2 K'"
+baseline_device,h_e_relative_variation,0.30,-,approx,PRIMARY_SOURCE,vaartstra2019,Sec. 1; Sec. 3.2; Fig. 4b,10e-6,30e-6,25e-6,5e-3,100e-6,at q_in = 82 W/cm^2,highest at the device center
+baseline_device,dT_e_inlet_minus_center,3,K,approx,PRIMARY_SOURCE,vaartstra2019,Sec. 3.2; Fig. 4a,10e-6,30e-6,25e-6,5e-3,100e-6,at q_in = 82 W/cm^2,
+unit_cell,h_e_change_for_10pct_q_in_change,0.00082,-,approx,PRIMARY_SOURCE,vaartstra2019,Sec. 3.1,10e-6,30e-6,25e-6,,1e-6,q_in = 50 W/cm^2 +/- 10%,"text: '0.082% average difference'"
+optimization,q_dryout_exponent_in_h,2,-,approx,PRIMARY_SOURCE,vaartstra2019,Sec. 3.3; Fig. 5,0.4h,1.2h,5e-6 to 50e-6,5e-3,100e-6,d/h = 0.4; l/h = 1.2,"text: 'scaling with h2'; h_e decreases with h"
+mesh,U_relative_interface_zmin,1.1e-4,-,less_than,PRIMARY_SOURCE,vaartstra2019,Table A1,10e-6,30e-6,25e-6,5e-3,100e-6,at dryout curvature,PDF text extraction drops the exponent minus sign (prints 1.1e4); a relative difference must be << 1
+mesh,U_relative_cell_h_e,1.4e-4,-,less_than,PRIMARY_SOURCE,vaartstra2019,Table A1,10e-6,30e-6,25e-6,5e-3,100e-6,at dryout curvature,see row above
+mesh,U_relative_cell_K,5.5e-4,-,less_than,PRIMARY_SOURCE,vaartstra2019,Table A1,10e-6,30e-6,25e-6,5e-3,100e-6,at dryout curvature,see row above
+mesh,U_relative_device_flow_pmin,2.3e-6,-,less_than,PRIMARY_SOURCE,vaartstra2019,Table A1,10e-6,30e-6,25e-6,5e-3,100e-6,,see row above
+mesh,U_relative_device_conduction_dT,9.9e-7,-,less_than,PRIMARY_SOURCE,vaartstra2019,Table A1,10e-6,30e-6,25e-6,5e-3,100e-6,,see row above
+baseline_device,symmetry_check_max_lateral_gradient_ratio,0.0019,-,approx,PRIMARY_SOURCE,vaartstra2019,A.1,10e-6,30e-6,25e-6,5e-3,100e-6,device of Fig. 4,"text: '0.19% of the local gradient between the evaporator and ambient'"
+figA2_hotspot,superheat_vs_x,,K,digitize,PROJECT_DERIVED,vaartstra2019,Fig. A2; A.4,10e-6,30e-6,25e-6,5e-3,100e-6,100 W/cm^2 hotspot on 0.9<x/L<=1 (a) or 0<=x/L<=0.1 (b); 50 W/cm^2 elsewhere,to digitize; the paper reports no hotspot dryout value
+cross_check_zhou_adera,q_dryout,84e4,W/m^2,approx,PRIMARY_SOURCE,zhou_adera2026,Abstract; Sec. 3.2,10e-6,30e-6,25e-6,5e-3,,1 atm; uniform evaporation,independent model of the same geometry (not a vaartstra2019 value)
+fig3a_pitch_sweep,h_e_vs_dp,,W/m^2K,digitize,PROJECT_DERIVED,vaartstra2019,Fig. 3a,10e-6,varied,25e-6,,1e-6,q_in = 50 W/cm^2; dp from 0 to dp_dryout,to digitize
+fig3b_height_sweep,h_e_vs_dp,,W/m^2K,digitize,PROJECT_DERIVED,vaartstra2019,Fig. 3b,10e-6,30e-6,varied,,1e-6,q_in = 50 W/cm^2; dp from 0 to dp_dryout,to digitize
+fig5_optimization,q_dryout_and_h_e_vs_h,,W/m^2,digitize,PROJECT_DERIVED,vaartstra2019,Fig. 5,0.4h,1.2h,varied,5e-3,100e-6,d/h = 0.4; l/h = 1.2,to digitize
+validation_A1_Adera,superheat_vs_q_in,,K,digitize,PROJECT_DERIVED,vaartstra2019,Fig. 6a,5e-6,12e-6,82e-6,,650e-6,3 kPa chamber; fed all sides,accommodation coefficient was fitted to this case
+validation_A2_Adera,superheat_vs_q_in,,K,digitize,PROJECT_DERIVED,vaartstra2019,Fig. 6a,12e-6,20e-6,90e-6,,650e-6,3 kPa chamber; fed all sides,
+validation_B1_Zhu,q_dryout_vs_L,,W/m^2,digitize,PROJECT_DERIVED,vaartstra2019,Fig. 6b,7e-6,20e-6,20e-6,varied,,air ambient; one side in water bath,
+validation_B2_Zhu,q_dryout_vs_L,,W/m^2,digitize,PROJECT_DERIVED,vaartstra2019,Fig. 6b,6e-6,50e-6,19e-6,varied,,air ambient; one side in water bath,

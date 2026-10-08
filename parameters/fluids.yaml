@@ -1,0 +1,22 @@
+# Working-fluid selection. Thermophysical properties (surface tension, viscosity, density,
+# latent heat, conductivity, saturation pressure) are evaluated at runtime from the IAPWS
+# formulations via CoolProp (provenance AUTHORITATIVE_DATABASE, source iapws / coolprop).
+# vaartstra2019 does not state which property source it used.
+
+working_fluid:
+  value: Water
+  unit: "-"
+  provenance: PRIMARY_SOURCE
+  source: vaartstra2019
+  source_location: "Sec. 2.2 ('we considered water as the working fluid and silicon as the micropillar material')"
+  notes: "Value is the CoolProp fluid name."
+
+molecular_kinetic_diameter:
+  value: 0.265
+  unit: nm
+  provenance: ASSUMED
+  source: breck1974
+  source_location: null
+  notes: >
+    Widely quoted kinetic diameter of H2O, attributed to breck1974 but not checked against it.
+    Used only for the vapor mean free path in the Knudsen-number estimate.

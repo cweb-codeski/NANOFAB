@@ -1,0 +1,67 @@
+# Baseline micropillar wick geometry (replication of vaartstra2019).
+#
+# Schema: value, unit, provenance, source, source_location, [sweep], [notes]
+# provenance: see docs/SOURCE_AUTHORITY.md; source: id in config/sources.yaml or null.
+# Sweep ranges are project choices for sensitivity studies, not published ranges.
+
+pillar_diameter:
+  value: 10
+  unit: um
+  provenance: PRIMARY_SOURCE
+  source: vaartstra2019
+  source_location: "Sec. 3.2; Fig. 4 caption"
+  sweep: [2, 20]
+  notes: "Baseline device geometry. vaartstra2019 Fig. 5 keeps d/h = 0.4 while varying h."
+
+pillar_pitch:
+  value: 30
+  unit: um
+  provenance: PRIMARY_SOURCE
+  source: vaartstra2019
+  source_location: "Sec. 3.2; Fig. 4 caption"
+  sweep: [15, 60]
+  notes: "Center-to-center spacing of a square array. Fig. 3(a) sweeps l at d = 10, h = 25 um."
+
+pillar_height:
+  value: 25
+  unit: um
+  provenance: PRIMARY_SOURCE
+  source: vaartstra2019
+  source_location: "Sec. 3.2; Fig. 4 caption"
+  sweep: [5, 50]
+  notes: "Fig. 3(b) sweeps h at d = 10, l = 30 um; Fig. 5 sweeps h = 5-50 um at fixed ratios."
+
+wick_feed_length:
+  value: 5
+  unit: mm
+  provenance: PRIMARY_SOURCE
+  source: vaartstra2019
+  source_location: "Sec. 2 (L defined edge to center); Sec. 3.2; Fig. 4 caption"
+  sweep: [1, 10]
+  notes: >
+    Wick fed from the two edges normal to x (Sec. 3.2, Fig. 1c). Dryout heat flux scales as
+    1/L^2, so hold this fixed when comparing geometries.
+
+wick_width:
+  value: 10
+  unit: mm
+  provenance: PRIMARY_SOURCE
+  source: vaartstra2019
+  source_location: "Sec. 1 ('1 cm x 1 cm micropillar wick')"
+  notes: "Stated in the introduction when quoting the 30% HTC variation; consistent with L = 5 mm."
+
+substrate_thickness:
+  value: 100
+  unit: um
+  provenance: PRIMARY_SOURCE
+  source: vaartstra2019
+  source_location: "Sec. 3.2 and 3.3 (t_s = 100 um)"
+  notes: "Device-level substrate. The validation data (adera2016) used 650 um (Sec. 3.4)."
+
+unit_cell_substrate_thickness:
+  value: 1
+  unit: um
+  provenance: PRIMARY_SOURCE
+  source: vaartstra2019
+  source_location: "Sec. 2.2 ('1 um below the base of the pillars')"
+  notes: "The same statement is garbled in the thesis PDF text; the IJHMT paper is legible."

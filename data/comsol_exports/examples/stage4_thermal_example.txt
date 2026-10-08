@@ -1,0 +1,10 @@
+% Model:              stage4_schrage.mph
+% Version:            COMSOL 6.2.0.290
+% Date:               Oct 7 2026, 12:00
+% Table:              Table 2 - Global Evaluation
+% Description:        SYNTHETIC example for testing the parser - not a real simulation result
+% Pc (Pa)       Q_in (W)       Q_evap (W)       T_base (K)       T_lv (K)
+500             2.25E-4        2.248E-4         309.40           305.80
+1000            2.25E-4        2.247E-4         309.10           305.70
+1500            2.25E-4        2.246E-4         308.95           305.65
+2000            2.25E-4        2.244E-4         308.90           305.62

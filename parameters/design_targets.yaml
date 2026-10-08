@@ -1,0 +1,15 @@
+# Project design targets. Every entry here must be DESIGN_TARGET, and DESIGN_TARGET entries may
+# only live in this file (enforced by tests/test_provenance.py), so targets are never mistaken for
+# vaartstra2019 replication inputs.
+
+target_heat_flux:
+  value: 100
+  unit: W/cm2
+  provenance: DESIGN_TARGET
+  source: null
+  source_location: null
+  sweep: [10, 1000]
+  notes: >
+    Project performance target (average heat flux over the evaporator footprint), not a
+    vaartstra2019 value. For context, liu2025_ectc reports 48-76 W/cm2 uniform logic flux and a
+    314 W/cm2 hotspot (cell area) on an AI TTV.

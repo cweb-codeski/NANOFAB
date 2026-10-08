@@ -1,0 +1,50 @@
+# Solid materials and surface (wetting) properties.
+# Fluid properties are NOT entered here; they come from IAPWS formulations via CoolProp
+# (src/nanofab/fluids.py).
+
+silicon_thermal_conductivity:
+  value: 148
+  unit: W/m/K
+  provenance: AUTHORITATIVE_DATABASE
+  source: incropera_fhmt
+  source_location: "Table A.1, pure Si at 300 K (edition and value not re-checked)"
+  sweep: [120, 153]
+  notes: >
+    vaartstra2019 does not state its silicon conductivity. DISCREPANCY: vaartstra2020 (Sec. IV C)
+    uses 153 W/m/K at 20 C citing lienhard_textbook. Si conductivity also falls with temperature
+    (~120 W/m/K near 375 K, from memory, unverified). Keep both and sweep for replication.
+
+silicon_density:
+  value: 2330
+  unit: kg/m3
+  provenance: AUTHORITATIVE_DATABASE
+  source: incropera_fhmt
+  source_location: "Table A.1 (not re-checked)"
+  notes: "Only needed for transient models."
+
+silicon_specific_heat:
+  value: 712
+  unit: J/kg/K
+  provenance: AUTHORITATIVE_DATABASE
+  source: incropera_fhmt
+  source_location: "Table A.1 (not re-checked)"
+  notes: "Only needed for transient models."
+
+receding_contact_angle:
+  value: 15
+  unit: deg
+  provenance: PRIMARY_SOURCE
+  source: vaartstra2019
+  source_location: "Sec. 3.1 ('receding contact angle for water on silicon dioxide [29]')"
+  sweep: [0, 40]
+  notes: >
+    vaartstra2019 takes it from raj2013 (not held). zhou_adera2026 (Sec. 3.1) uses the same value
+    for native-oxide Si sidewalls. Must be measured on our own surfaces.
+
+advancing_contact_angle:
+  value: 30
+  unit: deg
+  provenance: ASSUMED
+  source: null
+  source_location: null
+  notes: "Placeholder, unused by current models. No held source gives an advancing angle."

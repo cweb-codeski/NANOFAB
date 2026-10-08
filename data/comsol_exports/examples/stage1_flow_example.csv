@@ -1,0 +1,10 @@
+% Model:              stage1_flow.mph
+% Version:            COMSOL 6.2.0.290
+% Date:               Oct 7 2026, 12:00
+% Table:              Table 1 - Surface Integration 1 (u)
+% Description:        SYNTHETIC example for testing the parser - not a real simulation result
+% hmax (m),dp (Pa),Surface Integration 1 (m^3/s)
+4E-6,1,1.80E-12
+2E-6,1,1.74E-12
+1E-6,1,1.725E-12
+5E-7,1,1.722E-12

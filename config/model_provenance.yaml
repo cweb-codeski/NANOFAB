@@ -1,0 +1,185 @@
+# Provenance of model elements that are not numeric inputs: equations, boundary conditions,
+# interpretations, and derived results quoted in docs or script output.
+# Same fields as parameters/*.yaml (value optional). `verified` = we checked the cited location.
+# Source ids must exist in config/sources.yaml (tests/test_provenance.py).
+
+equations:
+  young_laplace:
+    provenance: PRIMARY_SOURCE
+    source: vaartstra2019
+    source_location: "Eq. (1)"
+    verified: true
+    notes: "Delta p = 2 sigma H; Bo ~ 1e-5 justifies it (A.1)."
+  meniscus_normal_stress_balance:
+    provenance: PRIMARY_SOURCE
+    source: vaartstra2019
+    source_location: "Eq. (2), Sec. 2.1"
+    verified: true
+    notes: "Solved in COMSOL with z = 0 at pillar edges and symmetry at cell boundaries."
+  pillar_dryout_capillary_pressure:
+    provenance: PRIMARY_SOURCE
+    source: vaartstra2019
+    source_location: "Eq. (3)"
+    verified: true
+    notes: "Implemented in capillary.pillar_max_capillary_pressure (algebraically identical). Origin commonly credited to xiao2010 (not checked)."
+  evaporative_htc_definition:
+    provenance: PRIMARY_SOURCE
+    source: vaartstra2019
+    source_location: "Eq. (4)"
+    verified: true
+  linearized_bte_interface:
+    provenance: PRIMARY_SOURCE
+    source: vaartstra2019
+    source_location: "Eqs. (5)-(7)"
+    verified: true
+    notes: "IJHMT text shows 2.13204 / 0.44675; the thesis (Sec. 2.2.1, p. 22) prints c4* = -2.13204, d4* = -0.44675. Same physics: evaporation.py uses magnitudes with an explicit minus sign."
+  accommodation_correction_form:
+    provenance: ASSUMED
+    source: meland_ytrehus2003
+    source_location: null
+    verified: false
+    notes: "C4(a) = C4* + 2 sqrt(pi)(1 - a)/a in evaporation.sone_bte_mass_flux. Neither vaartstra2019 nor the thesis (p. 22) prints the form; both only cite the method. Not checked against meland_ytrehus2003."
+  darcy_law:
+    provenance: PRIMARY_SOURCE
+    source: vaartstra2019
+    source_location: "Eq. (8)"
+    verified: true
+  volumetric_evaporation_sink:
+    provenance: PRIMARY_SOURCE
+    source: vaartstra2019
+    source_location: "Eq. (9)"
+    verified: true
+  schrage_relation:
+    provenance: ASSUMED
+    source: schrage1953
+    source_location: null
+    verified: false
+    notes: "Not used by vaartstra2019. Year discrepancy 1953 vs 1954 (vaartstra2019 ref. [22])."
+  sangani_acrivos_permeability:
+    provenance: ASSUMED
+    source: sangani_acrivos1982
+    source_location: null
+    verified: false
+    notes: "Series coefficients written from memory (drummond_tahir1984 form). Check before relying on K to better than ~30%."
+  brinkman_height_correction:
+    provenance: PROJECT_DERIVED
+    source: brinkman1949
+    source_location: null
+    verified: false
+    notes: "Closed-form height average derived by us from the Brinkman equation. Previously cited to an unverified 'Byon et al. 2014'."
+  one_d_capillary_dryout:
+    provenance: PROJECT_DERIVED
+    source: faghri_heatpipe
+    source_location: null
+    verified: false
+    notes: "Standard 1D Darcy capillary limit, derived by us; uniform evaporation and uniform K."
+  spreading_resistance:
+    provenance: ASSUMED
+    source: lee1995_spreading
+    source_location: null
+    verified: false
+
+boundary_conditions:
+  unit_cell_heat_input_1um_below_pillars:
+    provenance: PRIMARY_SOURCE
+    source: vaartstra2019
+    source_location: "Sec. 2.2"
+    verified: true
+  unit_cell_lateral_symmetry_and_insulated_tops:
+    provenance: PRIMARY_SOURCE
+    source: vaartstra2019
+    source_location: "Sec. 2.2; Fig. 2(b); A.1"
+    verified: true
+  meniscus_as_symmetry_in_flow_study:
+    provenance: PRIMARY_SOURCE
+    source: vaartstra2019
+    source_location: "Sec. 2.2; Fig. 2(c)"
+    verified: true
+  laminar_navier_stokes_in_flow_study:
+    provenance: PRIMARY_SOURCE
+    source: vaartstra2019
+    source_location: "Sec. 2.2"
+    verified: true
+  device_symmetry_at_x0_and_xL:
+    provenance: PRIMARY_SOURCE
+    source: vaartstra2019
+    source_location: "Sec. 2.3"
+    verified: true
+
+interpretations:
+  T_e_is_pillar_base_plane_average:
+    provenance: PROJECT_DERIVED
+    source: vaartstra2019_thesis
+    source_location: "Fig. 4(b) and caption, p. 20 (= vaartstra2019 Fig. 2b)"
+    verified: true
+    notes: >
+      The red line in the drawing runs along the top of the substrate at the pillar base, under
+      the liquid. The text never names the surface, so this stays a figure reading (PROJECT_DERIVED),
+      but it is no longer in doubt.
+  Re_h_exponent_positive:
+    provenance: PRIMARY_SOURCE
+    source: vaartstra2019_thesis
+    source_location: "Sec. 2.2.1, p. 23; Appendix, p. 51 ('Re_h = rho u h/mu ~ 10^1')"
+    verified: true
+    notes: "Read from rendered page images. The IJHMT PDF text ('10 1') was ambiguous; consistent with our MODEL_CALCULATED ~16."
+  K_gap_due_to_curvature:
+    provenance: PROJECT_DERIVED
+    source: vaartstra2019
+    source_location: "Sec. 2.2 (qualitative: curvature lowers K)"
+    verified: false
+    notes: "The 19% figure is ours. Analytical K error and non-uniform evaporation are alternative contributors."
+  narayanan_average_heat_flux:
+    provenance: PROJECT_DERIVED
+    source: narayanan2024_interpack
+    source_location: null
+    verified: false
+    notes: "~77 W/cm2 = 700 W TDP / ~9.1 cm2 die area; the paper does not print a heat flux."
+
+derived_results:
+  dryout_heat_flux_flat_meniscus:
+    value: 100.6
+    unit: W/cm2
+    provenance: MODEL_CALCULATED
+    source: null
+    source_location: "analysis/vaartstra_replication.py"
+    notes: "Compare to vaartstra2019 82 W/cm2 (+22.7%)."
+  dryout_capillary_pressure_at_100C:
+    value: 2177
+    unit: Pa
+    provenance: MODEL_CALCULATED
+    source: null
+    source_location: "analysis/vaartstra_replication.py"
+    notes: "Eq. (3) evaluated with IAPWS surface tension. The paper gives no number."
+  implied_permeability_reduction:
+    value: 19
+    unit: percent
+    provenance: MODEL_CALCULATED
+    source: null
+    source_location: "analysis/vaartstra_replication.py"
+  kinetic_resistance_share_upper_bound:
+    value: 16
+    unit: percent
+    provenance: MODEL_CALCULATED
+    source: null
+    source_location: "analysis/vaartstra_replication.py"
+    notes: "Our R''_int (flat interface area) x the paper's h_e > 60 kW/m2K bound."
+  pitch_optimum_flat_dryout:
+    value: 40
+    unit: um
+    provenance: MODEL_CALCULATED
+    source: null
+    source_location: "analysis/baseline_estimates.py"
+  adera_vapor_temperature:
+    value: 297.2
+    unit: K
+    provenance: MODEL_CALCULATED
+    source: null
+    source_location: "analysis/vaartstra_replication.py"
+    notes: "T_sat(3 kPa) from IAPWS; the 3 kPa is PRIMARY_SOURCE (vaartstra2019 Sec. 3.4)."
+  zhu_ambient_temperature:
+    value: 298.15
+    unit: K
+    provenance: ASSUMED
+    source: null
+    source_location: null
+    notes: "Air-ambient experiments; temperature not stated in vaartstra2019."

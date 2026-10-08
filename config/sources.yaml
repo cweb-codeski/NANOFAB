@@ -1,0 +1,514 @@
+# Source registry. Every `source:` id used in parameters/*.yaml, config/model_provenance.yaml and
+# data/literature/*.csv must be a key in this file (enforced by tests/test_provenance.py).
+#
+# Fields
+#   type:                   provenance class of the source itself (see docs/SOURCE_AUTHORITY.md)
+#   role:                   optional project role, e.g. PRIMARY_MODEL_REFERENCE
+#   bibliography_verified:  how the citation details were checked:
+#                             pdf            - read from the PDF we hold
+#                             reference_list - copied from a reference list in a PDF we hold
+#                             no             - written from memory, NOT checked; treat as TODO
+#   content_verified:       true only if we have read the part of the source our values rely on
+#   local_path:             where the PDF lives (research PDFs are kept outside the repo)
+# Unknown details are written as "unknown" or TODO, never guessed.
+
+# ---------------------------------------------------------------------------------------------
+# Primary model reference and closely related Wang-group work (PDFs held)
+# ---------------------------------------------------------------------------------------------
+
+vaartstra2019:
+  title: "Simultaneous prediction of dryout heat flux and local temperature for thin film evaporation in micropillar wicks"
+  authors: ["Geoffrey Vaartstra", "Zhengmao Lu", "Evelyn N. Wang"]
+  year: 2019
+  venue: "International Journal of Heat and Mass Transfer 136 (2019) 170-177"
+  doi: "10.1016/j.ijheatmasstransfer.2019.02.074"
+  type: PRIMARY_SOURCE
+  role: PRIMARY_MODEL_REFERENCE
+  scope: [micropillar_geometry, capillary_pressure, permeability, meniscus_shape, evaporation_model,
+          dryout, device_scale_model, mesh_convergence]
+  bibliography_verified: pdf
+  content_verified: true
+  local_path: "C:/Users/chase/Downloads/NANOFAB PROJECT RESEARCH/research documents/research papers/Simultaneous prediction of dryout heat flux and local temperature for.pdf"
+  notes: >
+    Primary authority for the baseline replication: geometry, unit-cell and device model
+    equations, boundary conditions, assumptions (App. A.1), replication targets, mesh convergence.
+    Does not state silicon conductivity or the source of water properties. Used COMSOL 5.3a
+    (ref. [25]). PDF text extraction drops minus signs in exponents (e.g. Table A1, A.1).
+
+vaartstra2019_thesis:
+  title: "Comprehensive modeling of thin film evaporation in micropillar wicks"
+  authors: ["Geoffrey Vaartstra"]
+  year: 2019
+  venue: "M.S. thesis, Department of Mechanical Engineering, Massachusetts Institute of Technology (June 2019), 52 pp."
+  doi: unknown
+  type: PRIMARY_SOURCE
+  role: SUPPORTING_MODEL_REFERENCE
+  scope: [micropillar_geometry, capillary_pressure, permeability, meniscus_shape, evaporation_model,
+          dryout, device_scale_model, mesh_convergence, system_cooling]
+  bibliography_verified: pdf
+  content_verified: partial
+  local_path: "C:/Users/chase/Downloads/NANOFAB PROJECT RESEARCH/research documents/research papers/comprehensive modeling of thin film evaporation in micropillar wicks.pdf"
+  notes: >
+    Thesis version of vaartstra2019 (cites it as ref. [46]). Not peer reviewed; ranks below the
+    IJHMT paper. Adds an optimization table (Table 1, T_sat = 50 C), a compact thermal model and
+    future-work chapters. Text extraction drops superscripts; checked items were read from
+    rendered page images. Checked: Re_h ~ 10^1 (p. 23, 51); heat input 1 um below pillar base
+    (p. 20); T_e red line at substrate top (Fig. 4b, p. 20); c4* = -2.13204, d4* = -0.44675
+    (p. 22). Confirmed NOT stated: silicon properties, water property source, the
+    Meland-Ytrehus correction form, Sangani-Acrivos.
+
+vaartstra2020:
+  title: "Capillary-fed, thin film evaporation devices"
+  authors: ["Geoffrey Vaartstra", "Lenan Zhang", "Zhengmao Lu", "Carlos D. Diaz-Marin", "Jeffrey C. Grossman", "Evelyn N. Wang"]
+  year: 2020
+  venue: "Journal of Applied Physics 128, 130901 (2020) (Perspective)"
+  doi: "10.1063/5.0021674"
+  type: PRIMARY_SOURCE
+  role: REVIEW
+  scope: [capillary_pressure, permeability, evaporation_model, dryout, device_scale_model, system_cooling, fluid_properties]
+  bibliography_verified: pdf
+  content_verified: partial
+  local_path: "C:/Users/chase/Downloads/NANOFAB PROJECT RESEARCH/research documents/research papers/Capillary-fed, thin film evaporation devices.pdf"
+  notes: >
+    Review/perspective. Primary for its own Fig. 8 model; for values it compiles from others,
+    cite the original. States the accommodation-coefficient range for water (0.001-1, Sec. III C)
+    and uses k_Si = 153 W/m/K at 20 C (citing Lienhard).
+
+zhou_adera2026:
+  title: "Numerical Simulation and Optimization of Thin-Film Evaporation in Variable Micropillar Wicks"
+  authors: ["Yimin Zhou", "Solomon Adera"]
+  year: 2026
+  venue: "ASME Journal of Heat and Mass Transfer 148(3), 031604 (2026)"
+  doi: "10.1115/1.4070734"
+  type: PRIMARY_SOURCE
+  scope: [micropillar_geometry, capillary_pressure, permeability, meniscus_shape, dryout, device_scale_model]
+  bibliography_verified: pdf
+  content_verified: partial
+  local_path: "C:/Users/chase/Downloads/NANOFAB PROJECT RESEARCH/research documents/research papers/Numerical simulation and Optimization of thin-film evaporation in variable micropillar wicks.pdf"
+  notes: >
+    Independent dryout model (no temperature/HTC). Reports 84 W/cm2 for d=10, l=30, h=25 um at
+    1 atm (vs 82 W/cm2 in vaartstra2019): a cross-check, not a replacement. Uses theta_rec = 15 deg.
+    Novel variable-diameter wicks: relevant to Phase 5. Supplemental material not held.
+
+# ---------------------------------------------------------------------------------------------
+# Wick characterization experiments (PDFs held)
+# ---------------------------------------------------------------------------------------------
+
+ravi2014:
+  title: "A novel method for characterization of liquid transport through micro-wicking arrays"
+  authors: ["Saitej Ravi", "David Horner", "Saeed Moghaddam"]
+  year: 2014
+  venue: "Microfluidics and Nanofluidics 17 (2014) 349-357"
+  doi: "10.1007/s10404-013-1301-y"
+  type: PRIMARY_SOURCE
+  scope: [micropillar_geometry, permeability, capillary_pressure, meniscus_shape, dryout, wick_characterization_experiment]
+  bibliography_verified: pdf
+  content_verified: partial
+  local_path: "C:/Users/chase/Downloads/NANOFAB PROJECT RESEARCH/research documents/research papers/A novel method for characterization of liquid transport through micro-wicking arrays.pdf"
+  notes: >
+    Measured K and capillary pressure separately for six Si micropillar wicks (Table 3). Good
+    independent check of permeability models (Byon & Kim best, ~30% error).
+
+elkholy2023:
+  title: "A rate-of-rise facility for measuring properties of wick structures"
+  authors: ["A Elkholy", "J Durfee", "J P Mooney", "A J Robinson", "R Kempers"]
+  year: 2023
+  venue: "Measurement Science and Technology 34, 045301 (2023)"
+  doi: "10.1088/1361-6501/acad1c"
+  type: PRIMARY_SOURCE
+  scope: [wick_characterization_experiment, permeability, capillary_pressure]
+  bibliography_verified: pdf
+  content_verified: partial
+  local_path: "C:/Users/chase/Downloads/NANOFAB PROJECT RESEARCH/research documents/research papers/A rate of rise facility for measuring properties of wick structures.pdf"
+  notes: "Rate-of-rise method for sintered copper wicks with ethanol; experimental-design reference."
+
+adkins_dykhuizen_sand92:
+  title: "Procedures for Measuring the Properties of Heat-Pipe Wick Materials"
+  authors: ["Douglas R. Adkins", "Ronald C. Dykhuizen"]
+  year: unknown
+  venue: "Sandia National Laboratories, SAND92-2347C (conference/proceedings name unknown)"
+  doi: unknown
+  type: PRIMARY_SOURCE
+  scope: [permeability, capillary_pressure, wick_characterization_experiment]
+  bibliography_verified: pdf
+  content_verified: partial
+  local_path: "C:/Users/chase/Downloads/NANOFAB PROJECT RESEARCH/research documents/research papers/Procedures for Measuring the Properties of Heat-Pipe Wick Materials.pdf"
+  notes: >
+    Forced-flow, bubble-point and rate-of-rise methods (screen wicks, 2-propanol). Year not
+    printed; ~1992-93 inferred from the report number only.
+
+# ---------------------------------------------------------------------------------------------
+# System-level / thermal test vehicle (PDFs held)
+# ---------------------------------------------------------------------------------------------
+
+liu2025_ectc:
+  title: "Experimental Demonstration of High-Power Thermal Test Vehicle using Two-Phase Cooling for AI Datacenters, 5G RAN, and Edge Compute Nodes"
+  authors: ["Yang Liu", "Rishav Roy", "David J. Apigo", "Manohar Bongarala", "Syed Faisal", "Sarwesh Parbat",
+            "Todd Salamon", "Mark Cappuzzo", "Ting-Chen Hu", "Rose Kopf", "Alaric Tate", "Ed Sutter",
+            "Nagesh Basavanhally", "Bob Farah", "Rick Papazian", "Mark Earnshaw"]
+  year: 2025
+  venue: "2025 IEEE 75th Electronic Components and Technology Conference (ECTC), pp. 2074-2080"
+  doi: "10.1109/ECTC51687.2025.00355"
+  type: PRIMARY_SOURCE
+  scope: [thermal_test_vehicle, system_cooling, heat_flux_targets]
+  bibliography_verified: pdf
+  content_verified: partial
+  local_path: "C:/Users/chase/Downloads/NANOFAB PROJECT RESEARCH/research documents/research papers/Experimental_Demonstration_of_High-Power_Thermal_Test_Vehicle_using_Two-Phase_Cooling_for_AI_Datacenters_5G_RAN_and_Edge_Compute_Nodes.pdf"
+  notes: >
+    2.6 kW multi-die TTV, pumped two-phase R1233zd(E) microchannel cooling (not a wick). Hotspot
+    314 W/cm2 over cell area (817 W/cm2 over heater area); uniform logic 48-76 W/cm2.
+    Context for design targets and TTV design.
+
+narayanan2024_interpack:
+  title: "Investigation of Server Level Direct-to-Chip Two Phase Cooling Solution for High Power GPUs"
+  authors: ["Akshith Narayanan", "Qingyang Wang", "Serdar Ozguc", "Richard W. Bonner III"]
+  year: 2024
+  venue: "Proc. ASME InterPACK 2024, paper IPACK2024-141261"
+  doi: unknown
+  type: PRIMARY_SOURCE
+  scope: [thermal_test_vehicle, system_cooling, heat_flux_targets]
+  bibliography_verified: pdf
+  content_verified: partial
+  local_path: "C:/Users/chase/Downloads/NANOFAB PROJECT RESEARCH/research documents/research papers/INVESTIGATION OF SERVER LEVEL DIRECT-TO-CHIP TWO PHASE COOLING SOLUTION.pdf"
+  notes: >
+    H100-form-factor TTVs (~26 x 35 mm die, 700 W TDP, tested to 1.35 kW), pumped two-phase
+    R1233zd(E) cold plates, R_case-fluid 0.02-0.03 K/W. Heat flux in W/cm2 not printed
+    (700 W / 9.1 cm2 ~ 77 W/cm2 is a PROJECT_DERIVED estimate).
+
+# ---------------------------------------------------------------------------------------------
+# Papers cited by our equations but NOT held. Citation copied from the vaartstra2019 reference
+# list where possible; content not checked by us.
+# ---------------------------------------------------------------------------------------------
+
+xiao2010:
+  title: "Prediction and optimization of liquid propagation in micropillar arrays"
+  authors: ["R. Xiao", "R. Enright", "E.N. Wang"]
+  year: 2010
+  venue: "Langmuir 26 (2010) 15070-15075"
+  doi: unknown
+  type: PRIMARY_SOURCE
+  bibliography_verified: reference_list
+  content_verified: false
+  local_path: null
+  notes: "vaartstra2019 ref. [19]. Commonly credited with the pillar-array capillary force balance."
+
+zhu2016:
+  title: "Prediction and characterization of dry-out heat flux in micropillar wick structures"
+  authors: ["Y. Zhu", "D.S. Antao", "Z. Lu", "S. Somasundaram", "T. Zhang", "E.N. Wang"]
+  year: 2016
+  venue: "Langmuir 32 (2016) 1920-1927"
+  doi: unknown
+  type: PRIMARY_SOURCE
+  bibliography_verified: reference_list
+  content_verified: false
+  local_path: null
+  notes: "vaartstra2019 ref. [14]. Meniscus + CFD permeability; optimal d/h, l/h ratios; dryout experiments (Fig. 6b data)."
+
+adera2016:
+  title: "Design of micropillar wicks for thin-film evaporation"
+  authors: ["S. Adera", "D. Antao", "R. Raj", "E.N. Wang"]
+  year: 2016
+  venue: "International Journal of Heat and Mass Transfer 101 (2016) 280-294"
+  doi: unknown
+  type: PRIMARY_SOURCE
+  bibliography_verified: reference_list
+  content_verified: false
+  local_path: null
+  notes: "vaartstra2019 ref. [12]. Brinkman + uniform evaporation dryout model; superheat data used to fit a = 0.052."
+
+byon_kim2011:
+  title: "The effect of meniscus on the permeability of micro-post arrays"
+  authors: ["C. Byon", "S.J. Kim"]
+  year: 2011
+  venue: "Journal of Micromechanics and Microengineering 21 (2011)"
+  doi: unknown
+  type: PRIMARY_SOURCE
+  bibliography_verified: reference_list
+  content_verified: false
+  local_path: null
+  notes: "vaartstra2019 ref. [17]. Best-performing permeability model in ravi2014."
+
+brinkman1949:
+  title: "A calculation of the viscous force exerted by a flowing fluid on a dense swarm of particles"
+  authors: ["H.C. Brinkman"]
+  year: 1949
+  venue: "Applied Scientific Research 1 (1949) 155-161"
+  doi: unknown
+  type: PRIMARY_SOURCE
+  bibliography_verified: reference_list
+  content_verified: false
+  local_path: null
+  notes: "vaartstra2019 ref. [20]."
+
+sone2000:
+  title: "Kinetic theoretical studies of the half-space problem of evaporation and condensation"
+  authors: ["Y. Sone"]
+  year: 2000
+  venue: "Transport Theory and Statistical Physics 29 (2000) 227-260"
+  doi: unknown
+  type: PRIMARY_SOURCE
+  bibliography_verified: reference_list
+  content_verified: false
+  local_path: null
+  notes: "vaartstra2019 ref. [26]. Source of C4* = 2.13204, d4* = 0.44675 (values as printed in vaartstra2019)."
+
+meland_ytrehus2003:
+  title: "Evaporation and condensation Knudsen layers for nonunity condensation coefficient"
+  authors: ["R. Meland", "T. Ytrehus"]
+  year: 2003
+  venue: "Physics of Fluids 15 (2003) 1348-1350"
+  doi: unknown
+  type: PRIMARY_SOURCE
+  bibliography_verified: reference_list
+  content_verified: false
+  local_path: null
+  notes: >
+    vaartstra2019 ref. [28]. The correction form used in evaporation.sone_bte_mass_flux,
+    C4(a) = C4* + 2 sqrt(pi) (1 - a)/a, has NOT been checked against this paper.
+
+meland2004:
+  title: "Nonequilibrium molecular-dynamics simulation of net evaporation and net condensation, and evaluation of the gas-kinetic boundary condition at the interphase"
+  authors: ["R. Meland", "A. Frezzotti", "T. Ytrehus", "B. Hafskjold"]
+  year: 2004
+  venue: "Physics of Fluids 16 (2004) 223-243"
+  doi: unknown
+  type: PRIMARY_SOURCE
+  bibliography_verified: reference_list
+  content_verified: false
+  local_path: null
+  notes: "vaartstra2019 ref. [27]: cited for the definition of the evaporation/condensation accommodation coefficient."
+
+raj2013:
+  title: "Wettability of graphene"
+  authors: ["R. Raj", "S.C. Maroo", "E.N. Wang"]
+  year: 2013
+  venue: "Nano Letters 13 (2013) 1509-1515"
+  doi: unknown
+  type: PRIMARY_SOURCE
+  bibliography_verified: reference_list
+  content_verified: false
+  local_path: null
+  notes: "vaartstra2019 ref. [29]: origin of theta_rec = 15 deg for water on SiO2."
+
+schrage1953:
+  title: "A Theoretical Study of Interphase Mass Transfer"
+  authors: ["R.W. Schrage"]
+  year: 1953
+  venue: "Columbia University Press"
+  doi: null
+  type: PRIMARY_SOURCE
+  bibliography_verified: reference_list
+  content_verified: false
+  local_path: null
+  notes: >
+    DISCREPANCY: vaartstra2019 ref. [22] prints the year as 1954 ("Columbia Press, 1954"); the
+    year 1953 used in our docstrings is from memory. Both are preserved until checked.
+
+lienhard_textbook:
+  title: "A Heat Transfer Textbook, 4th ed."
+  authors: ["J.H. Lienhard IV", "J.H. Lienhard V"]
+  year: 2012
+  venue: "textbook"
+  doi: null
+  type: AUTHORITATIVE_DATABASE
+  bibliography_verified: reference_list
+  content_verified: false
+  local_path: null
+  notes: >
+    vaartstra2019 ref. [31]; vaartstra2020 cites it for k_Si = 153 W/m/K at 20 C. Textbook
+    property tables are a secondary compilation, treated here as reference data.
+
+# ---------------------------------------------------------------------------------------------
+# Cited from memory in our code/docs; NOT held and citation NOT verified (TODO)
+# ---------------------------------------------------------------------------------------------
+
+sangani_acrivos1982:
+  title: "Slow flow past periodic arrays of cylinders with application to heat transfer"
+  authors: ["A.S. Sangani", "A. Acrivos"]
+  year: 1982
+  venue: "International Journal of Multiphase Flow 8 (1982) 193-206"
+  doi: unknown
+  type: PRIMARY_SOURCE
+  bibliography_verified: "no"
+  content_verified: false
+  local_path: null
+  notes: "TODO verify citation and the series coefficients used in permeability.sangani_acrivos_permeability."
+
+drummond_tahir1984:
+  title: "Laminar viscous flow through regular arrays of parallel solid cylinders"
+  authors: ["J.E. Drummond", "M.I. Tahir"]
+  year: 1984
+  venue: "International Journal of Multiphase Flow 10 (1984)"
+  doi: unknown
+  type: PRIMARY_SOURCE
+  bibliography_verified: "no"
+  content_verified: false
+  local_path: null
+  notes: "TODO verify. Form K = a^2/(8 phi)(-ln phi - 1.476 + 2 phi - 1.774 phi^2 + 4.076 phi^3)."
+
+lee1995_spreading:
+  title: "Constriction/spreading resistance model for electronics packaging"
+  authors: ["S. Lee", "S. Song", "V. Au", "K.P. Moran"]
+  year: 1995
+  venue: "Proc. ASME/JSME Thermal Engineering Conference (1995)"
+  doi: unknown
+  type: PRIMARY_SOURCE
+  bibliography_verified: "no"
+  content_verified: false
+  local_path: null
+  notes: "TODO verify citation and the average-temperature formula in conduction.spreading_resistance."
+
+carey_lvpcp:
+  title: "Liquid-Vapor Phase-Change Phenomena, 2nd ed."
+  authors: ["V.P. Carey"]
+  year: unknown
+  venue: "textbook"
+  doi: null
+  type: PRIMARY_SOURCE
+  bibliography_verified: "no"
+  content_verified: false
+  local_path: null
+  notes: "TODO verify edition/year and chapter for the Schrage relation."
+
+faghri_heatpipe:
+  title: "Heat Pipe Science and Technology"
+  authors: ["A. Faghri"]
+  year: unknown
+  venue: "textbook"
+  doi: null
+  type: PRIMARY_SOURCE
+  bibliography_verified: "no"
+  content_verified: false
+  local_path: null
+  notes: "TODO. Cited generically for the 1D capillary-limit analysis in dryout.py."
+
+marek_straub2001:
+  title: "Analysis of the evaporation coefficient and the condensation coefficient of water"
+  authors: ["R. Marek", "J. Straub"]
+  year: 2001
+  venue: "International Journal of Heat and Mass Transfer 44 (2001) 39-53"
+  doi: unknown
+  type: PRIMARY_SOURCE
+  bibliography_verified: "no"
+  content_verified: false
+  local_path: null
+  notes: "TODO verify. Previously cited for the accommodation range; replaced by vaartstra2020 Sec. III C (held)."
+
+breck1974:
+  title: "Zeolite Molecular Sieves"
+  authors: ["D.W. Breck"]
+  year: 1974
+  venue: "book"
+  doi: null
+  type: PRIMARY_SOURCE
+  bibliography_verified: "no"
+  content_verified: false
+  local_path: null
+  notes: "TODO verify. Cited for the H2O kinetic diameter (0.265 nm)."
+
+incropera_fhmt:
+  title: "Fundamentals of Heat and Mass Transfer"
+  authors: ["F.P. Incropera", "D.P. DeWitt", "T.L. Bergman", "A.S. Lavine"]
+  year: unknown
+  venue: "textbook (edition TODO), Table A.1"
+  doi: null
+  type: AUTHORITATIVE_DATABASE
+  bibliography_verified: "no"
+  content_verified: false
+  local_path: null
+  notes: "Textbook property tables (secondary compilation). Edition and exact table values TODO."
+
+# ---------------------------------------------------------------------------------------------
+# Authoritative databases and documentation
+# ---------------------------------------------------------------------------------------------
+
+iapws:
+  title: "IAPWS releases for ordinary water substance (IAPWS-95 formulation; surface tension, viscosity and thermal conductivity releases)"
+  authors: ["International Association for the Properties of Water and Steam"]
+  year: unknown
+  venue: "https://www.iapws.org"
+  doi: null
+  type: AUTHORITATIVE_DATABASE
+  bibliography_verified: "no"
+  content_verified: false
+  local_path: null
+  notes: >
+    Authority for water properties. Evaluated in this repo through CoolProp (see coolprop).
+    TODO: record the exact release numbers CoolProp 8.0 implements for each property.
+
+coolprop:
+  title: "Pure and Pseudo-pure Fluid Thermophysical Property Evaluation and the Open-Source Thermophysical Property Library CoolProp"
+  authors: ["I.H. Bell", "J. Wronski", "S. Quoilin", "V. Lemort"]
+  year: 2014
+  venue: "Industrial & Engineering Chemistry Research 53 (2014) 2498-2508"
+  doi: unknown
+  type: AUTHORITATIVE_DATABASE
+  bibliography_verified: "no"
+  content_verified: false
+  local_path: null
+  notes: >
+    Open-source implementation of the IAPWS formulations (installed version 8.0.0). Treated as
+    the access route to iapws, not an authority in itself. tests/test_fluids.py spot-checks values.
+
+nist_webbook:
+  title: "NIST Chemistry WebBook, SRD 69 - Thermophysical Properties of Fluid Systems"
+  authors: ["NIST"]
+  year: unknown
+  venue: "https://webbook.nist.gov/chemistry/fluid/"
+  doi: null
+  type: AUTHORITATIVE_DATABASE
+  bibliography_verified: "no"
+  content_verified: false
+  local_path: null
+  notes: "Not yet used. Use to cross-check CoolProp water properties at 100 C."
+
+nist_si_constants:
+  title: "NIST reference on constants, units and uncertainty (CODATA values; standard acceleration of gravity)"
+  authors: ["NIST"]
+  year: unknown
+  venue: "https://physics.nist.gov/cuu/"
+  doi: null
+  type: AUTHORITATIVE_DATABASE
+  bibliography_verified: "no"
+  content_verified: false
+  local_path: null
+  notes: "Standard gravity g_n = 9.80665 m/s2 (exact, CGPM 1901). Code constants R and k_B are CODATA/SI 2019."
+
+comsol_docs:
+  title: "COMSOL Multiphysics Reference Manual and module User's Guides (CFD Module, Heat Transfer Module)"
+  authors: ["COMSOL AB"]
+  year: unknown
+  venue: "https://doc.comsol.com"
+  doi: null
+  type: AUTHORITATIVE_DATABASE
+  bibliography_verified: "no"
+  content_verified: false
+  local_path: null
+  notes: >
+    Authority for COMSOL implementation details. The steps in docs/comsol_unit_cell_guide.md have
+    NOT yet been checked against these manuals; record the COMSOL version and manual sections
+    when they are.
+
+# ---------------------------------------------------------------------------------------------
+# Project context (not scientific authority)
+# ---------------------------------------------------------------------------------------------
+
+project_brief:
+  title: "NANOFAB modeling context brief"
+  authors: ["Chase"]
+  year: 2026
+  venue: "docs/modeling_context.md"
+  doi: null
+  type: PROJECT_CONTEXT
+  local_path: "docs/modeling_context.md"
+  notes: "Project goals, priorities and conventions."
+
+chase_drive_notes:
+  title: "Chase's Google Drive project notes, COMSOL planning docs, literature maps, presentations"
+  authors: ["Chase"]
+  year: unknown
+  venue: "Google Drive (not in repo)"
+  doi: null
+  type: PROJECT_CONTEXT
+  local_path: "C:/Users/chase/Downloads/NANOFAB PROJECT RESEARCH/"
+  notes: "Context for intent and decisions; not scientific evidence."
