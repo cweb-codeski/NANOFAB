@@ -30,10 +30,14 @@ def find_column(table: ComsolTable, name: str, required: bool = True) -> str | N
 
 
 def geometry_columns(table: ComsolTable, ps: ParameterSet) -> dict[str, "object"]:
-    """Per-row pillar d, l, h [m]: from sweep columns named d / l / h if present, else parameters."""
+    """Per-row pillar d, l, h [m]: from sweep columns d / l / hp (or h) if present, else parameters.
+
+    COMSOL reserves ``h`` (mesh element size), so the COMSOL guide names the pillar height ``hp``.
+    """
     out = {}
+    aliases = {"d": ("d",), "l": ("l",), "h": ("hp", "h")}
     for key, pname in (("d", "pillar_diameter"), ("l", "pillar_pitch"), ("h", "pillar_height")):
-        col = next((c for c in table.data.columns if c.lower() == key), None)
+        col = next((c for c in table.data.columns if c.lower() in aliases[key]), None)
         if col is not None:
             unit = table.units.get(col, "")
             scale = {"m": 1.0, "um": 1e-6, "µm": 1e-6, "mm": 1e-3, "": 1.0}.get(unit)

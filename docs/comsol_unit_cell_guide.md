@@ -33,7 +33,7 @@ COMSOL version assumed: 6.x (V2019 used 5.3a). Menu names may differ slightly.
 | Term | Meaning |
 | --- | --- |
 | Component | One model geometry plus its physics and mesh. |
-| Global Definitions > Parameters | Named constants (`d`, `l`, `h`, ...) usable everywhere and sweepable. |
+| Global Definitions > Parameters | Named constants (`d`, `l`, `hp`, ...) usable everywhere and sweepable. Avoid COMSOL's reserved names (`h` = mesh element size, `t`, `x`, `y`, `z`, `pi`, `freq`, `lambda`, `phase`). |
 | Domain | A 3D region (liquid, pillar, substrate). Materials and volume physics live on domains. |
 | Boundary | A face of a domain (an edge in 2D). Boundary conditions live on boundaries. |
 | Physics interface | A set of equations, e.g. Laminar Flow (`spf`), Heat Transfer in Solids and Fluids (`ht`), General Form PDE (`g`). |
@@ -56,7 +56,7 @@ Global Definitions > Parameters. Values match `parameters/*.yaml` (V2019 baselin
 | --- | --- | --- | --- |
 | `d` | `10[um]` | pillar diameter | V2019 Fig. 4 |
 | `l` | `30[um]` | pillar pitch | V2019 Fig. 4 |
-| `h` | `25[um]` | pillar height | V2019 Fig. 4 |
+| `hp` | `25[um]` | pillar height (not `h`: COMSOL reserves `h` for the mesh element size) | V2019 Fig. 4 |
 | `tsub` | `1[um]` | silicon below the pillar base in the cell | V2019 Sec. 2.2 |
 | `Tv` | `373.15[K]` | saturated vapor temperature | V2019 Sec. 3 |
 | `q0` | `50[W/cm^2]` | heat flux at the cell bottom | V2019 Sec. 3.1 |
@@ -103,8 +103,8 @@ between pillars are mirror planes (V2019 Fig. 2a), so only part of one cell is m
 
 Steps (Geometry node, 3D component):
 
-1. **Block** `blk_liquid`: Width `l/2`, Depth `l/2`, Height `h`, Corner (0, 0, 0).
-2. **Cylinder** `cyl_pillar`: Radius `d/2`, Height `h`, Position (0, 0, 0), Axis z.
+1. **Block** `blk_liquid`: Width `l/2`, Depth `l/2`, Height `hp`, Corner (0, 0, 0).
+2. **Cylinder** `cyl_pillar`: Radius `d/2`, Height `hp`, Position (0, 0, 0), Axis z.
 3. Flow-only models: **Booleans and Partitions > Difference**, add `blk_liquid`, subtract
    `cyl_pillar`. That leaves one liquid domain.
 4. Heat-transfer models: use **Union** with **Keep interior boundaries** checked (or leave both
@@ -270,7 +270,7 @@ V2019 neglects gravity (Bo ~ 1e-5) and treats the curvature as constant over one
    nonlinear, so sweeping from 0 lets each solution start from the previous one.
 5. Checks:
    - At `Pc = 0`, f = 0 everywhere (flat).
-   - The minimum of f (at the cell center) should stay above `-h`. V2019 tracked z_min for mesh
+   - The minimum of f (at the cell center) should stay above `-hp`. V2019 tracked z_min for mesh
      convergence (Table A1: 1.1e-4).
    - At `dp_dry`, the average interface angle at the pillar should match the receding angle,
      about 15° from the pillar wall. Equivalently, the slope is about tan(75°) ≈ 3.7. A big
@@ -278,7 +278,7 @@ V2019 neglects gravity (Bo ~ 1e-5) and treats the curvature as constant over one
 
 **Using the shape in 3D:** export f on a grid (Results > Export > Data, regular grid) for each
 `Pc`. In the 3D component, load it as an Interpolation function `fint(x,y)`. Build a Parametric
-Surface (x = s1, y = s2, z = `h + fint(s1,s2)`) and use it with **Partition Objects** to split
+Surface (x = s1, y = s2, z = `hp + fint(s1,s2)`) and use it with **Partition Objects** to split
 the liquid block; delete the part above the surface. V2019 imported the meniscus as a mesh. Either
 way, the curved face becomes the `meniscus` selection.
 
@@ -338,8 +338,8 @@ thin-film region.
 Parametric Sweep over `Pc` from 0 to `dp_dry` for each geometry, using the matching meniscus from
 Stage 3. Export:
 
-- thermal: `Pc, d, l, h, Q_in, Q_evap, T_base, T_lv` to `data/comsol_exports/stage5_thermal.csv`
-- flow: `Pc, d, l, h, dp, Q` to `data/comsol_exports/stage5_flow.csv`
+- thermal: `Pc, d, l, hp, Q_in, Q_evap, T_base, T_lv` to `data/comsol_exports/stage5_thermal.csv`
+- flow: `Pc, d, l, hp, dp, Q` to `data/comsol_exports/stage5_flow.csv`
 
 ```powershell
 python analysis/heat_transfer_from_comsol.py data/comsol_exports/stage5_thermal.csv
