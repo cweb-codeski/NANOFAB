@@ -17,6 +17,25 @@ def test_read_csv_table_with_units_and_metadata():
     assert t.columns_with_unit("m^3/s") == ["Surface Integration 1"]
 
 
+def test_read_comsol63_csv_with_quoted_headers(tmp_path):
+    p = tmp_path / "stage1.csv"
+    p.write_text(
+        '% Model,permeability1.mph\n'
+        '% Version,COMSOL 6.3.0.420\n'
+        '% Date,"Oct 7 2026, 21:57"\n'
+        '% hmax (m),"Q, flow rate (m^3/s)","K, permeability (m^2)"\n'
+        "1.0E-6,2.63E-12,2.96E-11\n"
+        "5.0E-7,2.64E-12,2.97E-11\n",
+        encoding="utf-8",
+    )
+    t = read_comsol_table(p)
+    assert list(t.data.columns) == ["hmax", "Q, flow rate", "K, permeability"]
+    assert t.units["Q, flow rate"] == "m^3/s"
+    assert t.units["K, permeability"] == "m^2"
+    assert t.metadata["Model"] == "permeability1.mph"
+    assert t.metadata["Date"] == "Oct 7 2026, 21:57"
+
+
 def test_read_whitespace_txt_table():
     t = read_comsol_table(EXAMPLES / "stage4_thermal_example.txt")
     assert list(t.data.columns) == ["Pc", "Q_in", "Q_evap", "T_base", "T_lv"]

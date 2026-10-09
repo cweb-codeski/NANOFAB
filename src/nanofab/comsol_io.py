@@ -10,6 +10,7 @@ Both "Results > Tables > Export" and "Results > Export > Data" files are handled
 
 from __future__ import annotations
 
+import csv
 import io
 import re
 from dataclasses import dataclass, field
@@ -51,7 +52,8 @@ class ComsolTable:
 
 def _split_header(header: str, delimiter: str | None) -> list[str]:
     if delimiter == ",":
-        parts = header.split(",")
+        # COMSOL 6.x quotes names that contain commas, e.g. "Q, flow rate (m^3/s)".
+        parts = next(csv.reader([header]))
     else:
         parts = re.split(r"\s{2,}|\t", header)
     return [p.strip() for p in parts if p.strip()]
@@ -89,10 +91,13 @@ def read_comsol_table(path: str | Path) -> ComsolTable:
 
     metadata: dict[str, str] = {}
     header = None
-    for c in comment_lines:
+    for c in comment_lines[:-1]:
+        # "% Model:  x.mph" (TXT, older CSV) or "% Model,x.mph" (COMSOL 6.x CSV)
         key, sep, value = c.partition(":")
+        if not (sep and re.fullmatch(r"[A-Za-z ]+", key.strip())):
+            key, sep, value = c.partition(",")
         if sep and re.fullmatch(r"[A-Za-z ]+", key.strip()) and len(key.strip()) < 30:
-            metadata[key.strip()] = value.strip()
+            metadata[key.strip()] = value.strip().strip('"')
     if comment_lines:
         header = comment_lines[-1]
 
@@ -147,5 +152,5 @@ def mesh_convergence_report(values: dict[str, float], tolerance: float = 0.02) -
             lines.append(f"{label:>10}  {values[label]:14.6g}  {'(finest)':>22}")
     rc_last = relative_change(values[fine_label], values[labels[-2]])
     verdict = "converged" if rc_last < tolerance else "NOT converged"
-    lines.append(f"Finest pair change {rc_last:.2%} -> {verdict} at tolerance {tolerance:.0%}")
+    lines.append(f"Finest pair change {rc_last:.2%} -> {verdict} at tolerance {100 * tolerance:g}%")
     return "\n".join(lines)
