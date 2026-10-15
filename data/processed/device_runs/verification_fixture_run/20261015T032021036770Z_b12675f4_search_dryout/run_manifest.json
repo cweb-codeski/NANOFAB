@@ -1,0 +1,776 @@
+{
+  "run_id": "20261015T032021036770Z_b12675f4_search_dryout",
+  "command_line": "python.exe analysis/run_passive_device.py --case tests/fixtures/device/manufactured_case.yaml --search-dryout --output data/processed/device_runs/verification_fixture_run",
+  "timestamp_utc": "2026-10-15T03:20:21.042768+00:00",
+  "git": {
+    "commit": "b12675f4b524aa0efaf5ef8b002a4fa458def34c",
+    "branch": "cursor/source-provenance-system",
+    "dirty": true,
+    "status_porcelain": [
+      "M .gitignore",
+      " M README.md",
+      " M analysis/baseline_estimates.py",
+      " M analysis/heat_transfer_from_comsol.py",
+      " M analysis/vaartstra_replication.py",
+      " M config/model_provenance.yaml",
+      " M config/sources.yaml",
+      " M docs/SOURCE_AUTHORITY.md",
+      " M docs/assumptions.md",
+      " M docs/comsol_unit_cell_guide.md",
+      " M docs/equations.md",
+      " M docs/literature_notes.md",
+      " M parameters/materials.yaml",
+      " M src/nanofab/evaporation.py",
+      " M src/nanofab/params.py",
+      " M src/nanofab/provenance.py",
+      " M tests/test_vaartstra2019.py",
+      "?? analysis/device_benchmarks.py",
+      "?? analysis/import_cell_tables.py",
+      "?? analysis/run_passive_device.py",
+      "?? config/data_inventory.yaml",
+      "?? config/device_assumptions.yaml",
+      "?? data/processed/cell_tables/",
+      "?? data/processed/device_runs/",
+      "?? data/processed/permeability_stage1_flow_example.csv",
+      "?? docs/cell_table_contract.md",
+      "?? docs/passive_device_model.md",
+      "?? docs/whole_wick_assumptions.md",
+      "?? parameters/cases/",
+      "?? parameters/whole_wick/",
+      "?? results/",
+      "?? src/nanofab/device/",
+      "?? src/nanofab/whole_wick/",
+      "?? tests/fixtures/",
+      "?? tests/test_cell_tables.py",
+      "?? tests/test_device_analytic.py",
+      "?? tests/test_device_coupling.py",
+      "?? tests/test_device_dryout.py",
+      "?? tests/test_device_provenance.py",
+      "?? tests/test_whole_wick.py",
+      "?? unit_cell/",
+      "?? validation/",
+      "?? whole_wick/"
+    ]
+  },
+  "environment": {
+    "python": "3.12.9 (tags/v3.12.9:fdb8142, Feb  4 2025, 15:27:58) [MSC v.1942 64 bit (AMD64)]",
+    "executable": "C:\\Users\\chase\\NANOFAB\\.venv\\Scripts\\python.exe",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "packages": {
+      "numpy": "2.5.3",
+      "scipy": "1.18.1",
+      "pandas": "3.0.6",
+      "matplotlib": "3.11.2",
+      "PyYAML": "6.0.3",
+      "CoolProp": "8.0.0",
+      "nanofab": "0.1.0",
+      "pytest": "9.1.1"
+    }
+  },
+  "model_mode": "search_dryout / case_role=VERIFICATION_FIXTURE",
+  "verification_only": true,
+  "banner": "VERIFICATION ONLY - manufactured or analytical inputs; not a physical prediction",
+  "case": {
+    "path": "tests/fixtures/device/manufactured_case.yaml",
+    "sha256": "80c2d0f9e39b480605fcdb34cafb1a73499d9d6c13da1993ab005dd0fbc381da",
+    "case_id": "verification_manufactured_fixture",
+    "case_role": "VERIFICATION_FIXTURE",
+    "raw": {
+      "schema_version": "nanofab.device_case/1",
+      "case_id": "verification_manufactured_fixture",
+      "case_role": "VERIFICATION_FIXTURE",
+      "description": "Manufactured-table verification case (VERIFICATION ONLY).",
+      "source": null,
+      "source_locations": {},
+      "parameters": {
+        "d": "pillar_diameter",
+        "l": "pillar_pitch",
+        "h": "pillar_height",
+        "L": "wick_feed_length",
+        "W": "wick_width",
+        "t_s": "substrate_thickness",
+        "cell_substrate": "unit_cell_substrate_thickness",
+        "theta_rec": "receding_contact_angle",
+        "T_v": "vapor_temperature",
+        "fluid": "working_fluid",
+        "k_s": "silicon_thermal_conductivity",
+        "accommodation": "accommodation_coefficient"
+      },
+      "fluid_properties": {
+        "method": "runtime"
+      },
+      "topology": {
+        "simulated": "half_device",
+        "full_device": "two_edge_fed_mirrored",
+        "feed_suction_Pa": 0.0,
+        "inlet_thermal": "insulated"
+      },
+      "heat_load": {
+        "shape": "uniform"
+      },
+      "capillary_limit": {
+        "equation": "table_endpoint",
+        "criterion": "MANUFACTURED declared endpoint"
+      },
+      "cell_tables": {
+        "required": [
+          "hydraulic",
+          "meniscus",
+          "thermal"
+        ],
+        "dataset": "tests/fixtures/device/manufactured_tables",
+        "requirements": {
+          "data_role": "MANUFACTURED_FIXTURE",
+          "require_verified_accommodation": false
+        }
+      },
+      "comparison_targets": [],
+      "numerics": {
+        "Nx": 200,
+        "Nz": 32,
+        "rtol": 1e-10
+      }
+    }
+  },
+  "parameters": [
+    {
+      "symbol": "d",
+      "parameter": "pillar_diameter",
+      "value_SI": 9.999999999999999e-06,
+      "si_unit": "m",
+      "raw_value": 10,
+      "raw_unit": "um",
+      "provenance": "PRIMARY_SOURCE",
+      "source": "vaartstra2019",
+      "source_location": "Sec. 3.2; Fig. 4 caption",
+      "file": "geometry.yaml",
+      "notes": "Baseline device geometry. vaartstra2019 Fig. 5 keeps d/h = 0.4 while varying h."
+    },
+    {
+      "symbol": "l",
+      "parameter": "pillar_pitch",
+      "value_SI": 2.9999999999999997e-05,
+      "si_unit": "m",
+      "raw_value": 30,
+      "raw_unit": "um",
+      "provenance": "PRIMARY_SOURCE",
+      "source": "vaartstra2019",
+      "source_location": "Sec. 3.2; Fig. 4 caption",
+      "file": "geometry.yaml",
+      "notes": "Center-to-center spacing of a square array. Fig. 3(a) sweeps l at d = 10, h = 25 um."
+    },
+    {
+      "symbol": "h",
+      "parameter": "pillar_height",
+      "value_SI": 2.4999999999999998e-05,
+      "si_unit": "m",
+      "raw_value": 25,
+      "raw_unit": "um",
+      "provenance": "PRIMARY_SOURCE",
+      "source": "vaartstra2019",
+      "source_location": "Sec. 3.2; Fig. 4 caption",
+      "file": "geometry.yaml",
+      "notes": "Fig. 3(b) sweeps h at d = 10, l = 30 um; Fig. 5 sweeps h = 5-50 um at fixed ratios."
+    },
+    {
+      "symbol": "L",
+      "parameter": "wick_feed_length",
+      "value_SI": 0.005,
+      "si_unit": "m",
+      "raw_value": 5,
+      "raw_unit": "mm",
+      "provenance": "PRIMARY_SOURCE",
+      "source": "vaartstra2019",
+      "source_location": "Sec. 2 (L defined edge to center); Sec. 3.2; Fig. 4 caption",
+      "file": "geometry.yaml",
+      "notes": "Wick fed from the two edges normal to x (Sec. 3.2, Fig. 1c). Dryout heat flux scales as 1/L^2, so hold this fixed when comparing geometries."
+    },
+    {
+      "symbol": "W",
+      "parameter": "wick_width",
+      "value_SI": 0.01,
+      "si_unit": "m",
+      "raw_value": 10,
+      "raw_unit": "mm",
+      "provenance": "PRIMARY_SOURCE",
+      "source": "vaartstra2019",
+      "source_location": "Sec. 1 ('1 cm x 1 cm micropillar wick')",
+      "file": "geometry.yaml",
+      "notes": "Stated in the introduction when quoting the 30% HTC variation; consistent with L = 5 mm."
+    },
+    {
+      "symbol": "t_s",
+      "parameter": "substrate_thickness",
+      "value_SI": 9.999999999999999e-05,
+      "si_unit": "m",
+      "raw_value": 100,
+      "raw_unit": "um",
+      "provenance": "PRIMARY_SOURCE",
+      "source": "vaartstra2019",
+      "source_location": "Sec. 3.2 and 3.3 (t_s = 100 um)",
+      "file": "geometry.yaml",
+      "notes": "Device-level substrate. The validation data (adera2016) used 650 um (Sec. 3.4)."
+    },
+    {
+      "symbol": "cell_substrate",
+      "parameter": "unit_cell_substrate_thickness",
+      "value_SI": 1e-06,
+      "si_unit": "m",
+      "raw_value": 1,
+      "raw_unit": "um",
+      "provenance": "PRIMARY_SOURCE",
+      "source": "vaartstra2019",
+      "source_location": "Sec. 2.2 ('1 um below the base of the pillars')",
+      "file": "geometry.yaml",
+      "notes": "The same statement is garbled in the thesis PDF text; the IJHMT paper is legible."
+    },
+    {
+      "symbol": "theta_rec",
+      "parameter": "receding_contact_angle",
+      "value_SI": 0.2617993877991494,
+      "si_unit": "rad",
+      "raw_value": 15,
+      "raw_unit": "deg",
+      "provenance": "PRIMARY_SOURCE",
+      "source": "vaartstra2019",
+      "source_location": "Sec. 3.1 ('receding contact angle for water on silicon dioxide [29]')",
+      "file": "materials.yaml",
+      "notes": "vaartstra2019 takes it from raj2013 (not held). zhou_adera2026 (Sec. 3.1) uses the same value for native-oxide Si sidewalls. Must be measured on our own surfaces."
+    },
+    {
+      "symbol": "T_v",
+      "parameter": "vapor_temperature",
+      "value_SI": 373.15,
+      "si_unit": "K",
+      "raw_value": 100,
+      "raw_unit": "degC",
+      "provenance": "PRIMARY_SOURCE",
+      "source": "vaartstra2019",
+      "source_location": "Sec. 3.1-3.3 ('pure water vapor at 100 C'; T_sat = 100 C)",
+      "file": "operating_conditions.yaml",
+      "notes": "Saturated vapor: p_v = p_sat(T_v), liquid supplied at T_sat (Sec. 2). The validation data (adera2016) were at 3 kPa (Sec. 3.4)."
+    },
+    {
+      "symbol": "fluid",
+      "parameter": "working_fluid",
+      "value_SI": "Water",
+      "si_unit": "-",
+      "raw_value": "Water",
+      "raw_unit": "-",
+      "provenance": "PRIMARY_SOURCE",
+      "source": "vaartstra2019",
+      "source_location": "Sec. 2.2 ('we considered water as the working fluid and silicon as the micropillar material')",
+      "file": "fluids.yaml",
+      "notes": "Value is the CoolProp fluid name."
+    },
+    {
+      "symbol": "k_s",
+      "parameter": "silicon_thermal_conductivity",
+      "value_SI": 148.0,
+      "si_unit": "W/m/K",
+      "raw_value": 148,
+      "raw_unit": "W/m/K",
+      "provenance": "ASSUMED",
+      "source": "incropera_fhmt",
+      "source_location": "intended: Table A.1, pure Si at 300 K (edition and value never re-checked)",
+      "file": "materials.yaml",
+      "notes": "PROVISIONAL. Not a V2019 value and not a verified property at 373.15 K: a textbook value recalled from memory for 300 K whose table entry was never re-checked, so it is labelled ASSUMED rather than AUTHORITATIVE_DATABASE. vaartstra2019 does not state its silicon conductivity. DISCREPANCY: vaartstra2020 (Sec. IV C) uses 153 W/m/K at 20 C citing lienhard_textbook. Si conductivity falls with temperature (~120 W/m/K near 375 K, from memory, unverified). Non-blocking for the device model; keep both and sweep for replication."
+    },
+    {
+      "symbol": "accommodation",
+      "parameter": "accommodation_coefficient",
+      "value_SI": 0.052,
+      "si_unit": "-",
+      "raw_value": 0.052,
+      "raw_unit": "-",
+      "provenance": "PRIMARY_SOURCE",
+      "source": "vaartstra2019",
+      "source_location": "Sec. 2.2 and Sec. 3.4 (fitted to adera2016 data set A1)",
+      "file": "operating_conditions.yaml",
+      "notes": "A fitted parameter, not a measured property (the thesis says so explicitly). vaartstra2020 Sec. III C reports values for water spanning 0.001-1 and uses 1 and 0.31 in its own model. Sweep it for anything beyond exact replication."
+    }
+  ],
+  "liquid_properties": {
+    "T_v": 373.15,
+    "p_v": 101417.9966600156,
+    "rho": 958.3490516048603,
+    "mu": 0.0002815820076656743,
+    "h_fg": 2256403.721526573,
+    "sigma": 0.05892058565922924,
+    "cp": 4215.673616815757,
+    "k": 0.6772105145161135,
+    "rho_v": 0.5981697919259734,
+    "gamma_v": 1.3369328643376661,
+    "R_specific": 461.5231157260608,
+    "source": "IAPWS via CoolProp 8.0.0 at saturation, T = 373.15 K"
+  },
+  "boundary_conditions": {
+    "x0": "reservoir edge: Pc = 0.0 Pa, insulated substrate end",
+    "xL": "symmetry: Q = 0, insulated substrate end",
+    "substrate_bottom": "prescribed q_in''(x)",
+    "substrate_top": "Robin q_e'' = h_e(Pc)(T_e - T_v) at the pillar-base plane",
+    "liquid_inlet_temperature": "T_v (V2019)"
+  },
+  "preflight": {
+    "case_id": "verification_manufactured_fixture",
+    "case_role": "VERIFICATION_FIXTURE",
+    "status": "ADMISSIBLE",
+    "ready_for_prediction": true,
+    "missing_inputs": [],
+    "blocking_source_gaps": [],
+    "provisional_inputs": [
+      {
+        "symbol": "fluid_properties",
+        "status": "AVAILABLE (runtime CoolProp)",
+        "note": "V2019 does not identify its property database; a remaining limitation."
+      }
+    ],
+    "available_inputs": [
+      {
+        "symbol": "d",
+        "parameter": "pillar_diameter",
+        "value_SI": 9.999999999999999e-06,
+        "unit": "m",
+        "provenance": "PRIMARY_SOURCE",
+        "source": "vaartstra2019",
+        "source_location": "Sec. 3.2; Fig. 4 caption"
+      },
+      {
+        "symbol": "l",
+        "parameter": "pillar_pitch",
+        "value_SI": 2.9999999999999997e-05,
+        "unit": "m",
+        "provenance": "PRIMARY_SOURCE",
+        "source": "vaartstra2019",
+        "source_location": "Sec. 3.2; Fig. 4 caption"
+      },
+      {
+        "symbol": "h",
+        "parameter": "pillar_height",
+        "value_SI": 2.4999999999999998e-05,
+        "unit": "m",
+        "provenance": "PRIMARY_SOURCE",
+        "source": "vaartstra2019",
+        "source_location": "Sec. 3.2; Fig. 4 caption"
+      },
+      {
+        "symbol": "L",
+        "parameter": "wick_feed_length",
+        "value_SI": 0.005,
+        "unit": "m",
+        "provenance": "PRIMARY_SOURCE",
+        "source": "vaartstra2019",
+        "source_location": "Sec. 2 (L defined edge to center); Sec. 3.2; Fig. 4 caption"
+      },
+      {
+        "symbol": "W",
+        "parameter": "wick_width",
+        "value_SI": 0.01,
+        "unit": "m",
+        "provenance": "PRIMARY_SOURCE",
+        "source": "vaartstra2019",
+        "source_location": "Sec. 1 ('1 cm x 1 cm micropillar wick')"
+      },
+      {
+        "symbol": "t_s",
+        "parameter": "substrate_thickness",
+        "value_SI": 9.999999999999999e-05,
+        "unit": "m",
+        "provenance": "PRIMARY_SOURCE",
+        "source": "vaartstra2019",
+        "source_location": "Sec. 3.2 and 3.3 (t_s = 100 um)"
+      },
+      {
+        "symbol": "cell_substrate",
+        "parameter": "unit_cell_substrate_thickness",
+        "value_SI": 1e-06,
+        "unit": "m",
+        "provenance": "PRIMARY_SOURCE",
+        "source": "vaartstra2019",
+        "source_location": "Sec. 2.2 ('1 um below the base of the pillars')"
+      },
+      {
+        "symbol": "theta_rec",
+        "parameter": "receding_contact_angle",
+        "value_SI": 0.2617993877991494,
+        "unit": "rad",
+        "provenance": "PRIMARY_SOURCE",
+        "source": "vaartstra2019",
+        "source_location": "Sec. 3.1 ('receding contact angle for water on silicon dioxide [29]')"
+      },
+      {
+        "symbol": "T_v",
+        "parameter": "vapor_temperature",
+        "value_SI": 373.15,
+        "unit": "K",
+        "provenance": "PRIMARY_SOURCE",
+        "source": "vaartstra2019",
+        "source_location": "Sec. 3.1-3.3 ('pure water vapor at 100 C'; T_sat = 100 C)"
+      },
+      {
+        "symbol": "fluid",
+        "parameter": "working_fluid",
+        "value_SI": "Water",
+        "unit": "-",
+        "provenance": "PRIMARY_SOURCE",
+        "source": "vaartstra2019",
+        "source_location": "Sec. 2.2 ('we considered water as the working fluid and silicon as the micropillar material')"
+      },
+      {
+        "symbol": "k_s",
+        "parameter": "silicon_thermal_conductivity",
+        "value_SI": 148.0,
+        "unit": "W/m/K",
+        "provenance": "ASSUMED",
+        "source": "incropera_fhmt",
+        "source_location": "intended: Table A.1, pure Si at 300 K (edition and value never re-checked)"
+      },
+      {
+        "symbol": "accommodation",
+        "parameter": "accommodation_coefficient",
+        "value_SI": 0.052,
+        "unit": "-",
+        "provenance": "PRIMARY_SOURCE",
+        "source": "vaartstra2019",
+        "source_location": "Sec. 2.2 and Sec. 3.4 (fitted to adera2016 data set A1)"
+      }
+    ],
+    "capillary_limit_V2019_Eq3_Pa": 2176.577762803573,
+    "liquid_properties": {
+      "T_v": 373.15,
+      "p_v": 101417.9966600156,
+      "rho": 958.3490516048603,
+      "mu": 0.0002815820076656743,
+      "h_fg": 2256403.721526573,
+      "sigma": 0.05892058565922924,
+      "cp": 4215.673616815757,
+      "k": 0.6772105145161135,
+      "rho_v": 0.5981697919259734,
+      "gamma_v": 1.3369328643376661,
+      "R_specific": 461.5231157260608,
+      "source": "IAPWS via CoolProp 8.0.0 at saturation, T = 373.15 K"
+    },
+    "dataset_report": {
+      "dataset_id": "fixture_manufactured",
+      "data_role": "MANUFACTURED_FIXTURE",
+      "path": "C:\\Users\\chase\\NANOFAB\\tests\\fixtures\\device\\manufactured_tables",
+      "dataset_hash": "5341f2ac4f85e9f9437c9921b83bb7c8a079a8c55eddce33c093610944aa904e",
+      "schema_valid": true,
+      "verification_only": true,
+      "numerically_qualified": false,
+      "case_matched": true,
+      "errors": [],
+      "warnings": [],
+      "qualification_failures": [
+        "data_role MANUFACTURED_FIXTURE is not a physical cell calculation",
+        "generation.model_file and export_files are required for qualification",
+        "generation.run_log (actual solver log) required",
+        "mesh_evidence.hydraulic: fewer than 3 mesh levels",
+        "mesh_evidence.hydraulic: finest-pair change None not <= 0.001",
+        "mesh_evidence.hydraulic: systematic convergence not demonstrated",
+        "mesh_evidence.thermal: fewer than 3 mesh levels",
+        "mesh_evidence.thermal: finest-pair change None not <= 0.001",
+        "mesh_evidence.thermal: systematic convergence not demonstrated",
+        "mesh_evidence.meniscus: fewer than 3 mesh levels",
+        "mesh_evidence.meniscus: finest-pair change None not <= 0.001",
+        "mesh_evidence.meniscus: systematic convergence not demonstrated",
+        "gradient_study: K variation None not <= 0.01 (a one-dimensional K(Pc) table is not qualified; Q(Pc, gradient) data would be needed)",
+        "gradient_study: needs representative Pc values spanning the interval",
+        "gradient_study: Stokes vs Navier-Stokes comparison missing"
+      ],
+      "case_mismatches": []
+    },
+    "data_inventory": [],
+    "fallbacks_used": "none (fixtures and the legacy analytical model are never substituted)"
+  },
+  "plots_dir": "plots/device/20261015T032021036770Z_b12675f4_search_dryout",
+  "settings": {
+    "Nx": 200,
+    "Nz": 32,
+    "rtol": 1e-10,
+    "max_iter": 300,
+    "relaxation": 1.0,
+    "min_relaxation": 1e-06,
+    "abs_floor_fraction": 1e-06,
+    "continuation_fractions": [
+      0.1,
+      0.25,
+      0.5,
+      0.75,
+      0.9,
+      0.97,
+      0.99,
+      0.999
+    ],
+    "bracket_rel_width": 5e-05,
+    "endpoint_snap_rel": 1e-09
+  },
+  "dataset": {
+    "report": {
+      "dataset_id": "fixture_manufactured",
+      "data_role": "MANUFACTURED_FIXTURE",
+      "path": "C:\\Users\\chase\\NANOFAB\\tests\\fixtures\\device\\manufactured_tables",
+      "dataset_hash": "5341f2ac4f85e9f9437c9921b83bb7c8a079a8c55eddce33c093610944aa904e",
+      "schema_valid": true,
+      "verification_only": true,
+      "numerically_qualified": false,
+      "case_matched": true,
+      "errors": [],
+      "warnings": [],
+      "qualification_failures": [
+        "data_role MANUFACTURED_FIXTURE is not a physical cell calculation",
+        "generation.model_file and export_files are required for qualification",
+        "generation.run_log (actual solver log) required",
+        "mesh_evidence.hydraulic: fewer than 3 mesh levels",
+        "mesh_evidence.hydraulic: finest-pair change None not <= 0.001",
+        "mesh_evidence.hydraulic: systematic convergence not demonstrated",
+        "mesh_evidence.thermal: fewer than 3 mesh levels",
+        "mesh_evidence.thermal: finest-pair change None not <= 0.001",
+        "mesh_evidence.thermal: systematic convergence not demonstrated",
+        "mesh_evidence.meniscus: fewer than 3 mesh levels",
+        "mesh_evidence.meniscus: finest-pair change None not <= 0.001",
+        "mesh_evidence.meniscus: systematic convergence not demonstrated",
+        "gradient_study: K variation None not <= 0.01 (a one-dimensional K(Pc) table is not qualified; Q(Pc, gradient) data would be needed)",
+        "gradient_study: needs representative Pc values spanning the interval",
+        "gradient_study: Stokes vs Navier-Stokes comparison missing"
+      ],
+      "case_mismatches": []
+    },
+    "file_hashes": {
+      "hydraulic": "059fd12f5b9772a13c9bfc8eba3fcdb289c0a2fe2c62bc4f1c4e7c56424ce1ec",
+      "thermal": "e94afb7464225371ce78193cb59ef23ed2f0090b7bd52b8733ff7ca5d976b99f",
+      "meniscus": "3b1fcba4107701ca2de1b004106ba87ac5d89e3b6cfcab140575f8e0c2bda6ce"
+    },
+    "closure_limits": {
+      "Pc_physical_limit": 2200.0,
+      "physical_limit_criterion": "MANUFACTURED declared endpoint",
+      "physical_limit_demonstrated": true,
+      "Pc_geometry_limit": null,
+      "geometry_limit_criterion": "none reached",
+      "geometry_limit_demonstrated": false,
+      "supported_gradient_Pa_m": [
+        0.0,
+        100000000.0
+      ],
+      "supported_heat_flux_W_m2": [
+        0.0,
+        10000000.0
+      ],
+      "notes": []
+    },
+    "closure_range_Pa": [
+      0.0,
+      2200.0
+    ]
+  },
+  "capillary_limit": {
+    "Pc_Pa": 2200.0,
+    "criterion": "MANUFACTURED declared endpoint"
+  },
+  "result": {
+    "status": "PHYSICAL_CAPILLARY_LIMIT",
+    "mechanism": "PHYSICAL_CAPILLARY_LIMIT",
+    "reason": "limit located",
+    "admissible_interval": {
+      "Pc_lo": 0.0,
+      "Pc_cap": 2200.0,
+      "mechanism": "PHYSICAL_CAPILLARY_LIMIT",
+      "Pc_physical_limit": 2200.0,
+      "Pc_geometry_limit": null,
+      "Pc_coverage_hi": 2200.0,
+      "notes": []
+    },
+    "lower_operating_point_W_m2": 942630.5546947478,
+    "upper_bracket_W_m2": 942677.6885791768,
+    "relative_interval": 5.0000000000044e-05,
+    "monotonic_end_suction_along_continuation": true,
+    "forward_endpoint_consistency": {
+      "endpoint_Pc_end_Pa": 2199.9999999999995,
+      "forward_Pc_end_Pa_at_lower_bracket": 2199.8712683251492,
+      "forward_below_cap": true,
+      "q_e_rel_diff_forward_vs_endpoint": 5.00062054211316e-05,
+      "Pc_rel_diff_forward_vs_endpoint": 5.625333684564242e-05,
+      "endpoint_load_consistency_rel": 1.518979897179385e-14
+    },
+    "continuation": [
+      {
+        "load_W_m2": 94267.76885791769,
+        "fraction_of_endpoint": 0.1,
+        "status": "ADMISSIBLE",
+        "converged": true,
+        "iterations": 4,
+        "Pc_end_Pa": 204.80587125373472
+      },
+      {
+        "load_W_m2": 235669.4221447942,
+        "fraction_of_endpoint": 0.25,
+        "status": "ADMISSIBLE",
+        "converged": true,
+        "iterations": 5,
+        "Pc_end_Pa": 513.8950490969339
+      },
+      {
+        "load_W_m2": 471338.8442895884,
+        "fraction_of_endpoint": 0.5,
+        "status": "ADMISSIBLE",
+        "converged": true,
+        "iterations": 5,
+        "Pc_end_Pa": 1040.5020134687825
+      },
+      {
+        "load_W_m2": 707008.2664343826,
+        "fraction_of_endpoint": 0.7500000000000001,
+        "status": "ADMISSIBLE",
+        "converged": true,
+        "iterations": 5,
+        "Pc_end_Pa": 1594.6166345457718
+      },
+      {
+        "load_W_m2": 848409.9197212592,
+        "fraction_of_endpoint": 0.9,
+        "status": "ADMISSIBLE",
+        "converged": true,
+        "iterations": 5,
+        "Pc_end_Pa": 1949.4572214184336
+      },
+      {
+        "load_W_m2": 914397.3579218015,
+        "fraction_of_endpoint": 0.97,
+        "status": "ADMISSIBLE",
+        "converged": true,
+        "iterations": 5,
+        "Pc_end_Pa": 2123.41879887321
+      },
+      {
+        "load_W_m2": 933250.911693385,
+        "fraction_of_endpoint": 0.99,
+        "status": "ADMISSIBLE",
+        "converged": true,
+        "iterations": 5,
+        "Pc_end_Pa": 2174.327336582541
+      },
+      {
+        "load_W_m2": 941735.0108905976,
+        "fraction_of_endpoint": 0.999,
+        "status": "ADMISSIBLE",
+        "converged": true,
+        "iterations": 5,
+        "Pc_end_Pa": 2197.4260735218804
+      },
+      {
+        "load_W_m2": 942630.5546947478,
+        "fraction_of_endpoint": 0.99995,
+        "status": "ADMISSIBLE",
+        "converged": true,
+        "iterations": 4,
+        "Pc_end_Pa": 2199.8712683251492
+      }
+    ],
+    "regime": {
+      "definitions": {
+        "Re_h_superficial": "rho U_feed h / mu, U = Q/(W h) (V2019 A.1 form)",
+        "u_pore_volume_porosity_estimate": "U / (1 - pi d^2/(4 l^2)); flat-interface volume porosity, NOT an intrinsic section velocity",
+        "capillary_scale": "Pc_cap - Pc_feed (nonzero; local Pc is not used as a divisor)",
+        "Pe_axial_L_feed": "rho cp U_feed L / k_l (superficial velocity, half length L)",
+        "axial_enthalpy_estimate": "rho cp Q |dT_e/dx| / (W q_e) with liquid temperature approximated by T_e; approximate",
+        "Knudsen": "not computed: the molecular diameter is unverified (breck1974, ASSUMED)"
+      },
+      "U_superficial_feed_m_s": 0.08718719369123355,
+      "Re_h_superficial": 7.418421819522794,
+      "u_pore_volume_porosity_estimate_m_s": 0.0955231621482505,
+      "Re_h_pore_estimate": 8.127697203558995,
+      "Re_gap_pore_estimate": 6.5021577628471965,
+      "Re_Dh_pore_estimate": 16.62020712602554,
+      "Pe_axial_L_pore_estimate": 2849.3493486591183,
+      "hydraulic_diameter_flat_m": 5.1122128167950824e-05,
+      "u_intrinsic_section_feed_m_s": 0.10898399211404193,
+      "Re_h_intrinsic_section": 9.273027274403493,
+      "Ca_superficial": 0.0004166683811376546,
+      "Bo_pitch": 0.00014346590112845642,
+      "We_pitch_superficial": 0.003709226172164181,
+      "max_dPc_dx_Pa_m": 818344.8347437851,
+      "max_cell_pressure_change_Pa": 24.550345042313552,
+      "max_cell_pressure_change_over_capillary_scale": 0.01115924774650616,
+      "u_e_max_m_s": 0.00043787553546229777,
+      "Pe_vertical_max": 0.06530669335605277,
+      "Pe_axial_L_feed": 2600.6967102908307,
+      "Ja_max_superheat": 0.028013297801968994,
+      "omitted_sensible_over_latent_global_estimate": 0.028013297801957052,
+      "axial_enthalpy_over_evaporation_local_max_estimate": 0.0077500156293248135,
+      "vapor_Mach_max": 0.0014620312998048777,
+      "Knudsen": null,
+      "cell_to_cell_dT_over_superheat_max": 0.002119084823759745,
+      "max_superheat_T_e_K": 14.993881205713256,
+      "max_superheat_T_source_K": 15.617259972713132,
+      "supported_ranges": {
+        "pressure_gradient_Pa_m": [
+          0.0,
+          100000000.0
+        ],
+        "heat_flux_W_m2": [
+          0.0,
+          10000000.0
+        ]
+      },
+      "violations": [],
+      "within_supported_ranges": true
+    }
+  },
+  "literature_comparison": "not applicable (VERIFICATION ONLY)",
+  "balances": {
+    "endpoint": {
+      "mass": {
+        "Q_feed_m3_s": 2.1796798422808386e-08,
+        "Q_end_m3_s": 0.0,
+        "integrated_evaporation_m3_s": 2.1796798422808376e-08,
+        "global_abs_m3_s": 9.926167350636332e-24,
+        "global_normalized": 4.553956575682001e-16,
+        "local_max_abs_m3_s": 1.6285118309637732e-24,
+        "local_max_normalized": 7.471335006978283e-17,
+        "end_flow_normalized": 0.0,
+        "normalization_Q_char_m3_s": 2.1796798422808386e-08,
+        "darcy_cell_max_abs_m3Pa": 1.5672299604025842e-24,
+        "darcy_cell_max_normalized": 1.0177568925940162e-12
+      },
+      "energy": {
+        "input_W_half_device": 47.13388442895884,
+        "evaporation_W_half_device": 47.13388442893872,
+        "other_losses_W": 0.0,
+        "global_abs_W": 2.0118022803217174e-11,
+        "global_normalized": 4.26827176392378e-13,
+        "local_max_abs_W": 3.016609184669505e-13,
+        "local_max_normalized": 1.2800172195508793e-12,
+        "robin_face_max_abs_W_m2": 1.1641532182693481e-10,
+        "normalization_E_char_W": 47.13388442895884,
+        "linear_solve_residual": 1.3410709204009685e-12
+      }
+    }
+  },
+  "files": {
+    "endpoint": {
+      "endpoint_profiles.csv": "endpoint_profiles.csv",
+      "endpoint_faces.csv": "endpoint_faces.csv",
+      "history": "endpoint_convergence_history.csv",
+      "field": "endpoint_substrate_T_field.csv",
+      "plots": [
+        "plots/device/20261015T032021036770Z_b12675f4_search_dryout/endpoint_profiles.png",
+        "plots/device/20261015T032021036770Z_b12675f4_search_dryout/endpoint_substrate_field.png"
+      ]
+    }
+  },
+  "convergence": {
+    "endpoint": {
+      "iterations": 5,
+      "final": {
+        "iteration": 4,
+        "dq_scaled": 1.236032810499685e-13,
+        "dPc_scaled": 3.5226317035467038e-12,
+        "dload_rel": 2.8812455269181114e-12,
+        "load_W_m2": 942677.6885791625,
+        "linear_residual": 1.5373986805844013e-12
+      }
+    }
+  },
+  "status": "PHYSICAL_CAPILLARY_LIMIT",
+  "exit_code": 0
+}

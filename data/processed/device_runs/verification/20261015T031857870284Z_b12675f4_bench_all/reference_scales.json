@@ -1,0 +1,57 @@
+{
+  "suite": "reference_scales",
+  "passed": true,
+  "gates": [],
+  "details": {
+    "load_W_cm2": 82,
+    "note": "82 W/cm^2 is a COMPARISON reference load here, never a fitted input; Ja uses an assumed 10 K superheat; estimates only",
+    "scales": {
+      "U_feed_m_s": 0.07584087296539124,
+      "u_pore_volume_porosity_m_s": 0.08309201958482532,
+      "Re_h_superficial": 6.453007179134437,
+      "Re_h_pore": 7.0699792597896405,
+      "Pe_vertical": 0.05655621556222587,
+      "Pe_axial_L_superficial": 2262.2486224890354,
+      "Pe_axial_L_pore": 2478.5422358123737,
+      "Ja": 0.018683153092672784
+    },
+    "audit_comparison": {
+      "U_feed_m_s": {
+        "computed": 0.07584087296539124,
+        "audit": 0.07584,
+        "rel_diff": 1.1510619610207756e-05
+      },
+      "u_pore_volume_porosity_m_s": {
+        "computed": 0.08309201958482532,
+        "audit": 0.08309,
+        "rel_diff": 2.4305991398712892e-05
+      },
+      "Re_h_superficial": {
+        "computed": 6.453007179134437,
+        "audit": 6.45,
+        "rel_diff": 0.0004662293231685683
+      },
+      "Re_h_pore": {
+        "computed": 7.0699792597896405,
+        "audit": 7.07,
+        "rel_diff": -2.933551677482917e-06
+      },
+      "Pe_vertical": {
+        "computed": 0.05655621556222587,
+        "audit": 0.0566,
+        "rel_diff": -0.0007735766391188613
+      },
+      "Pe_axial_L_pore": {
+        "computed": 2478.5422358123737,
+        "audit": 2479.0,
+        "rel_diff": -0.0001846567921041764
+      },
+      "Ja": {
+        "computed": 0.018683153092672784,
+        "audit": 0.0187,
+        "rel_diff": -0.0009009041351453341
+      }
+    }
+  },
+  "seconds": 0.23823022842407227
+}

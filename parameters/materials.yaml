@@ -5,14 +5,17 @@
 silicon_thermal_conductivity:
   value: 148
   unit: W/m/K
-  provenance: AUTHORITATIVE_DATABASE
+  provenance: ASSUMED
   source: incropera_fhmt
-  source_location: "Table A.1, pure Si at 300 K (edition and value not re-checked)"
+  source_location: "intended: Table A.1, pure Si at 300 K (edition and value never re-checked)"
   sweep: [120, 153]
   notes: >
-    vaartstra2019 does not state its silicon conductivity. DISCREPANCY: vaartstra2020 (Sec. IV C)
-    uses 153 W/m/K at 20 C citing lienhard_textbook. Si conductivity also falls with temperature
-    (~120 W/m/K near 375 K, from memory, unverified). Keep both and sweep for replication.
+    PROVISIONAL. Not a V2019 value and not a verified property at 373.15 K: a textbook value
+    recalled from memory for 300 K whose table entry was never re-checked, so it is labelled
+    ASSUMED rather than AUTHORITATIVE_DATABASE. vaartstra2019 does not state its silicon
+    conductivity. DISCREPANCY: vaartstra2020 (Sec. IV C) uses 153 W/m/K at 20 C citing
+    lienhard_textbook. Si conductivity falls with temperature (~120 W/m/K near 375 K, from memory,
+    unverified). Non-blocking for the device model; keep both and sweep for replication.
 
 silicon_density:
   value: 2330

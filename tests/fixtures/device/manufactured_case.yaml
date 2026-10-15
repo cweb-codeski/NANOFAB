@@ -1,0 +1,53 @@
+# VERIFICATION ONLY. Exercises the full run pipeline with MANUFACTURED_FIXTURE tables on the V2019
+# Fig. 4 geometry. Results are not predictions and must never be compared with 82 W/cm^2.
+
+schema_version: nanofab.device_case/1
+case_id: verification_manufactured_fixture
+case_role: VERIFICATION_FIXTURE
+description: "Manufactured-table verification case (VERIFICATION ONLY)."
+source: null
+source_locations: {}
+
+parameters:
+  d: pillar_diameter
+  l: pillar_pitch
+  h: pillar_height
+  L: wick_feed_length
+  W: wick_width
+  t_s: substrate_thickness
+  cell_substrate: unit_cell_substrate_thickness
+  theta_rec: receding_contact_angle
+  T_v: vapor_temperature
+  fluid: working_fluid
+  k_s: silicon_thermal_conductivity
+  accommodation: accommodation_coefficient
+
+fluid_properties:
+  method: runtime
+
+topology:
+  simulated: half_device
+  full_device: two_edge_fed_mirrored
+  feed_suction_Pa: 0.0
+  inlet_thermal: insulated
+
+heat_load:
+  shape: uniform
+
+capillary_limit:
+  equation: table_endpoint   # manufactured endpoint from the fixture manifest
+  criterion: "MANUFACTURED declared endpoint"
+
+cell_tables:
+  required: [hydraulic, meniscus, thermal]
+  dataset: tests/fixtures/device/manufactured_tables
+  requirements:
+    data_role: MANUFACTURED_FIXTURE
+    require_verified_accommodation: false
+
+comparison_targets: []
+
+numerics:
+  Nx: 200
+  Nz: 32
+  rtol: 1.0e-10

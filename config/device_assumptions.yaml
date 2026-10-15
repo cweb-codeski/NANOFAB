@@ -1,0 +1,184 @@
+# Assumption register for the passive device-scale wick model (src/nanofab/device/).
+# Each entry: source (provenance of the assumption itself), rationale, diagnostic (what the code
+# reports), regime (where it is expected to hold), failure_consequence, qualification_status.
+# Regime numbers are calculated estimates, not rigorous thresholds. Diagnostics named here are
+# keys of nanofab.device.diagnostics.regime_diagnostics unless stated otherwise.
+#
+# qualification_status values:
+#   SOURCE_STATED      the cited source states the assumption for its model
+#   DIAGNOSED          a solution-based diagnostic is computed and reported every run
+#   GATED              a violation stops the run with OUTSIDE_MODEL_REGIME
+#   OPEN               neither stated nor diagnosed; needs cell or source evidence
+#   PROVISIONAL_INPUT  an input value used provisionally (non-blocking, reported)
+
+D1:
+  assumption: "Laminar Darcy transport with a pressure-dependent transmissivity tau(Pc) = h K_bulk(Pc)"
+  source: "vaartstra2019 Eq. (8) (Darcy with K from cell Stokes/laminar calculations); tau form PROJECT_DERIVED"
+  rationale: "Re_h ~ 10 at the feed (V2019 App. A.1; thesis p. 23, 51); inertia small but not negligible"
+  diagnostic: [Re_h_superficial, Re_h_pore_estimate, Re_gap_pore_estimate, Re_Dh_pore_estimate, Re_h_intrinsic_section]
+  regime: "Q proportional to dPc/dx at fixed Pc over the device gradient range; checked by the cell gradient sweep (<= 1% K variation, docs/cell_table_contract.md)"
+  failure_consequence: "K(Pc) depends on gradient; dryout and Pc(x) biased (likely overpredicted dryout if inertia lowers K)"
+  qualification_status: GATED   # supported_ranges.pressure_gradient_Pa_m
+
+D2:
+  assumption: "Local equilibrium meniscus: Pc(x) determines the cell meniscus, K and h_e (no history, no axial meniscus slope within a cell)"
+  source: "vaartstra2019 Sec. 2.3 (cell properties looked up at local Pc)"
+  rationale: "Pressure change across one pitch is small compared with the capillary scale"
+  diagnostic: [max_cell_pressure_change_over_capillary_scale, Ca_superficial]
+  regime: "cell Delta Pc / (Pc_cap - Pc_feed) << 1 (about 0.01 at the manufactured limit); Ca << 1"
+  failure_consequence: "Cell tables misrepresent the local meniscus near the dry end"
+  qualification_status: DIAGNOSED
+
+D3:
+  assumption: "Liquid heat transfer by conduction only inside the cell; liquid enters at T_v; no axial enthalpy transport"
+  source: "vaartstra2019 App. A.1 (Pe_h, Ja); inlet at T_v per Sec. 2.3"
+  rationale: "Pe_vertical ~ 0.06, Ja ~ 0.02 at 82 W/cm^2 (audit reference scales, reproduced by analysis/device_benchmarks.py --suite reference_scales)"
+  diagnostic: [Pe_vertical_max, Pe_axial_L_feed, Pe_axial_L_pore_estimate, Ja_max_superheat,
+               omitted_sensible_over_latent_global_estimate, axial_enthalpy_over_evaporation_local_max_estimate]
+  regime: "Ja << 1 and the axial-enthalpy estimate << 1. The large axial Pe (~2.5e3) is not itself a failure: the energy it carries scales with Ja"
+  failure_consequence: "Superheat and h_e coupling biased by O(Ja); dryout nearly unaffected"
+  qualification_status: DIAGNOSED
+
+D4:
+  assumption: "Gravity negligible"
+  source: "PROJECT_DERIVED (Bond number)"
+  rationale: "Bo(pitch) ~ 1e-4"
+  diagnostic: [Bo_pitch]
+  regime: "horizontal wick, Bo << 1"
+  failure_consequence: "Orientation effects missed"
+  qualification_status: DIAGNOSED
+
+D5:
+  assumption: "Pure saturated vapor at uniform T_v and p_v; interfacial kinetics inside h_e(Pc)"
+  source: "vaartstra2019 Sec. 2.2 (vacuum-chamber conditions)"
+  rationale: "Vapor Mach ~ 1e-3; no noncondensables"
+  diagnostic: [vapor_Mach_max]
+  regime: "Ma << 1; NOT valid in air ambient (diffusion-limited)"
+  failure_consequence: "h_e and dryout wrong in air"
+  qualification_status: DIAGNOSED
+
+D6:
+  assumption: "Knudsen number not evaluated precisely"
+  source: "PROJECT_DERIVED"
+  rationale: "molecular diameter (breck1974) is ASSUMED and unverified"
+  diagnostic: [Knudsen]   # reported as null with the reason
+  regime: "n/a"
+  failure_consequence: "None for the device model; the kinetic treatment lives in the cell tables"
+  qualification_status: OPEN
+
+D7:
+  assumption: "Cell-to-cell lateral heat flow inside the wick negligible; substrate carries lateral spreading"
+  source: "vaartstra2019 App. A.1, A.4 (symmetry check 0.19% uniform, 1% hotspot)"
+  rationale: "Cell tables are computed with symmetry (adiabatic) sides"
+  diagnostic: [cell_to_cell_dT_over_superheat_max]
+  regime: "|dT_e/dx| l / (T_e - T_v) << 1 (about 2e-3 for the manufactured case)"
+  failure_consequence: "Hotspot superheat misestimated"
+  qualification_status: DIAGNOSED
+
+D8:
+  assumption: "Two-dimensional x-z substrate conduction, invariant across W; insulated ends; uniform bottom heat input shape"
+  source: "vaartstra2019 Sec. 2.3 (symmetry at x = 0 and x = L), App. A.3"
+  rationale: "Edge-fed strip; W only scales totals"
+  diagnostic: "W-invariance benchmark (accounting suite)"
+  regime: "W >> L or a strip with no y-gradients"
+  failure_consequence: "End effects in y missed"
+  qualification_status: SOURCE_STATED
+
+D9:
+  assumption: "h_e referenced to the pillar-base plane (T_e), applied as a Robin condition on the substrate top"
+  source: "vaartstra2019 Eq. (4); plane per thesis Fig. 4(b) (PROJECT_DERIVED reading, docs/assumptions.md A19)"
+  rationale: "Cell h_e already contains the pillar/liquid/interface resistance; no extra series resistance is added"
+  diagnostic: "thermal_reference_plane convention check on every table (cell_table_contract)"
+  regime: "cell and device use the same reference plane"
+  failure_consequence: "Double-counted or missing resistance if the plane differs"
+  qualification_status: GATED   # schema rejects other planes
+
+D10:
+  assumption: "Cell h_e is evaluated at the cell's own computed load and applied at the local device flux"
+  source: "vaartstra2019 Sec. 3.1 (0.082% h_e change for a 10% change in q_in) and Sec. 3.3 (cells updated at the operating load)"
+  rationale: "h_e weakly load-dependent per V2019"
+  diagnostic: "supported_ranges.heat_flux_W_m2 checked against local q_e"
+  regime: "local q_e within the table's supported flux range"
+  failure_consequence: "Load-dependent h_e error; OUTSIDE_MODEL_REGIME if the range is exceeded"
+  qualification_status: GATED
+
+D11:
+  assumption: "Dryout = first load at which the pressure end condition reaches the admissible cap (V2019 Eq. 3 capillary limit, or an earlier demonstrated meniscus geometry limit)"
+  source: "vaartstra2019 Sec. 3.3, Eq. (3)"
+  rationale: "Pinned meniscus recedes once the receding angle is reached"
+  diagnostic: "admissible interval mechanism; continuation monotonicity; forward-vs-endpoint consistency"
+  regime: "Pinned-contact-line branch only; no depinning, receding or partial-dryout model"
+  failure_consequence: "Post-depinning behaviour not represented (by design)"
+  qualification_status: SOURCE_STATED
+
+D12:
+  assumption: "Properties constant at T_v over the device"
+  source: "PROJECT_DERIVED; V2019 does not state its property source"
+  rationale: "Superheats are a few K"
+  diagnostic: [max_superheat_T_e_K]
+  regime: "superheat << T_v"
+  failure_consequence: "Small property errors (viscosity ~2%/K)"
+  qualification_status: DIAGNOSED
+
+D13:
+  assumption: "Silicon k_s = 148 W/(m K)"
+  source: "ASSUMED (parameters/materials.yaml silicon_thermal_conductivity)"
+  rationale: "Placeholder until a verified 373 K value is chosen; V2019 does not state it"
+  diagnostic: "parameter snapshot in every run manifest"
+  regime: "substrate Delta T ~ 0.55 K at 82 W/cm^2 over 100 um, so sensitivity of dryout is small"
+  failure_consequence: "Superheat bias of order 0.1 K; lateral spreading slightly changed"
+  qualification_status: PROVISIONAL_INPUT
+
+D15:
+  assumption: "Uniform periodic pillar array and scale separation (cell pitch << device length; cell properties vary slowly in x)"
+  source: "vaartstra2019 Sec. 2.3 (cell properties at local Pc); PROJECT_DERIVED"
+  rationale: "L / l ~ 170 for the Fig. 4 case"
+  diagnostic: [max_cell_pressure_change_over_capillary_scale, cell_to_cell_dT_over_superheat_max]
+  regime: "both << 1"
+  failure_consequence: "Homogenized closures misrepresent short-scale gradients (hotspots, graded geometry)"
+  qualification_status: DIAGNOSED
+
+D16:
+  assumption: "Incompressible, Newtonian liquid; static pinned meniscus (no interface inertia, no dynamic contact angle)"
+  source: "vaartstra2019 Sec. 2.1-2.2"
+  rationale: "We << 1 and Ca << 1"
+  diagnostic: [We_pitch_superficial, Ca_superficial]
+  regime: "We, Ca << 1"
+  failure_consequence: "Meniscus shape and K(Pc) biased at high flow"
+  qualification_status: DIAGNOSED
+
+D17:
+  assumption: "Insulated pillar tops and device ends; no other heat losses"
+  source: "vaartstra2019 Sec. 2.3 and App. A.1 (natural convection 2-3 orders weaker)"
+  rationale: "Vacuum-chamber replication"
+  diagnostic: "energy balance reports other_losses_W = 0 explicitly"
+  regime: "replication conditions"
+  failure_consequence: "Any added loss must enter the energy balance as a signed boundary integral"
+  qualification_status: SOURCE_STATED
+
+D18:
+  assumption: "Negligible vapor-side pressure loss (uniform p_v)"
+  source: "PROJECT_DERIVED; consistent with V2019 vapor treatment"
+  rationale: "Vapor Mach ~ 1e-3"
+  diagnostic: [vapor_Mach_max]
+  regime: "Ma << 1 and open vapor space"
+  failure_consequence: "Local saturation temperature varies; h_e reference shifts"
+  qualification_status: DIAGNOSED
+
+D19:
+  assumption: "No nucleate boiling, no depinning or post-depinning recession, no partial dryout; no electrical terms"
+  source: "Task scope; vaartstra2019 capillary-limit criterion"
+  rationale: "Passive pinned-meniscus model"
+  diagnostic: "max superheat reported (no nucleation criterion is implemented or implied)"
+  regime: "superheats of order 10 K on smooth silicon (no nucleation model is claimed)"
+  failure_consequence: "Boiling or recession beyond the limit is not represented"
+  qualification_status: OPEN
+
+D14:
+  assumption: "Steady state, evaporating branch only (q_e >= 0)"
+  source: "PROJECT_DERIVED"
+  rationale: "Passive capillary-limit search"
+  diagnostic: "solver rejects condensation (OUTSIDE_MODEL_REGIME), never clips"
+  regime: "positive heat input"
+  failure_consequence: "Condensing branches unsupported"
+  qualification_status: GATED

@@ -150,9 +150,10 @@ def main() -> None:
     print(f"Re in that model ~ {props.rho_l * (Q/((b.l/2)*b.h)) / (1-b.phi) * (b.l-b.d) / props.mu_l:.2e}")
 
     print("\n-- COMSOL Stage 4 evaporative heat flux on the meniscus (define as variable q_evap) --")
-    print("linearized BTE (V2019 Eqs. 5-7, paper-exact):")
+    print("reduced linearized BTE (V2019 Eqs. 5-7 form; temperature-jump Eq. 6 not used; nonunity-")
+    print("accommodation C4(a) correction from memory, UNVERIFIED against Meland & Ytrehus 2003):")
     print("  q_evap = " + comsol_bte_expression(b.accommodation, fluid.molar_mass, b.T_v, props.h_lv))
-    print("Schrage (alternative; within a few % of BTE at small accommodation):")
+    print("Schrage (alternative; within a few % of the reduced BTE at a = 0.052 - a cross-model check, not verification):")
     print("  q_evap = " + comsol_schrage_expression(b.accommodation, fluid.molar_mass, b.T_v, props.h_lv)[1:])
     print("Boundary condition: Heat Flux, General inward heat flux q0 = -q_evap")
     print("(requires an Interpolation function psat(T); create it with --psat-table)")

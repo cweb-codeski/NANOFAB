@@ -1,0 +1,97 @@
+{
+  "suite": "thermal",
+  "passed": true,
+  "gates": [
+    {
+      "gate": "T_e observed order (finest pair)",
+      "value": 1.998881036928821,
+      "limit": [
+        1.8,
+        2.2
+      ],
+      "kind": "range",
+      "passed": true
+    },
+    {
+      "gate": "T_source observed order (finest pair)",
+      "value": 1.9995072138183771,
+      "limit": [
+        1.8,
+        2.2
+      ],
+      "kind": "range",
+      "passed": true
+    },
+    {
+      "gate": "finest T_e error [K]",
+      "value": 7.663334393459564e-05,
+      "limit": 0.001,
+      "kind": "max",
+      "passed": true
+    },
+    {
+      "gate": "finest T_source error [K]",
+      "value": 4.386412124013361e-05,
+      "limit": 0.001,
+      "kind": "max",
+      "passed": true
+    },
+    {
+      "gate": "global energy balance (rel, all levels)",
+      "value": 1.5324428324091705e-12,
+      "limit": 1e-08,
+      "kind": "max",
+      "passed": true
+    }
+  ],
+  "details": {
+    "levels": [
+      {
+        "Nx": 50,
+        "Nz": 8,
+        "err_T_e_K": 0.0012213944094803253,
+        "err_T_source_K": 0.000700628439577855,
+        "err_field_K": 0.0004992114572468509,
+        "global_energy_rel": 4.638942540606482e-14,
+        "linear_residual": 1.9052147236445083e-13
+      },
+      {
+        "Nx": 100,
+        "Nz": 16,
+        "err_T_e_K": 0.00030629571875895323,
+        "err_T_source_K": 0.00017539656393505965,
+        "err_field_K": 0.00012610820002478818,
+        "global_energy_rel": 3.2233828682890625e-13,
+        "linear_residual": 3.38658585048741e-13
+      },
+      {
+        "Nx": 200,
+        "Nz": 32,
+        "err_T_e_K": 7.663334393459564e-05,
+        "err_T_source_K": 4.386412124013361e-05,
+        "err_field_K": 3.167822150107469e-05,
+        "global_energy_rel": 1.5324428324091705e-12,
+        "linear_residual": 9.312792906530637e-13
+      }
+    ],
+    "orders_T_e": [
+      1.995532039905293,
+      1.998881036928821
+    ],
+    "orders_T_source": [
+      1.9980290652393173,
+      1.9995072138183771
+    ],
+    "manufactured_solution": "theta = A + B (t_s - zeta) + C cos(m pi x/L) exp(m pi zeta/L)",
+    "parameters": {
+      "L": 0.001,
+      "t_s": 0.00025,
+      "k_s": 148.0,
+      "A": 5.0,
+      "B": 3378.0,
+      "C": 0.04,
+      "m": 2
+    }
+  },
+  "seconds": 0.05518937110900879
+}

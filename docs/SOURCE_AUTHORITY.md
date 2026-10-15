@@ -115,7 +115,10 @@ The audit was done against the held PDF, reading the full text.
 | --- | --- | --- | --- |
 | Dryout heat flux 100.6 W/cm² | replication result | MODEL_CALCULATED | Our flat-meniscus 1D model. +22.7% vs the paper's 82. |
 | "K about 19% below flat" | "the paper implies" | MODEL_CALCULATED; the cause is a PROJECT_DERIVED hypothesis | The paper states no K reduction, only that curvature lowers K. Our docs said "this is the curvature effect", but analytical K error and non-uniform evaporation may contribute. Reworded everywhere. |
-| "Kinetic resistance ≤ 16% of total" | "V2019 reports … so the kinetic part is at most ~16%" | MODEL_CALCULATED | Our R''_int (flat interface area, unverified accommodation correction) combined with the paper's h_e > 60 kW/m²K. The paper gives no resistance breakdown. |
+| "Kinetic resistance ≤ 16% of total" | "V2019 reports … so the kinetic part is at most ~16%" | MODEL_CALCULATED; **inequality reversed (corrected)** | R_int/R_total = R_int h_e and h_e > 60 kW/m²K, so the share is > R_int × 60000 ≈ 16%: a conditional *lower* bound, not an upper bound. Conditional on our R''_int (flat interface area, unverified accommodation correction). The paper gives no resistance breakdown. Corrected in code, docs and `config/model_provenance.yaml`. |
+| "Flat K is a known upper bound" on dryout | assumption status (A2) | Unsupported claim (removed) | V2019 says curvature lowers K; it does not follow that the legacy constant-K, uniform-q estimate bounds the coupled result. Now an approximate analytical estimate. |
+| Reduced BTE called "paper-exact" | docstring / printed label | Unsupported claim (removed) | The implementation drops the temperature-jump relation (Eq. 6), approximates rho_k, and uses an accommodation correction written from memory (Meland & Ytrehus 2003 not held). BTE-vs-Schrage agreement (~3-5%) is a cross-model check only. |
+| Silicon k = 148 W/(m·K) | AUTHORITATIVE_DATABASE | ASSUMED (provisional) | A textbook value recalled for 300 K, never re-checked against the table, not verified at 373.15 K, and not a V2019 value. |
 | T_e = mean temperature of the pillar-base plane | the paper's definition | PROJECT_DERIVED (well supported) | The text says only "average temperature at the surface (red line)". The thesis drawing (Fig. 4b, p. 20) puts the red line along the substrate top at the pillar base. |
 | Re_h ≈ 10 (exponent +1) | "From the stated values Re_h ≈ 16, so the exponent is +1" | Now PRIMARY_SOURCE (thesis p. 23, 51) | The IJHMT text was ambiguous; the thesis page images print "~ 10¹". Our earlier reasoning was not proof, but the conclusion holds. |
 | C4* = 2.13204, d4* = 0.44675 | as printed | PRIMARY_SOURCE, sign convention noted | The thesis prints them as negative. `evaporation.py` uses magnitudes with an explicit minus sign, so the physics is equivalent. |
@@ -129,7 +132,7 @@ The audit was done against the held PDF, reading the full text.
 
 | Parameter | Old label | New label | Reason |
 | --- | --- | --- | --- |
-| silicon_thermal_conductivity (148) | LITERATURE | AUTHORITATIVE_DATABASE (`incropera_fhmt`) | Not in vaartstra2019. Textbook value from memory, table not re-checked. vaartstra2020 uses 153 at 20 °C; both are kept, and the sweep was widened to 120-153. |
+| silicon_thermal_conductivity (148) | LITERATURE | ASSUMED, provisional (intended source `incropera_fhmt`) | Not in vaartstra2019. Textbook value from memory for 300 K, table not re-checked, not verified at 373.15 K; relabelled from AUTHORITATIVE_DATABASE. vaartstra2020 uses 153 at 20 °C; both are kept, and the sweep was widened to 120-153. |
 | silicon_density, silicon_specific_heat | LITERATURE | AUTHORITATIVE_DATABASE (`incropera_fhmt`) | Same as above. |
 | gravity (9.81) | LITERATURE | AUTHORITATIVE_DATABASE (`nist_si_constants`) | Rounded from g_n = 9.80665 m/s². Value unchanged (negligible effect, Bo ~1e-5). |
 | molecular_kinetic_diameter (0.265 nm) | LITERATURE | ASSUMED (`breck1974`, unverified) | Citation from memory, not held. |

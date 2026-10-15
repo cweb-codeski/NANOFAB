@@ -1,0 +1,65 @@
+# Classification of existing data files relevant to the passive device model.
+# Read by nanofab.device.case.preflight, which reports presence and hashes at run time.
+# data_role values: PHYSICAL_CELL_CALCULATION, LITERATURE_DIGITIZATION, ANALYTICAL_EXAMPLE,
+# MANUFACTURED_FIXTURE, plus PROPERTY_TABLE / SYNTHETIC_PARSER_EXAMPLE / STORED_DERIVED_RESULT for
+# files outside the cell-table contract. Relabeling a file here never promotes it.
+
+permeability_stage1_flow_processed:
+  path: data/processed/permeability_stage1_flow.csv
+  data_role: STORED_DERIVED_RESULT
+  classification: "stored derived COMSOL result with incomplete provenance (not synthetic)"
+  content: >
+    Four flat-interface (Pc = 0) mesh levels, hmax 2.0/1.0/0.7/0.5 um, single imposed 1 Pa drop
+    over a quarter cell (ell = l/2 = 15 um, gradient ~6.7e4 Pa/m). Finest K = 2.9698e-11 m^2;
+    last-pair change ~0.102%.
+  qualified_for_prediction: false
+  reasons:
+    - "flat interface only: no pressure dependence K(Pc), no meniscus states"
+    - "single low gradient (~6.7e4 Pa/m) vs device feed gradients of order 1e5-1e6 Pa/m; gradient independence not demonstrated"
+    - "no Stokes vs Navier-Stokes comparison"
+    - ".mph model, selections and complete setup evidence are not tracked"
+
+stage1_flow_raw_local:
+  path: data/comsol_exports/stage1_flow.csv
+  data_role: STORED_DERIVED_RESULT
+  classification: "local raw COMSOL export (gitignored); metadata names permeability1.mph, COMSOL 6.3.0.420"
+  qualified_for_prediction: false
+  reasons:
+    - "same flat-interface, single-gradient limitations as the processed table"
+    - "the referenced .mph model is not present in the repository"
+    - "note in the header says it is the corrected third column pair of a larger export held outside the repository"
+
+permeability_stage1_flow_example:
+  path: data/processed/permeability_stage1_flow_example.csv
+  data_role: SYNTHETIC_PARSER_EXAMPLE
+  classification: "processed output of the SYNTHETIC parser example (untracked local file)"
+  qualified_for_prediction: false
+  reasons: ["derived from data/comsol_exports/examples/stage1_flow_example.csv, which is SYNTHETIC"]
+
+comsol_examples:
+  path: data/comsol_exports/examples/
+  data_role: SYNTHETIC_PARSER_EXAMPLE
+  classification: "explicitly SYNTHETIC parser examples"
+  qualified_for_prediction: false
+  reasons: ["synthetic by declaration"]
+
+vaartstra2019_analytical_comparison:
+  path: data/processed/vaartstra2019_analytical_comparison.csv
+  data_role: ANALYTICAL_EXAMPLE
+  classification: "approximate analytical estimates with ASSUMED feed lengths and unmatched validation geometries"
+  qualified_for_prediction: false
+  reasons: ["legacy analytical sanity output, not a cell-response table"]
+
+psat_water:
+  path: data/processed/psat_water.txt
+  data_role: PROPERTY_TABLE
+  classification: "saturation-pressure property table for COMSOL interpolation, not a cell-response table"
+  qualified_for_prediction: false
+  reasons: ["not a cell table"]
+
+vaartstra2019_targets:
+  path: data/literature/vaartstra2019_targets.csv
+  data_role: LITERATURE_DIGITIZATION
+  classification: "reported scalar targets plus empty planned digitizations"
+  qualified_for_prediction: false
+  reasons: ["comparison targets only; blank planned digitization rows are not data"]

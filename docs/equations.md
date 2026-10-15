@@ -78,16 +78,20 @@ $$h_i=h_{lv}\frac{2s}{2-s}\sqrt{\frac{M}{2\pi R}}\frac{1}{\sqrt T}\left(\frac{dp
 Assumptions: no disjoining-pressure or curvature correction to p_sat, and near-equilibrium vapor
 (no Knudsen-layer resolution).
 
-Linearized Boltzmann transport equation (the V2019 interface model, Eqs. 5-7; Sone 2000), with
-the vapor pressure at the Knudsen-layer edge set to the far-field value. Here
-\(R_s=R/M\), and the accommodation correction follows Meland & Ytrehus (2003):
+Reduced linearized Boltzmann transport relation (form of the V2019 interface model, Eqs. 5-7;
+Sone 2000), with the vapor pressure at the Knudsen-layer edge set to the far-field value. Here
+\(R_s=R/M\). This is **not** a paper-verified implementation: the temperature-jump relation
+(V2019 Eq. 6) is not used, \(\rho_k\approx p_{sat}(T_l)/(R_sT_l)\), and the nonunity-accommodation
+correction below was written from memory; V2019 attributes its treatment to Meland & Ytrehus
+(2003, DOI 10.1063/1.1564097), which is not held (open source gap):
 
 $$\frac{p_k}{p_{sat}(T_l)}-1=-C_4\frac{u_k}{\sqrt{2R_sT_l}},\qquad q''_e=\rho_k u_k h_{lv}$$
 
 $$\dot m''=\frac{\left(p_{sat}(T_l)-p_k\right)}{C_4(a)}\sqrt{\frac{2}{R_sT_l}},\qquad
 C_4(a)=2.13204+2\sqrt{\pi}\,\frac{1-a}{a}$$
 
-At a = 0.052 this is within ~3% of the Schrage flux (water, 100 °C).
+At a = 0.052 this is within ~3-5% of the Schrage flux (water, 100 °C): a cross-model check
+between two approximate relations, not a verification of either.
 
 ## Conduction (`conduction.py`)
 
@@ -109,7 +113,26 @@ At a = 0.052 this is within ~3% of the Schrage flux (water, 100 °C).
 ## Unit-cell metrics (`analysis/heat_transfer_from_comsol.py`)
 
 $$q''=\frac{Q_{in}}{A_{fp}},\quad h_{evap}=\frac{q''}{T_{base}-T_v},\quad
-R''_{wick}=\frac{T_{base}-T_{lv}}{q''},\quad R''_{int}=\frac{T_{lv}-T_v}{q''}$$
+R''_{wick,app}=\frac{T_{base}-T_{lv}}{q''},\quad R''_{int,app}=\frac{T_{lv}-T_v}{q''}$$
 
 The h_evap definition (which temperature, which area) must be matched to the reference paper
-before comparing values.
+before comparing values. \(R''_{wick,app}\) and \(R''_{int,app}\) are apparent splits at the
+area-averaged meniscus temperature \(T_{lv}\); with nonuniform interface temperature and flux they
+depend on the averaging convention and are not unique resistances.
+
+## Passive device model (`src/nanofab/device/`)
+
+Half device \(0\le x\le L\), substrate \(-t_s\le z\le 0\), \(P_c=p_v-p_{liquid}\) (positive suction),
+\(Q\) total flow across \(W\), transmissivity \(\tau(P_c)=hK_{bulk}(P_c)\):
+
+$$\frac{Q}{W}=\frac{\tau(P_c)}{\mu}\frac{dP_c}{dx},\qquad \frac{dQ}{dx}=-\frac{W q''_e}{\rho h_{fg}},\qquad
+P_c(0)=P_{c,feed},\ Q(L)=0$$
+
+$$\nabla\cdot(k_s\nabla T)=0,\quad -k_s\partial_zT|_{-t_s}=q''_{in},\quad -k_s\partial_zT|_{0}=q''_e=h_e(P_c)\,(T_e-T_v),\quad
+\partial_xT|_{0,L}=0$$
+
+Kirchhoff transform \(\Psi(P_c)=\int\tau\,dP_c\) and the evaporation-moment identity (PROJECT_DERIVED):
+
+$$\int_{P_c(0)}^{P_c(L)}\frac{\tau}{\mu}\,dP_c=\int_0^L\frac{x\,q''_e(x)}{\rho h_{fg}}\,dx$$
+
+Full derivation, numerics, statuses and verification gates: `docs/passive_device_model.md`.

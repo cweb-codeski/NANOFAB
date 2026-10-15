@@ -117,8 +117,11 @@ def main() -> None:
     label(MODEL_CALCULATED, f"R''_int per footprint = {R_int*1e6:.2f} mm^2K/W (ASSUMED flat interface area)")
     label(PRIMARY_SOURCE, f"vaartstra2019 Sec. 3.2: h_e > {V2019_HE_LOWER_BOUND/1e3:.0f} kW/m^2K "
           f"-> total 1/h_e < {1e6/V2019_HE_LOWER_BOUND:.1f} mm^2K/W")
-    label(MODEL_CALCULATED, f"kinetic share of total unit-cell resistance <= ~{100*R_int*V2019_HE_LOWER_BOUND:.0f}% "
-          "(our R''_int combined with the paper's bound; not stated by the paper)")
+    label(MODEL_CALCULATED, f"kinetic share of total unit-cell resistance >= ~{100*R_int*V2019_HE_LOWER_BOUND:.0f}% "
+          "(conditional LOWER bound: R_int/R_total = R_int h_e > R_int x 60000 W/m^2K; valid only if our "
+          "R''_int is right; not stated by the paper)")
+    print("   Caveats: R''_int uses an ASSUMED flat interface area and an UNVERIFIED nonunity-accommodation")
+    print("   correction (Meland & Ytrehus 2003, source gap). The fitted a = 0.052 is a single-paper value.")
 
     # 5: validation geometries
     print("\n5) Validation geometries (geometry: PRIMARY_SOURCE, vaartstra2019 Fig. 6 caption)")

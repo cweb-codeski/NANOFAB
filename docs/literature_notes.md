@@ -99,11 +99,14 @@ Everything in this subsection is MODEL_CALCULATED or PROJECT_DERIVED. None of it
   COMSOL Stage 3 (flat-meniscus K) separates the first two.
 - **Height scaling.** Our model gives exactly h² by geometric similarity (MODEL_CALCULATED);
   V2019 states "scaling with h²" (PRIMARY_SOURCE, Sec. 3.3).
-- **Interface resistance.** MODEL_CALCULATED R''_int ≈ 2.6 mm²K/W at a = 0.052 (linearized BTE,
-  ASSUMED flat interface area). Combined with the PRIMARY_SOURCE bound h_e > 60 kW/m²K, the
-  kinetic share is at most ~16% of the total unit-cell resistance (MODEL_CALCULATED; the paper
-  gives no resistance breakdown).
-- **Schrage vs BTE.** They agree within ~3% at a = 0.052 and are ~14% apart at a = 1 (MODEL_CALCULATED).
+- **Interface resistance.** MODEL_CALCULATED R''_int ≈ 2.6 mm²K/W at a = 0.052 (reduced
+  linearized BTE, ASSUMED flat interface area, unverified accommodation correction). Combined
+  with the PRIMARY_SOURCE bound h_e > 60 kW/m²K: R_int/R_total = R_int h_e > R_int × 60000, so
+  the kinetic share is **at least** ~16% (a conditional lower bound, valid only if our R''_int is
+  right; MODEL_CALCULATED; the paper gives no resistance breakdown).
+- **Schrage vs reduced BTE.** They agree within ~3-5% at a = 0.052 and are ~14% apart at a = 1
+  (MODEL_CALCULATED). This is a cross-model comparison of two approximate relations, not a
+  verification of either.
 
 ### Open items
 
@@ -111,8 +114,9 @@ Everything in this subsection is MODEL_CALCULATED or PROJECT_DERIVED. None of it
       note the figure).
 - [x] T_e surface: pillar-base plane per thesis Fig. 4(b) drawing (PROJECT_DERIVED, figure only).
 - [x] Re_h exponent: +1 (thesis p. 23, 51).
-- [x] Silicon conductivity: stated in neither paper nor thesis. We use 148 W/m/K
-      (AUTHORITATIVE_DATABASE); vaartstra2020 uses 153 W/m/K.
+- [x] Silicon conductivity: stated in neither paper nor thesis. We use 148 W/m/K as a
+      provisional ASSUMED value (textbook value from memory for 300 K, not re-checked, not
+      verified at 373.15 K); vaartstra2020 uses 153 W/m/K at 20 °C.
 - [x] Water property source: stated in neither (vaartstra2020's own Fig. 8 model uses REFPROP).
 - [ ] Check Meland & Ytrehus (2003) for the exact accommodation correction form.
 - [ ] Contact-line treatment: V2019 does not mention a film cut-off or disjoining pressure. Check

@@ -1,0 +1,608 @@
+{
+  "run_id": "20261015T032012234891Z_b12675f4_search_dryout",
+  "command_line": "python.exe analysis/run_passive_device.py --case parameters/cases/vaartstra2019_fig4.yaml --search-dryout --output data/processed/device_runs/vaartstra_prediction",
+  "timestamp_utc": "2026-10-15T03:20:12.238935+00:00",
+  "git": {
+    "commit": "b12675f4b524aa0efaf5ef8b002a4fa458def34c",
+    "branch": "cursor/source-provenance-system",
+    "dirty": true,
+    "status_porcelain": [
+      "M .gitignore",
+      " M README.md",
+      " M analysis/baseline_estimates.py",
+      " M analysis/heat_transfer_from_comsol.py",
+      " M analysis/vaartstra_replication.py",
+      " M config/model_provenance.yaml",
+      " M config/sources.yaml",
+      " M docs/SOURCE_AUTHORITY.md",
+      " M docs/assumptions.md",
+      " M docs/comsol_unit_cell_guide.md",
+      " M docs/equations.md",
+      " M docs/literature_notes.md",
+      " M parameters/materials.yaml",
+      " M src/nanofab/evaporation.py",
+      " M src/nanofab/params.py",
+      " M src/nanofab/provenance.py",
+      " M tests/test_vaartstra2019.py",
+      "?? analysis/device_benchmarks.py",
+      "?? analysis/import_cell_tables.py",
+      "?? analysis/run_passive_device.py",
+      "?? config/data_inventory.yaml",
+      "?? config/device_assumptions.yaml",
+      "?? data/processed/cell_tables/",
+      "?? data/processed/device_runs/",
+      "?? data/processed/permeability_stage1_flow_example.csv",
+      "?? docs/cell_table_contract.md",
+      "?? docs/passive_device_model.md",
+      "?? docs/whole_wick_assumptions.md",
+      "?? parameters/cases/",
+      "?? parameters/whole_wick/",
+      "?? results/",
+      "?? src/nanofab/device/",
+      "?? src/nanofab/whole_wick/",
+      "?? tests/fixtures/",
+      "?? tests/test_cell_tables.py",
+      "?? tests/test_device_analytic.py",
+      "?? tests/test_device_coupling.py",
+      "?? tests/test_device_dryout.py",
+      "?? tests/test_device_provenance.py",
+      "?? tests/test_whole_wick.py",
+      "?? unit_cell/",
+      "?? validation/",
+      "?? whole_wick/"
+    ]
+  },
+  "environment": {
+    "python": "3.12.9 (tags/v3.12.9:fdb8142, Feb  4 2025, 15:27:58) [MSC v.1942 64 bit (AMD64)]",
+    "executable": "C:\\Users\\chase\\NANOFAB\\.venv\\Scripts\\python.exe",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "packages": {
+      "numpy": "2.5.3",
+      "scipy": "1.18.1",
+      "pandas": "3.0.6",
+      "matplotlib": "3.11.2",
+      "PyYAML": "6.0.3",
+      "CoolProp": "8.0.0",
+      "nanofab": "0.1.0",
+      "pytest": "9.1.1"
+    }
+  },
+  "model_mode": "search_dryout / case_role=LITERATURE_REPLICATION",
+  "verification_only": false,
+  "banner": null,
+  "case": {
+    "path": "parameters/cases/vaartstra2019_fig4.yaml",
+    "sha256": "e20d7cb33bc8d5b7340c6c3c77b97f4bd3bc3533961159057e833ef9927c3ed5",
+    "case_id": "vaartstra2019_fig4",
+    "case_role": "LITERATURE_REPLICATION",
+    "raw": {
+      "schema_version": "nanofab.device_case/1",
+      "case_id": "vaartstra2019_fig4",
+      "case_role": "LITERATURE_REPLICATION",
+      "description": "V2019 Fig. 4 device: d = 10, l = 30, h = 25 um, L = 5 mm (edge to center), W = 10 mm, t_s = 100 um, water, silicon, receding contact angle 15 deg, pure saturated water vapor at 373.15 K, liquid supplied at T_v, uniform heat input, fed from the two edges normal to x.\n",
+      "source": "vaartstra2019",
+      "source_locations": {
+        "geometry_and_conditions": "Sec. 3.2; Fig. 4 caption; Sec. 2, Fig. 1(c)",
+        "capillary_limit": "Sec. 2.1, Eq. (3)",
+        "device_model": "Sec. 2.3; Eq. (9); App. A.3, Fig. A1",
+        "dryout_definition": "Sec. 3.3 ('minimum heat flux at which Delta p_dryout was reached on the wick')"
+      },
+      "parameters": {
+        "d": "pillar_diameter",
+        "l": "pillar_pitch",
+        "h": "pillar_height",
+        "L": "wick_feed_length",
+        "W": "wick_width",
+        "t_s": "substrate_thickness",
+        "cell_substrate": "unit_cell_substrate_thickness",
+        "theta_rec": "receding_contact_angle",
+        "T_v": "vapor_temperature",
+        "fluid": "working_fluid",
+        "k_s": "silicon_thermal_conductivity",
+        "accommodation": "accommodation_coefficient"
+      },
+      "provisional_inputs": {
+        "k_s": "148 W/(m K) is the existing provisional project choice (textbook value from memory, 300 K, not re-checked). It is NOT a V2019 value and NOT a verified property at 373.15 K. V2019 does not state its silicon conductivity. Non-blocking; reported as a limitation and swept.\n"
+      },
+      "fluid_properties": {
+        "method": "runtime",
+        "note": "V2019 does not identify its property database."
+      },
+      "topology": {
+        "simulated": "half_device",
+        "full_device": "two_edge_fed_mirrored",
+        "feed_suction_Pa": 0.0,
+        "inlet_thermal": "insulated"
+      },
+      "heat_load": {
+        "shape": "uniform"
+      },
+      "capillary_limit": {
+        "equation": "V2019_Eq3",
+        "criterion": "V2019 capillary-limit criterion (receding angle at the pinned contact line), not post-depinning recession"
+      },
+      "cell_tables": {
+        "required": [
+          "hydraulic",
+          "meniscus",
+          "thermal"
+        ],
+        "dataset": null,
+        "requirements": {
+          "data_role": "PHYSICAL_CELL_CALCULATION",
+          "kinetic_model": "linearized_BTE_V2019_Eqs5-7",
+          "require_verified_accommodation": true,
+          "thermal_reference_plane": "pillar_base_plane",
+          "load_range_must_cover_W_m2": "the operating loads of the search (V2019 Sec. 3.3 updated cells for the operating load)"
+        }
+      },
+      "comparison_targets": [
+        {
+          "quantity": "q_dryout",
+          "parameter": "reference_dryout_heat_flux",
+          "use": "COMPARISON_ONLY",
+          "investigation_threshold_rel": 0.05,
+          "note": "Reported numerical result (Sec. 3.2); no experimental uncertainty applies."
+        },
+        {
+          "quantity": "fig4_profiles",
+          "file": null,
+          "use": "COMPARISON_ONLY",
+          "note": "Fig. 4(a,b) digitizations not available; blank planned rows in data/literature are not data."
+        }
+      ],
+      "numerics": {
+        "Nx": 200,
+        "Nz": 32,
+        "rtol": 1e-10
+      }
+    }
+  },
+  "parameters": [
+    {
+      "symbol": "d",
+      "parameter": "pillar_diameter",
+      "value_SI": 9.999999999999999e-06,
+      "si_unit": "m",
+      "raw_value": 10,
+      "raw_unit": "um",
+      "provenance": "PRIMARY_SOURCE",
+      "source": "vaartstra2019",
+      "source_location": "Sec. 3.2; Fig. 4 caption",
+      "file": "geometry.yaml",
+      "notes": "Baseline device geometry. vaartstra2019 Fig. 5 keeps d/h = 0.4 while varying h."
+    },
+    {
+      "symbol": "l",
+      "parameter": "pillar_pitch",
+      "value_SI": 2.9999999999999997e-05,
+      "si_unit": "m",
+      "raw_value": 30,
+      "raw_unit": "um",
+      "provenance": "PRIMARY_SOURCE",
+      "source": "vaartstra2019",
+      "source_location": "Sec. 3.2; Fig. 4 caption",
+      "file": "geometry.yaml",
+      "notes": "Center-to-center spacing of a square array. Fig. 3(a) sweeps l at d = 10, h = 25 um."
+    },
+    {
+      "symbol": "h",
+      "parameter": "pillar_height",
+      "value_SI": 2.4999999999999998e-05,
+      "si_unit": "m",
+      "raw_value": 25,
+      "raw_unit": "um",
+      "provenance": "PRIMARY_SOURCE",
+      "source": "vaartstra2019",
+      "source_location": "Sec. 3.2; Fig. 4 caption",
+      "file": "geometry.yaml",
+      "notes": "Fig. 3(b) sweeps h at d = 10, l = 30 um; Fig. 5 sweeps h = 5-50 um at fixed ratios."
+    },
+    {
+      "symbol": "L",
+      "parameter": "wick_feed_length",
+      "value_SI": 0.005,
+      "si_unit": "m",
+      "raw_value": 5,
+      "raw_unit": "mm",
+      "provenance": "PRIMARY_SOURCE",
+      "source": "vaartstra2019",
+      "source_location": "Sec. 2 (L defined edge to center); Sec. 3.2; Fig. 4 caption",
+      "file": "geometry.yaml",
+      "notes": "Wick fed from the two edges normal to x (Sec. 3.2, Fig. 1c). Dryout heat flux scales as 1/L^2, so hold this fixed when comparing geometries."
+    },
+    {
+      "symbol": "W",
+      "parameter": "wick_width",
+      "value_SI": 0.01,
+      "si_unit": "m",
+      "raw_value": 10,
+      "raw_unit": "mm",
+      "provenance": "PRIMARY_SOURCE",
+      "source": "vaartstra2019",
+      "source_location": "Sec. 1 ('1 cm x 1 cm micropillar wick')",
+      "file": "geometry.yaml",
+      "notes": "Stated in the introduction when quoting the 30% HTC variation; consistent with L = 5 mm."
+    },
+    {
+      "symbol": "t_s",
+      "parameter": "substrate_thickness",
+      "value_SI": 9.999999999999999e-05,
+      "si_unit": "m",
+      "raw_value": 100,
+      "raw_unit": "um",
+      "provenance": "PRIMARY_SOURCE",
+      "source": "vaartstra2019",
+      "source_location": "Sec. 3.2 and 3.3 (t_s = 100 um)",
+      "file": "geometry.yaml",
+      "notes": "Device-level substrate. The validation data (adera2016) used 650 um (Sec. 3.4)."
+    },
+    {
+      "symbol": "cell_substrate",
+      "parameter": "unit_cell_substrate_thickness",
+      "value_SI": 1e-06,
+      "si_unit": "m",
+      "raw_value": 1,
+      "raw_unit": "um",
+      "provenance": "PRIMARY_SOURCE",
+      "source": "vaartstra2019",
+      "source_location": "Sec. 2.2 ('1 um below the base of the pillars')",
+      "file": "geometry.yaml",
+      "notes": "The same statement is garbled in the thesis PDF text; the IJHMT paper is legible."
+    },
+    {
+      "symbol": "theta_rec",
+      "parameter": "receding_contact_angle",
+      "value_SI": 0.2617993877991494,
+      "si_unit": "rad",
+      "raw_value": 15,
+      "raw_unit": "deg",
+      "provenance": "PRIMARY_SOURCE",
+      "source": "vaartstra2019",
+      "source_location": "Sec. 3.1 ('receding contact angle for water on silicon dioxide [29]')",
+      "file": "materials.yaml",
+      "notes": "vaartstra2019 takes it from raj2013 (not held). zhou_adera2026 (Sec. 3.1) uses the same value for native-oxide Si sidewalls. Must be measured on our own surfaces."
+    },
+    {
+      "symbol": "T_v",
+      "parameter": "vapor_temperature",
+      "value_SI": 373.15,
+      "si_unit": "K",
+      "raw_value": 100,
+      "raw_unit": "degC",
+      "provenance": "PRIMARY_SOURCE",
+      "source": "vaartstra2019",
+      "source_location": "Sec. 3.1-3.3 ('pure water vapor at 100 C'; T_sat = 100 C)",
+      "file": "operating_conditions.yaml",
+      "notes": "Saturated vapor: p_v = p_sat(T_v), liquid supplied at T_sat (Sec. 2). The validation data (adera2016) were at 3 kPa (Sec. 3.4)."
+    },
+    {
+      "symbol": "fluid",
+      "parameter": "working_fluid",
+      "value_SI": "Water",
+      "si_unit": "-",
+      "raw_value": "Water",
+      "raw_unit": "-",
+      "provenance": "PRIMARY_SOURCE",
+      "source": "vaartstra2019",
+      "source_location": "Sec. 2.2 ('we considered water as the working fluid and silicon as the micropillar material')",
+      "file": "fluids.yaml",
+      "notes": "Value is the CoolProp fluid name."
+    },
+    {
+      "symbol": "k_s",
+      "parameter": "silicon_thermal_conductivity",
+      "value_SI": 148.0,
+      "si_unit": "W/m/K",
+      "raw_value": 148,
+      "raw_unit": "W/m/K",
+      "provenance": "ASSUMED",
+      "source": "incropera_fhmt",
+      "source_location": "intended: Table A.1, pure Si at 300 K (edition and value never re-checked)",
+      "file": "materials.yaml",
+      "notes": "PROVISIONAL. Not a V2019 value and not a verified property at 373.15 K: a textbook value recalled from memory for 300 K whose table entry was never re-checked, so it is labelled ASSUMED rather than AUTHORITATIVE_DATABASE. vaartstra2019 does not state its silicon conductivity. DISCREPANCY: vaartstra2020 (Sec. IV C) uses 153 W/m/K at 20 C citing lienhard_textbook. Si conductivity falls with temperature (~120 W/m/K near 375 K, from memory, unverified). Non-blocking for the device model; keep both and sweep for replication."
+    },
+    {
+      "symbol": "accommodation",
+      "parameter": "accommodation_coefficient",
+      "value_SI": 0.052,
+      "si_unit": "-",
+      "raw_value": 0.052,
+      "raw_unit": "-",
+      "provenance": "PRIMARY_SOURCE",
+      "source": "vaartstra2019",
+      "source_location": "Sec. 2.2 and Sec. 3.4 (fitted to adera2016 data set A1)",
+      "file": "operating_conditions.yaml",
+      "notes": "A fitted parameter, not a measured property (the thesis says so explicitly). vaartstra2020 Sec. III C reports values for water spanning 0.001-1 and uses 1 and 0.31 in its own model. Sweep it for anything beyond exact replication."
+    }
+  ],
+  "liquid_properties": {
+    "T_v": 373.15,
+    "p_v": 101417.9966600156,
+    "rho": 958.3490516048603,
+    "mu": 0.0002815820076656743,
+    "h_fg": 2256403.721526573,
+    "sigma": 0.05892058565922924,
+    "cp": 4215.673616815757,
+    "k": 0.6772105145161135,
+    "rho_v": 0.5981697919259734,
+    "gamma_v": 1.3369328643376661,
+    "R_specific": 461.5231157260608,
+    "source": "IAPWS via CoolProp 8.0.0 at saturation, T = 373.15 K"
+  },
+  "boundary_conditions": {
+    "x0": "reservoir edge: Pc = 0.0 Pa, insulated substrate end",
+    "xL": "symmetry: Q = 0, insulated substrate end",
+    "substrate_bottom": "prescribed q_in''(x)",
+    "substrate_top": "Robin q_e'' = h_e(Pc)(T_e - T_v) at the pillar-base plane",
+    "liquid_inlet_temperature": "T_v (V2019)"
+  },
+  "preflight": {
+    "case_id": "vaartstra2019_fig4",
+    "case_role": "LITERATURE_REPLICATION",
+    "status": "MISSING_VALIDATED_INPUTS",
+    "ready_for_prediction": false,
+    "missing_inputs": [
+      {
+        "input": "cell table: hydraulic",
+        "reason": "no dataset configured in the case (cell_tables.dataset is null)",
+        "needed": "K_bulk(Pc) or tau(Pc) from three-dimensional laminar-flow cell calculations on the pinned menisci, Pc = 0 to the physical endpoint, with source Q_cell, Delta_p_cell, ell, b, h, mu, >= 3 meshes, a pressure-gradient sweep covering device gradients (<= 1% K variation) and a Stokes vs Navier-Stokes comparison"
+      },
+      {
+        "input": "cell table: meniscus",
+        "reason": "no dataset configured in the case (cell_tables.dataset is null)",
+        "needed": "pinned-meniscus states from V2019 Eqs. (1)-(2), Pc = 0 to the physical endpoint, with minimum clearance, interface area, contact-angle/limit measure, admissibility and mesh convergence; A_liquid_section if intrinsic velocities are wanted"
+      },
+      {
+        "input": "cell table: thermal",
+        "reason": "no dataset configured in the case (cell_tables.dataset is null)",
+        "needed": "h_e(Pc) referenced to the pillar-base plane from conjugate cell conduction with a source-verified V2019 interfacial boundary (linearized BTE, a = 0.052 with the verified accommodation treatment), Q_in, Q_evap, T_base, T_v, footprint area, energy balance <= 1e-3, >= 3 meshes, and loads covering the device operating range (around 50 and 82 W/cm^2)"
+      },
+      {
+        "input": "comparison data: fig4_profiles",
+        "reason": "not available",
+        "needed": "digitized curves with documented procedure and uncertainty",
+        "blocks": "literature profile comparison only (not the solver)"
+      }
+    ],
+    "blocking_source_gaps": [
+      {
+        "gap": "meland_ytrehus2003 accommodation treatment",
+        "effect": "a self-generated thermal table cannot be qualified as V2019 replication until the nonunity-accommodation treatment is checked against Meland & Ytrehus (2003), Phys. Fluids 15, 1348-1350, DOI 10.1063/1.1564097"
+      }
+    ],
+    "provisional_inputs": [
+      {
+        "symbol": "k_s",
+        "status": "PROVISIONAL (non-blocking limitation)",
+        "note": "148 W/(m K) is the existing provisional project choice (textbook value from memory, 300 K, not re-checked). It is NOT a V2019 value and NOT a verified property at 373.15 K. V2019 does not state its silicon conductivity. Non-blocking; reported as a limitation and swept."
+      },
+      {
+        "symbol": "fluid_properties",
+        "status": "AVAILABLE (runtime CoolProp)",
+        "note": "V2019 does not identify its property database; a remaining limitation."
+      }
+    ],
+    "available_inputs": [
+      {
+        "symbol": "d",
+        "parameter": "pillar_diameter",
+        "value_SI": 9.999999999999999e-06,
+        "unit": "m",
+        "provenance": "PRIMARY_SOURCE",
+        "source": "vaartstra2019",
+        "source_location": "Sec. 3.2; Fig. 4 caption"
+      },
+      {
+        "symbol": "l",
+        "parameter": "pillar_pitch",
+        "value_SI": 2.9999999999999997e-05,
+        "unit": "m",
+        "provenance": "PRIMARY_SOURCE",
+        "source": "vaartstra2019",
+        "source_location": "Sec. 3.2; Fig. 4 caption"
+      },
+      {
+        "symbol": "h",
+        "parameter": "pillar_height",
+        "value_SI": 2.4999999999999998e-05,
+        "unit": "m",
+        "provenance": "PRIMARY_SOURCE",
+        "source": "vaartstra2019",
+        "source_location": "Sec. 3.2; Fig. 4 caption"
+      },
+      {
+        "symbol": "L",
+        "parameter": "wick_feed_length",
+        "value_SI": 0.005,
+        "unit": "m",
+        "provenance": "PRIMARY_SOURCE",
+        "source": "vaartstra2019",
+        "source_location": "Sec. 2 (L defined edge to center); Sec. 3.2; Fig. 4 caption"
+      },
+      {
+        "symbol": "W",
+        "parameter": "wick_width",
+        "value_SI": 0.01,
+        "unit": "m",
+        "provenance": "PRIMARY_SOURCE",
+        "source": "vaartstra2019",
+        "source_location": "Sec. 1 ('1 cm x 1 cm micropillar wick')"
+      },
+      {
+        "symbol": "t_s",
+        "parameter": "substrate_thickness",
+        "value_SI": 9.999999999999999e-05,
+        "unit": "m",
+        "provenance": "PRIMARY_SOURCE",
+        "source": "vaartstra2019",
+        "source_location": "Sec. 3.2 and 3.3 (t_s = 100 um)"
+      },
+      {
+        "symbol": "cell_substrate",
+        "parameter": "unit_cell_substrate_thickness",
+        "value_SI": 1e-06,
+        "unit": "m",
+        "provenance": "PRIMARY_SOURCE",
+        "source": "vaartstra2019",
+        "source_location": "Sec. 2.2 ('1 um below the base of the pillars')"
+      },
+      {
+        "symbol": "theta_rec",
+        "parameter": "receding_contact_angle",
+        "value_SI": 0.2617993877991494,
+        "unit": "rad",
+        "provenance": "PRIMARY_SOURCE",
+        "source": "vaartstra2019",
+        "source_location": "Sec. 3.1 ('receding contact angle for water on silicon dioxide [29]')"
+      },
+      {
+        "symbol": "T_v",
+        "parameter": "vapor_temperature",
+        "value_SI": 373.15,
+        "unit": "K",
+        "provenance": "PRIMARY_SOURCE",
+        "source": "vaartstra2019",
+        "source_location": "Sec. 3.1-3.3 ('pure water vapor at 100 C'; T_sat = 100 C)"
+      },
+      {
+        "symbol": "fluid",
+        "parameter": "working_fluid",
+        "value_SI": "Water",
+        "unit": "-",
+        "provenance": "PRIMARY_SOURCE",
+        "source": "vaartstra2019",
+        "source_location": "Sec. 2.2 ('we considered water as the working fluid and silicon as the micropillar material')"
+      },
+      {
+        "symbol": "k_s",
+        "parameter": "silicon_thermal_conductivity",
+        "value_SI": 148.0,
+        "unit": "W/m/K",
+        "provenance": "ASSUMED",
+        "source": "incropera_fhmt",
+        "source_location": "intended: Table A.1, pure Si at 300 K (edition and value never re-checked)"
+      },
+      {
+        "symbol": "accommodation",
+        "parameter": "accommodation_coefficient",
+        "value_SI": 0.052,
+        "unit": "-",
+        "provenance": "PRIMARY_SOURCE",
+        "source": "vaartstra2019",
+        "source_location": "Sec. 2.2 and Sec. 3.4 (fitted to adera2016 data set A1)"
+      }
+    ],
+    "capillary_limit_V2019_Eq3_Pa": 2176.577762803573,
+    "liquid_properties": {
+      "T_v": 373.15,
+      "p_v": 101417.9966600156,
+      "rho": 958.3490516048603,
+      "mu": 0.0002815820076656743,
+      "h_fg": 2256403.721526573,
+      "sigma": 0.05892058565922924,
+      "cp": 4215.673616815757,
+      "k": 0.6772105145161135,
+      "rho_v": 0.5981697919259734,
+      "gamma_v": 1.3369328643376661,
+      "R_specific": 461.5231157260608,
+      "source": "IAPWS via CoolProp 8.0.0 at saturation, T = 373.15 K"
+    },
+    "dataset_report": null,
+    "data_inventory": [
+      {
+        "id": "permeability_stage1_flow_processed",
+        "path": "data/processed/permeability_stage1_flow.csv",
+        "data_role": "STORED_DERIVED_RESULT",
+        "classification": "stored derived COMSOL result with incomplete provenance (not synthetic)",
+        "content": "Four flat-interface (Pc = 0) mesh levels, hmax 2.0/1.0/0.7/0.5 um, single imposed 1 Pa drop over a quarter cell (ell = l/2 = 15 um, gradient ~6.7e4 Pa/m). Finest K = 2.9698e-11 m^2; last-pair change ~0.102%.\n",
+        "qualified_for_prediction": false,
+        "reasons": [
+          "flat interface only: no pressure dependence K(Pc), no meniscus states",
+          "single low gradient (~6.7e4 Pa/m) vs device feed gradients of order 1e5-1e6 Pa/m; gradient independence not demonstrated",
+          "no Stokes vs Navier-Stokes comparison",
+          ".mph model, selections and complete setup evidence are not tracked"
+        ],
+        "present": true,
+        "sha256": "4cf14a66aef72d3a710e0a13d42cd80d30f8cd4acc5265602d1bd770bd9fb7b0"
+      },
+      {
+        "id": "stage1_flow_raw_local",
+        "path": "data/comsol_exports/stage1_flow.csv",
+        "data_role": "STORED_DERIVED_RESULT",
+        "classification": "local raw COMSOL export (gitignored); metadata names permeability1.mph, COMSOL 6.3.0.420",
+        "qualified_for_prediction": false,
+        "reasons": [
+          "same flat-interface, single-gradient limitations as the processed table",
+          "the referenced .mph model is not present in the repository",
+          "note in the header says it is the corrected third column pair of a larger export held outside the repository"
+        ],
+        "present": true,
+        "sha256": "d31f102466dda691fa8566e232cffbe1630ec14dcc091393e70be2cd38fffa54"
+      },
+      {
+        "id": "permeability_stage1_flow_example",
+        "path": "data/processed/permeability_stage1_flow_example.csv",
+        "data_role": "SYNTHETIC_PARSER_EXAMPLE",
+        "classification": "processed output of the SYNTHETIC parser example (untracked local file)",
+        "qualified_for_prediction": false,
+        "reasons": [
+          "derived from data/comsol_exports/examples/stage1_flow_example.csv, which is SYNTHETIC"
+        ],
+        "present": true,
+        "sha256": "aec124a7fc3208c55e7b9ce9ef80f59a58ab2c61955cf79aec2d1eb94b8bbca8"
+      },
+      {
+        "id": "comsol_examples",
+        "path": "data/comsol_exports/examples/",
+        "data_role": "SYNTHETIC_PARSER_EXAMPLE",
+        "classification": "explicitly SYNTHETIC parser examples",
+        "qualified_for_prediction": false,
+        "reasons": [
+          "synthetic by declaration"
+        ],
+        "present": true
+      },
+      {
+        "id": "vaartstra2019_analytical_comparison",
+        "path": "data/processed/vaartstra2019_analytical_comparison.csv",
+        "data_role": "ANALYTICAL_EXAMPLE",
+        "classification": "approximate analytical estimates with ASSUMED feed lengths and unmatched validation geometries",
+        "qualified_for_prediction": false,
+        "reasons": [
+          "legacy analytical sanity output, not a cell-response table"
+        ],
+        "present": true,
+        "sha256": "9b2db0bb9d179796531d6e7f344b51bdbbd85e5c59dd29e92fe00a5340234167"
+      },
+      {
+        "id": "psat_water",
+        "path": "data/processed/psat_water.txt",
+        "data_role": "PROPERTY_TABLE",
+        "classification": "saturation-pressure property table for COMSOL interpolation, not a cell-response table",
+        "qualified_for_prediction": false,
+        "reasons": [
+          "not a cell table"
+        ],
+        "present": true,
+        "sha256": "fa549bc6cd4678e4bee6f7d910112fb10766a2aad7d7c14fa563433e1e9f7a40"
+      },
+      {
+        "id": "vaartstra2019_targets",
+        "path": "data/literature/vaartstra2019_targets.csv",
+        "data_role": "LITERATURE_DIGITIZATION",
+        "classification": "reported scalar targets plus empty planned digitizations",
+        "qualified_for_prediction": false,
+        "reasons": [
+          "comparison targets only; blank planned digitization rows are not data"
+        ],
+        "present": true,
+        "sha256": "4fd7aa780aea6fc1846c9bda54db1d6cc7e892dc23de9e2db3b8d7fd079fb834"
+      }
+    ],
+    "fallbacks_used": "none (fixtures and the legacy analytical model are never substituted)"
+  },
+  "plots_dir": "plots/device/20261015T032012234891Z_b12675f4_search_dryout",
+  "status": "MISSING_VALIDATED_INPUTS",
+  "exit_code": 3
+}

@@ -4,9 +4,18 @@ Definitions (footprint-based, so results feed a device-scale model directly):
     q''      = Q_in / A_fp                       A_fp = footprint of the modeled cell
     h_evap   = q'' / (T_base - T_v)              T_base = mean temperature at the pillar base
                                                  (top of substrate), T_v = vapor temperature
-    R''_wick = (T_base - T_lv) / q''             conduction through pillars + liquid + film
-    R''_int  = (T_lv - T_v) / q''                kinetic interfacial resistance
     energy balance error = |Q_in - Q_evap| / Q_in   (should be < 1%)
+
+Apparent diagnostics (not unique resistances):
+    R''_wick,app = (T_base - T_lv) / q''
+    R''_int,app  = (T_lv - T_v) / q''
+    kinetic_fraction_app = (T_lv - T_v) / (T_base - T_v)
+with T_base the unweighted area average over the pillar-base plane and T_lv the unweighted area
+average over the meniscus (COMSOL Surface Average). The meniscus temperature and the evaporative
+flux are both strongly nonuniform (most evaporation is near the contact line), so splitting the
+total resistance at an area-averaged T_lv is a convention: a flux-weighted average
+(integral q T dA / integral q dA) gives a different split. Only h_evap is a defined input to the
+device model; the apparent split is for diagnosis and comparison of export conventions.
 
 This matches Vaartstra et al. (2019) Eq. (4), h_e = q''_in / (T_e - T_sat), with q''_in per
 footprint area and T_e the average temperature of the evaporator surface (T_base here; see the
@@ -73,9 +82,9 @@ def main() -> None:
     out["q_W_cm2"] = q / 1e4
     out["T_base_minus_Tv_K"] = T_base - T_v
     out["h_evap_W_m2K"] = q / (T_base - T_v)
-    out["R_wick_mm2K_W"] = (T_base - T_lv) / q * 1e6
-    out["R_int_mm2K_W"] = (T_lv - T_v) / q * 1e6
-    out["kinetic_fraction"] = (T_lv - T_v) / (T_base - T_v)
+    out["R_wick_apparent_mm2K_W"] = (T_base - T_lv) / q * 1e6
+    out["R_int_apparent_mm2K_W"] = (T_lv - T_v) / q * 1e6
+    out["kinetic_fraction_apparent"] = (T_lv - T_v) / (T_base - T_v)
 
     if Q_evap is not None:
         err = np.abs(Q_in - Q_evap) / np.abs(Q_in)
@@ -91,8 +100,8 @@ def main() -> None:
     pd.set_option("display.width", 160)
     print(f"T_v = {T_v:.2f} K, cell = {args.cell}, footprint = {'(l/2)^2' if args.cell == 'quarter' else 'l^2'}")
     print(out.to_string(index=False, float_format=lambda v: f"{v:.4g}"))
-    print("\nkinetic_fraction near 1 -> interface-limited (accommodation coefficient dominates);"
-          " near 0 -> conduction-limited (geometry/material dominates).")
+    print("\nR_wick/R_int/kinetic_fraction are APPARENT splits at the area-averaged meniscus temperature"
+          " (see docstring); they depend on the averaging convention and are not unique resistances.")
 
     PROCESSED_DIR.mkdir(parents=True, exist_ok=True)
     dest = PROCESSED_DIR / f"h_evap_{args.export.stem}.csv"

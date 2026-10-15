@@ -1,0 +1,134 @@
+{
+  "missing_inputs": [
+    {
+      "input": "cell table: hydraulic",
+      "reason": "no dataset configured in the case (cell_tables.dataset is null)",
+      "needed": "K_bulk(Pc) or tau(Pc) from three-dimensional laminar-flow cell calculations on the pinned menisci, Pc = 0 to the physical endpoint, with source Q_cell, Delta_p_cell, ell, b, h, mu, >= 3 meshes, a pressure-gradient sweep covering device gradients (<= 1% K variation) and a Stokes vs Navier-Stokes comparison"
+    },
+    {
+      "input": "cell table: meniscus",
+      "reason": "no dataset configured in the case (cell_tables.dataset is null)",
+      "needed": "pinned-meniscus states from V2019 Eqs. (1)-(2), Pc = 0 to the physical endpoint, with minimum clearance, interface area, contact-angle/limit measure, admissibility and mesh convergence; A_liquid_section if intrinsic velocities are wanted"
+    },
+    {
+      "input": "cell table: thermal",
+      "reason": "no dataset configured in the case (cell_tables.dataset is null)",
+      "needed": "h_e(Pc) referenced to the pillar-base plane from conjugate cell conduction with a source-verified V2019 interfacial boundary (linearized BTE, a = 0.052 with the verified accommodation treatment), Q_in, Q_evap, T_base, T_v, footprint area, energy balance <= 1e-3, >= 3 meshes, and loads covering the device operating range (around 50 and 82 W/cm^2)"
+    },
+    {
+      "input": "comparison data: fig4_profiles",
+      "reason": "not available",
+      "needed": "digitized curves with documented procedure and uncertainty",
+      "blocks": "literature profile comparison only (not the solver)"
+    }
+  ],
+  "blocking_source_gaps": [
+    {
+      "gap": "meland_ytrehus2003 accommodation treatment",
+      "effect": "a self-generated thermal table cannot be qualified as V2019 replication until the nonunity-accommodation treatment is checked against Meland & Ytrehus (2003), Phys. Fluids 15, 1348-1350, DOI 10.1063/1.1564097"
+    }
+  ],
+  "provisional_inputs": [
+    {
+      "symbol": "k_s",
+      "status": "PROVISIONAL (non-blocking limitation)",
+      "note": "148 W/(m K) is the existing provisional project choice (textbook value from memory, 300 K, not re-checked). It is NOT a V2019 value and NOT a verified property at 373.15 K. V2019 does not state its silicon conductivity. Non-blocking; reported as a limitation and swept."
+    },
+    {
+      "symbol": "fluid_properties",
+      "status": "AVAILABLE (runtime CoolProp)",
+      "note": "V2019 does not identify its property database; a remaining limitation."
+    }
+  ],
+  "data_inventory": [
+    {
+      "id": "permeability_stage1_flow_processed",
+      "path": "data/processed/permeability_stage1_flow.csv",
+      "data_role": "STORED_DERIVED_RESULT",
+      "classification": "stored derived COMSOL result with incomplete provenance (not synthetic)",
+      "content": "Four flat-interface (Pc = 0) mesh levels, hmax 2.0/1.0/0.7/0.5 um, single imposed 1 Pa drop over a quarter cell (ell = l/2 = 15 um, gradient ~6.7e4 Pa/m). Finest K = 2.9698e-11 m^2; last-pair change ~0.102%.\n",
+      "qualified_for_prediction": false,
+      "reasons": [
+        "flat interface only: no pressure dependence K(Pc), no meniscus states",
+        "single low gradient (~6.7e4 Pa/m) vs device feed gradients of order 1e5-1e6 Pa/m; gradient independence not demonstrated",
+        "no Stokes vs Navier-Stokes comparison",
+        ".mph model, selections and complete setup evidence are not tracked"
+      ],
+      "present": true,
+      "sha256": "4cf14a66aef72d3a710e0a13d42cd80d30f8cd4acc5265602d1bd770bd9fb7b0"
+    },
+    {
+      "id": "stage1_flow_raw_local",
+      "path": "data/comsol_exports/stage1_flow.csv",
+      "data_role": "STORED_DERIVED_RESULT",
+      "classification": "local raw COMSOL export (gitignored); metadata names permeability1.mph, COMSOL 6.3.0.420",
+      "qualified_for_prediction": false,
+      "reasons": [
+        "same flat-interface, single-gradient limitations as the processed table",
+        "the referenced .mph model is not present in the repository",
+        "note in the header says it is the corrected third column pair of a larger export held outside the repository"
+      ],
+      "present": true,
+      "sha256": "d31f102466dda691fa8566e232cffbe1630ec14dcc091393e70be2cd38fffa54"
+    },
+    {
+      "id": "permeability_stage1_flow_example",
+      "path": "data/processed/permeability_stage1_flow_example.csv",
+      "data_role": "SYNTHETIC_PARSER_EXAMPLE",
+      "classification": "processed output of the SYNTHETIC parser example (untracked local file)",
+      "qualified_for_prediction": false,
+      "reasons": [
+        "derived from data/comsol_exports/examples/stage1_flow_example.csv, which is SYNTHETIC"
+      ],
+      "present": true,
+      "sha256": "aec124a7fc3208c55e7b9ce9ef80f59a58ab2c61955cf79aec2d1eb94b8bbca8"
+    },
+    {
+      "id": "comsol_examples",
+      "path": "data/comsol_exports/examples/",
+      "data_role": "SYNTHETIC_PARSER_EXAMPLE",
+      "classification": "explicitly SYNTHETIC parser examples",
+      "qualified_for_prediction": false,
+      "reasons": [
+        "synthetic by declaration"
+      ],
+      "present": true
+    },
+    {
+      "id": "vaartstra2019_analytical_comparison",
+      "path": "data/processed/vaartstra2019_analytical_comparison.csv",
+      "data_role": "ANALYTICAL_EXAMPLE",
+      "classification": "approximate analytical estimates with ASSUMED feed lengths and unmatched validation geometries",
+      "qualified_for_prediction": false,
+      "reasons": [
+        "legacy analytical sanity output, not a cell-response table"
+      ],
+      "present": true,
+      "sha256": "9b2db0bb9d179796531d6e7f344b51bdbbd85e5c59dd29e92fe00a5340234167"
+    },
+    {
+      "id": "psat_water",
+      "path": "data/processed/psat_water.txt",
+      "data_role": "PROPERTY_TABLE",
+      "classification": "saturation-pressure property table for COMSOL interpolation, not a cell-response table",
+      "qualified_for_prediction": false,
+      "reasons": [
+        "not a cell table"
+      ],
+      "present": true,
+      "sha256": "fa549bc6cd4678e4bee6f7d910112fb10766a2aad7d7c14fa563433e1e9f7a40"
+    },
+    {
+      "id": "vaartstra2019_targets",
+      "path": "data/literature/vaartstra2019_targets.csv",
+      "data_role": "LITERATURE_DIGITIZATION",
+      "classification": "reported scalar targets plus empty planned digitizations",
+      "qualified_for_prediction": false,
+      "reasons": [
+        "comparison targets only; blank planned digitization rows are not data"
+      ],
+      "present": true,
+      "sha256": "4fd7aa780aea6fc1846c9bda54db1d6cc7e892dc23de9e2db3b8d7fd079fb834"
+    }
+  ]
+}

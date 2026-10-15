@@ -1,0 +1,32 @@
+{
+  "dataset_id": "fixture_raw_import",
+  "data_role": "MANUFACTURED_FIXTURE",
+  "path": "data\\processed\\device_runs\\import_demo\\fixture_raw_import",
+  "dataset_hash": "3543fb231c66d9cf5011cf028a3f50c91f3689eb81045f18eda1642a67dfa79b",
+  "schema_valid": true,
+  "verification_only": true,
+  "numerically_qualified": false,
+  "case_matched": null,
+  "errors": [],
+  "warnings": [
+    "no A_liquid_section_m2: intrinsic section velocity diagnostics are unavailable"
+  ],
+  "qualification_failures": [
+    "data_role MANUFACTURED_FIXTURE is not a physical cell calculation",
+    "generation.model_file and export_files are required for qualification",
+    "generation.run_log (actual solver log) required",
+    "mesh_evidence.hydraulic: fewer than 3 mesh levels",
+    "mesh_evidence.hydraulic: finest-pair change None not <= 0.001",
+    "mesh_evidence.hydraulic: systematic convergence not demonstrated",
+    "mesh_evidence.thermal: fewer than 3 mesh levels",
+    "mesh_evidence.thermal: finest-pair change None not <= 0.001",
+    "mesh_evidence.thermal: systematic convergence not demonstrated",
+    "mesh_evidence.meniscus: fewer than 3 mesh levels",
+    "mesh_evidence.meniscus: finest-pair change None not <= 0.001",
+    "mesh_evidence.meniscus: systematic convergence not demonstrated",
+    "gradient_study: K variation None not <= 0.01 (a one-dimensional K(Pc) table is not qualified; Q(Pc, gradient) data would be needed)",
+    "gradient_study: needs representative Pc values spanning the interval",
+    "gradient_study: Stokes vs Navier-Stokes comparison missing"
+  ],
+  "case_mismatches": []
+}

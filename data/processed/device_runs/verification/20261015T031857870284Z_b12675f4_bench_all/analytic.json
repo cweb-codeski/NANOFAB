@@ -1,0 +1,106 @@
+{
+  "suite": "analytic",
+  "passed": true,
+  "gates": [
+    {
+      "gate": "status is PHYSICAL_CAPILLARY_LIMIT",
+      "value": "PHYSICAL_CAPILLARY_LIMIT",
+      "limit": "PHYSICAL_CAPILLARY_LIMIT",
+      "kind": "equal",
+      "passed": true
+    },
+    {
+      "gate": "q_dry vs closed form (rel)",
+      "value": 8.683778474466659e-13,
+      "limit": 1e-09,
+      "kind": "max",
+      "passed": true
+    },
+    {
+      "gate": "p_g(x) vs closed form (rel to Pc_limit)",
+      "value": 8.685123821168206e-13,
+      "limit": 1e-09,
+      "kind": "max",
+      "passed": true
+    },
+    {
+      "gate": "Q(x) vs closed form (rel to Q(0))",
+      "value": 5.361997072171232e-13,
+      "limit": 1e-09,
+      "kind": "max",
+      "passed": true
+    },
+    {
+      "gate": "T_e - T_v vs q/h_e (rel)",
+      "value": 2.345006305411554e-12,
+      "limit": 1e-09,
+      "kind": "max",
+      "passed": true
+    },
+    {
+      "gate": "T_source - T_v vs q/h_e + q t_s/k_s (rel)",
+      "value": 2.3038913163538096e-12,
+      "limit": 1e-09,
+      "kind": "max",
+      "passed": true
+    },
+    {
+      "gate": "limit interval (rel)",
+      "value": 5.000000000003891e-05,
+      "limit": 0.0001,
+      "kind": "max",
+      "passed": true
+    },
+    {
+      "gate": "q_dry with tabulated tau(Pc) vs quadrature closed form (rel)",
+      "value": 8.680231635481788e-13,
+      "limit": 1e-09,
+      "kind": "max",
+      "passed": true
+    },
+    {
+      "gate": "constant closure endpoint: mass global (normalized)",
+      "value": 9.987753992873536e-16,
+      "limit": 1e-08,
+      "kind": "max",
+      "passed": true
+    },
+    {
+      "gate": "constant closure endpoint: mass local max (normalized)",
+      "value": 7.022639526239205e-17,
+      "limit": 1e-07,
+      "kind": "max",
+      "passed": true
+    },
+    {
+      "gate": "constant closure endpoint: Darcy cell consistency (independent quadrature)",
+      "value": 1.0213779983042987e-15,
+      "limit": 1e-07,
+      "kind": "max",
+      "passed": true
+    },
+    {
+      "gate": "constant closure endpoint: energy global (normalized)",
+      "value": 5.374038317868259e-13,
+      "limit": 1e-08,
+      "kind": "max",
+      "passed": true
+    },
+    {
+      "gate": "constant closure endpoint: energy local max (normalized)",
+      "value": 1.5491678864656809e-12,
+      "limit": 1e-07,
+      "kind": "max",
+      "passed": true
+    }
+  ],
+  "details": {
+    "q_dry_numeric_W_m2": 1002907.9221088085,
+    "q_dry_closed_form_W_m2": 1002907.9221079376,
+    "q_dry_tau_numeric_W_m2": 946050.4219854629,
+    "q_dry_tau_quadrature_W_m2": 946050.4219846417,
+    "Pc_limit_Pa": 2176.577762803573,
+    "label": "ANALYTICAL_EXAMPLE (K = 3.0e-11 m^2, h_e = 6.0e4 W/m^2K chosen for verification, not fitted)"
+  },
+  "seconds": 5.782090425491333
+}

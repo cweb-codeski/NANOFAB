@@ -22,6 +22,8 @@ tracking, analytical sanity checks, and post-processing of COMSOL CSV exports.
 | `parameters/` | YAML inputs; every entry has `value`, `unit`, `status`, `source` |
 | `src/nanofab/` | Python library (fluids, capillary, permeability, dryout, evaporation, conduction, ...) |
 | `analysis/` | Scripts: baseline estimates, permeability / heat transfer from COMSOL exports |
+| `src/nanofab/device/` | Passive device-scale model (V2019 framework): table-driven Darcy transport + x-z substrate conduction, dryout search |
+| `parameters/cases/` | Named device cases (manifests referencing `parameters/*.yaml` entries) |
 | `comsol/` | COMSOL model notes (`.mph` files are gitignored) |
 | `data/` | Raw data, COMSOL exports, literature digitizations, processed results |
 | `tests/` | pytest checks of analytical limits and identities |
@@ -49,6 +51,13 @@ python analysis/permeability_from_comsol.py data/comsol_exports/stage1_flow.csv
 # Effective evaporative h from a COMSOL Stage 4/5 export
 python analysis/heat_transfer_from_comsol.py data/comsol_exports/stage4_thermal.csv
 
+# Passive device-scale model (docs/passive_device_model.md)
+python analysis/device_benchmarks.py --suite all --output data/processed/device_runs/verification
+python analysis/run_passive_device.py --case parameters/cases/vaartstra2019_fig4.yaml --preflight --output data/processed/device_runs/vaartstra_preflight
+python analysis/run_passive_device.py --case parameters/cases/vaartstra2019_fig4.yaml --search-dryout --output data/processed/device_runs/vaartstra_prediction
+#   (currently exits 3, MISSING_VALIDATED_INPUTS: no qualified physical cell tables exist yet)
+python analysis/import_cell_tables.py --manifest PATH_TO_EXPORT_MANIFEST --output data/processed/cell_tables/DATASET_ID
+
 # Tests
 pytest
 ```
@@ -70,3 +79,9 @@ Phase 1 (learn and reproduce). The baseline is the Vaartstra, Lu & Wang (IJHMT 1
 device: d = 10 µm, l = 30 µm, h = 25 µm, L = 5 mm, water at 100 °C (all `PRIMARY_SOURCE`).
 Replication targets are in `data/literature/vaartstra2019_targets.csv`. Start with
 `docs/comsol_unit_cell_guide.md`.
+
+The passive device model (`src/nanofab/device/`) is numerically verified on analytical and
+manufactured inputs. A V2019 literature comparison is blocked until qualified unit-cell tables
+(meniscus, hydraulic, thermal) exist and the Meland & Ytrehus accommodation source gap is closed;
+see `docs/passive_device_implementation_report.md`. The legacy flat-meniscus result (100.6 W/cm²)
+is an approximate analytical estimate, not a bound.

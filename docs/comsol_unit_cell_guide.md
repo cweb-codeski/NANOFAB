@@ -233,9 +233,12 @@ python analysis/heat_transfer_from_comsol.py data/comsol_exports/stage2_flat.csv
 
 - Energy balance error below 1%.
 - R_wick between the parallel and series bounds printed by `baseline_estimates.py`.
-- Kinetic fraction around 0.15 or less. V2019 reports h_e > 60 kW/(m²K) (PRIMARY_SOURCE). Our
-  analytical R''_int combined with that bound puts the kinetic part at most ~16% of the total
-  (MODEL_CALCULATED, not a paper value); the rest is expected to be conduction through the liquid.
+- Apparent kinetic fraction: no target range. V2019 reports h_e > 60 kW/(m²K) (PRIMARY_SOURCE).
+  Our analytical R''_int combined with that bound gives R_int/R_total = R_int h_e > ~16%, a
+  conditional **lower** bound (MODEL_CALCULATED, not a paper value), so a fraction below ~0.16
+  would contradict either our R''_int or the paper's h_e bound and should be investigated. The
+  script's R_wick, R_int and kinetic fraction are apparent diagnostics (see its docstring for
+  the averaging definitions), not unique resistances.
 
 ---
 
@@ -381,3 +384,46 @@ most extreme curvature (dryout), where meshes struggle most. Do the same.
 - Give each Derived Value the column name the scripts expect (`Q_in`, `Q_evap`, `T_base`,
   `T_lv`), or pass `--qin-col` etc.
 - Save each `.mph` in `comsol/unit_cell/` and log it in `comsol/unit_cell/README.md`.
+
+---
+
+## 10. Checklist: cell tables for the passive device model
+
+Status: **none of these calculations has been run for the device model.** There is no `.mph`
+file in the repository and no execution evidence. This is the list of next required
+calculations, not a record of work done. Menu paths are deliberately omitted where they depend on
+the installed COMSOL version (the existing stage-1 export header names COMSOL 6.3.0.420; confirm
+before relying on any menu name). Outputs must satisfy `docs/cell_table_contract.md` and be
+imported with `analysis/import_cell_tables.py`.
+
+1. **Pinned meniscus (V2019 Sec. 2.1, Eqs. 1-2).** Solve the 3D pinned meniscus from Pc = 0
+   through the documented physical limit (Eq. 3), refining the pressure sampling near the limit.
+   Export per state: Pc, state id, branch id, minimum liquid clearance above the pillar base,
+   interface area, contact-line angle (or the measure that defines the limit), admissibility, and
+   mesh convergence of the interface minimum. Record the Eq. (2) normal convention. The triangular
+   symmetry region of V2019 Fig. 2(a) is appropriate only where geometry and loading preserve it;
+   directed flow does not inherit diagonal symmetry. If the meniscus touches the substrate or a
+   contact-line criterion is met before Eq. (3), record that geometry limit with its evidence.
+2. **Hydraulics on the same menisci (V2019 Sec. 2.2, Eq. 8).** Pressure-driven flow with no-slip
+   solids and a shear-free, impermeable meniscus. Use pressure-periodic full-cell boundaries, or a
+   reduced cell justified against a full periodic cell (especially with finite inertia). Export
+   inlet and outlet flow integrals, cell dimensions (ell, b, h), imposed pressure drop and
+   gradient, viscosity, the K normalization (bulk, A_ref = b h), Re and the mass residual.
+   Sweep the imposed gradient over the device range (from near zero at the symmetry plane up to
+   about 2 Pc_limit / L ≈ 9e5 Pa/m at the feed for the Fig. 4 case at the limit, uniform-evaporation
+   estimate) at >= 3 representative Pc values; compare laminar Navier-Stokes with Stokes. The
+   existing low-gradient flat-interface result (`data/processed/permeability_stage1_flow.csv`) is
+   insufficient on its own.
+3. **Conjugate cell conduction (V2019 Sec. 2.2, Eqs. 4-7).** Include the 1 µm substrate under the
+   pillars, insulated lateral faces and pillar tops, and a source-verified interfacial evaporation
+   boundary. **Resolve the accommodation source gap (Meland & Ytrehus 2003) before qualifying any
+   self-generated table as a V2019 replication input.** Schrage is a different closure, never a
+   silent substitute. Export Q_in, Q_evap, the exact pillar-base-plane average temperature
+   (state the selection), T_v, interface area and temperature diagnostics, h_e, energy balance and
+   mesh evidence. Check low, intermediate and near-limit pressures, and load dependence around
+   both 50 and 82 W/cm^2. Never generate h_e by fitting the device target.
+4. **Mesh studies.** At least three cell meshes at representative states including near the
+   limiting curvature; report interface, hydraulic and thermal errors separately (fill in §8).
+5. **Evidence.** Preserve raw exports unmodified; write a raw-export manifest with checksums,
+   COMSOL version, study and selection details, and the actual run logs. Only state that COMSOL
+   ran when this evidence exists.

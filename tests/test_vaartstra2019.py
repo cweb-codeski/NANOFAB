@@ -31,8 +31,13 @@ def test_eq3_matches_force_balance(water):
     assert capillary.pillar_max_capillary_pressure(gamma, d, l, THETA) == pytest.approx(eq3)
 
 
-def test_flat_meniscus_dryout_bounds_paper_value(water):
-    """Paper: 82 W/cm^2. Flat-meniscus K overestimates permeability, so expect 0-40% above."""
+def test_legacy_flat_meniscus_sanity_check(water):
+    """LEGACY SANITY CHECK of the approximate analytical estimate (flat-meniscus K, uniform q).
+
+    The 0-40% window is a plausibility range for a legacy estimate, not a source-backed bound: it
+    is not established that the flat-meniscus K, constant-K transport and uniform evaporation
+    together overpredict the V2019 numerical result (82 W/cm^2, Sec. 3.2) for every geometry.
+    """
     q = q_dry(water, 10e-6, 30e-6, 25e-6)
     assert 82e4 < q < 1.4 * 82e4
 
@@ -56,7 +61,9 @@ def test_bte_zero_at_equilibrium(water):
 
 
 def test_kinetic_resistance_below_paper_total(water):
-    """Paper h_e > 60 kW/m^2K in total; the kinetic part alone must be a smaller resistance."""
+    """Consistency check only: V2019 reports h_e > 60 kW/m^2K, so R_total < 1/60000 m^2K/W, and any
+    kinetic part must satisfy R_int < R_total < 1/60000. Passing is necessary, not sufficient; it
+    does not bound the kinetic share (R_int / R_total = R_int h_e > 60000 R_int is a lower bound)."""
     h_i = evaporation.sone_bte_heat_flux(T_SAT + 0.1, T_SAT, 0.052, water) / 0.1
     assert 1 / h_i < 1 / 60e3
 

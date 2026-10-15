@@ -1,0 +1,546 @@
+{
+  "suite": "coupled",
+  "passed": true,
+  "gates": [
+    {
+      "gate": "(50,8) endpoint: mass global (normalized)",
+      "value": 1.5179784568910278e-16,
+      "limit": 1e-08,
+      "kind": "max",
+      "passed": true
+    },
+    {
+      "gate": "(50,8) endpoint: mass local max (normalized)",
+      "value": 7.352708150565915e-17,
+      "limit": 1e-07,
+      "kind": "max",
+      "passed": true
+    },
+    {
+      "gate": "(50,8) endpoint: Darcy cell consistency (independent quadrature)",
+      "value": 1.3483467898892007e-12,
+      "limit": 1e-07,
+      "kind": "max",
+      "passed": true
+    },
+    {
+      "gate": "(50,8) endpoint: energy global (normalized)",
+      "value": 1.9874771455030202e-14,
+      "limit": 1e-08,
+      "kind": "max",
+      "passed": true
+    },
+    {
+      "gate": "(50,8) endpoint: energy local max (normalized)",
+      "value": 2.360732106991597e-13,
+      "limit": 1e-07,
+      "kind": "max",
+      "passed": true
+    },
+    {
+      "gate": "(50,8) limit interval (rel)",
+      "value": 4.999999999995482e-05,
+      "limit": 0.0001,
+      "kind": "max",
+      "passed": true
+    },
+    {
+      "gate": "(50,8) end suction monotonic along continuation",
+      "value": true,
+      "limit": true,
+      "kind": "equal",
+      "passed": true
+    },
+    {
+      "gate": "(50,8) moment identity (rel)",
+      "value": 1.5125738046978767e-16,
+      "limit": 1e-09,
+      "kind": "max",
+      "passed": true
+    },
+    {
+      "gate": "(100,16) endpoint: mass global (normalized)",
+      "value": 1.5179841086495143e-16,
+      "limit": 1e-08,
+      "kind": "max",
+      "passed": true
+    },
+    {
+      "gate": "(100,16) endpoint: mass local max (normalized)",
+      "value": 7.589920543247572e-17,
+      "limit": 1e-07,
+      "kind": "max",
+      "passed": true
+    },
+    {
+      "gate": "(100,16) endpoint: Darcy cell consistency (independent quadrature)",
+      "value": 1.0804605940353559e-12,
+      "limit": 1e-07,
+      "kind": "max",
+      "passed": true
+    },
+    {
+      "gate": "(100,16) endpoint: energy global (normalized)",
+      "value": 7.467539019740677e-14,
+      "limit": 1e-08,
+      "kind": "max",
+      "passed": true
+    },
+    {
+      "gate": "(100,16) endpoint: energy local max (normalized)",
+      "value": 4.035570485272442e-13,
+      "limit": 1e-07,
+      "kind": "max",
+      "passed": true
+    },
+    {
+      "gate": "(100,16) limit interval (rel)",
+      "value": 4.9999999999960226e-05,
+      "limit": 0.0001,
+      "kind": "max",
+      "passed": true
+    },
+    {
+      "gate": "(100,16) end suction monotonic along continuation",
+      "value": true,
+      "limit": true,
+      "kind": "equal",
+      "passed": true
+    },
+    {
+      "gate": "(100,16) moment identity (rel)",
+      "value": 3.0251476093957543e-16,
+      "limit": 1e-09,
+      "kind": "max",
+      "passed": true
+    },
+    {
+      "gate": "(200,32) endpoint: mass global (normalized)",
+      "value": 4.553956575682001e-16,
+      "limit": 1e-08,
+      "kind": "max",
+      "passed": true
+    },
+    {
+      "gate": "(200,32) endpoint: mass local max (normalized)",
+      "value": 7.471335006978283e-17,
+      "limit": 1e-07,
+      "kind": "max",
+      "passed": true
+    },
+    {
+      "gate": "(200,32) endpoint: Darcy cell consistency (independent quadrature)",
+      "value": 1.0177568925940162e-12,
+      "limit": 1e-07,
+      "kind": "max",
+      "passed": true
+    },
+    {
+      "gate": "(200,32) endpoint: energy global (normalized)",
+      "value": 4.26827176392378e-13,
+      "limit": 1e-08,
+      "kind": "max",
+      "passed": true
+    },
+    {
+      "gate": "(200,32) endpoint: energy local max (normalized)",
+      "value": 1.2800172195508793e-12,
+      "limit": 1e-07,
+      "kind": "max",
+      "passed": true
+    },
+    {
+      "gate": "(200,32) limit interval (rel)",
+      "value": 5.0000000000044e-05,
+      "limit": 0.0001,
+      "kind": "max",
+      "passed": true
+    },
+    {
+      "gate": "(200,32) end suction monotonic along continuation",
+      "value": true,
+      "limit": true,
+      "kind": "equal",
+      "passed": true
+    },
+    {
+      "gate": "(200,32) moment identity (rel)",
+      "value": 3.0251476093957524e-16,
+      "limit": 1e-09,
+      "kind": "max",
+      "passed": true
+    },
+    {
+      "gate": "all refinement levels solved",
+      "value": true,
+      "limit": true,
+      "kind": "equal",
+      "passed": true
+    },
+    {
+      "gate": "endpoint: finest-pair change load_W_m2 (rel)",
+      "value": 9.331962374753692e-07,
+      "limit": 0.002,
+      "kind": "max",
+      "passed": true
+    },
+    {
+      "gate": "endpoint: finest-pair change Q_feed_m3_s (rel)",
+      "value": 9.331967385297654e-07,
+      "limit": 0.002,
+      "kind": "max",
+      "passed": true
+    },
+    {
+      "gate": "endpoint: finest-pair change max_dTe_K (rel to superheat)",
+      "value": 5.5059311475194245e-05,
+      "limit": 0.002,
+      "kind": "max",
+      "passed": true
+    },
+    {
+      "gate": "endpoint: finest-pair change max_dTe_K [K]",
+      "value": 0.0008255527755274272,
+      "limit": 0.02,
+      "kind": "max",
+      "passed": true
+    },
+    {
+      "gate": "endpoint: finest-pair change max_dTsource_K (rel to superheat)",
+      "value": 3.8185281557243626e-05,
+      "limit": 0.002,
+      "kind": "max",
+      "passed": true
+    },
+    {
+      "gate": "endpoint: finest-pair change max_dTsource_K [K]",
+      "value": 0.0005963494692107218,
+      "limit": 0.02,
+      "kind": "max",
+      "passed": true
+    },
+    {
+      "gate": "endpoint: systematic convergence of load_W_m2",
+      "value": true,
+      "limit": true,
+      "kind": "equal",
+      "passed": true
+    },
+    {
+      "gate": "endpoint: systematic convergence of Q_feed_m3_s",
+      "value": true,
+      "limit": true,
+      "kind": "equal",
+      "passed": true
+    },
+    {
+      "gate": "endpoint: systematic convergence of max_dTe_K",
+      "value": true,
+      "limit": true,
+      "kind": "equal",
+      "passed": true
+    },
+    {
+      "gate": "endpoint: systematic convergence of max_dTsource_K",
+      "value": true,
+      "limit": true,
+      "kind": "equal",
+      "passed": true
+    },
+    {
+      "gate": "fixed load: finest-pair change max_suction_Pa (rel)",
+      "value": 5.034296938055671e-07,
+      "limit": 0.002,
+      "kind": "max",
+      "passed": true
+    },
+    {
+      "gate": "fixed load: finest-pair change Q_feed_m3_s (rel)",
+      "value": 5.553385662258979e-13,
+      "limit": 0.002,
+      "kind": "max",
+      "passed": true
+    },
+    {
+      "gate": "fixed load: finest-pair change max_dTe_K (rel to superheat)",
+      "value": 2.830425630987892e-05,
+      "limit": 0.002,
+      "kind": "max",
+      "passed": true
+    },
+    {
+      "gate": "fixed load: finest-pair change max_dTe_K [K]",
+      "value": 0.00021647257549695098,
+      "limit": 0.02,
+      "kind": "max",
+      "passed": true
+    },
+    {
+      "gate": "fixed load: finest-pair change max_dTsource_K (rel to superheat)",
+      "value": 1.989205057732234e-05,
+      "limit": 0.002,
+      "kind": "max",
+      "passed": true
+    },
+    {
+      "gate": "fixed load: finest-pair change max_dTsource_K [K]",
+      "value": 0.00015838284411451298,
+      "limit": 0.02,
+      "kind": "max",
+      "passed": true
+    },
+    {
+      "gate": "fixed load: systematic convergence of max_suction_Pa",
+      "value": true,
+      "limit": true,
+      "kind": "equal",
+      "passed": true
+    },
+    {
+      "gate": "fixed load: systematic convergence of Q_feed_m3_s",
+      "value": true,
+      "limit": true,
+      "kind": "equal",
+      "passed": true
+    },
+    {
+      "gate": "fixed load: systematic convergence of max_dTe_K",
+      "value": true,
+      "limit": true,
+      "kind": "equal",
+      "passed": true
+    },
+    {
+      "gate": "fixed load: systematic convergence of max_dTsource_K",
+      "value": true,
+      "limit": true,
+      "kind": "equal",
+      "passed": true
+    },
+    {
+      "gate": "tolerance 1e-8 vs 1e-10: dryout load (rel)",
+      "value": 1.4201831314028784e-14,
+      "limit": 0.0001,
+      "kind": "max",
+      "passed": true
+    },
+    {
+      "gate": "tolerance 1e-8 vs 1e-10: max T_e [K]",
+      "value": 1.2882139799330616e-11,
+      "limit": 0.001,
+      "kind": "max",
+      "passed": true
+    },
+    {
+      "gate": "tolerance 1e-8 vs 1e-10 (fixed load): max suction (rel)",
+      "value": 2.2574117103366084e-14,
+      "limit": 0.0001,
+      "kind": "max",
+      "passed": true
+    },
+    {
+      "gate": "tolerance 1e-8 vs 1e-10 (fixed load): max T_e [K]",
+      "value": 1.2276402117095131e-11,
+      "limit": 0.001,
+      "kind": "max",
+      "passed": true
+    },
+    {
+      "gate": "forward solve at fixed load converged",
+      "value": true,
+      "limit": true,
+      "kind": "equal",
+      "passed": true
+    },
+    {
+      "gate": "forward fixed load: mass global (normalized)",
+      "value": 0.0,
+      "limit": 1e-08,
+      "kind": "max",
+      "passed": true
+    },
+    {
+      "gate": "forward fixed load: mass local max (normalized)",
+      "value": 7.37368744560497e-17,
+      "limit": 1e-07,
+      "kind": "max",
+      "passed": true
+    },
+    {
+      "gate": "forward fixed load: Darcy cell consistency (independent quadrature)",
+      "value": 2.9887237369201303e-15,
+      "limit": 1e-07,
+      "kind": "max",
+      "passed": true
+    },
+    {
+      "gate": "forward fixed load: energy global (normalized)",
+      "value": 4.946103101556605e-13,
+      "limit": 1e-08,
+      "kind": "max",
+      "passed": true
+    },
+    {
+      "gate": "forward fixed load: energy local max (normalized)",
+      "value": 1.3353668053125077e-12,
+      "limit": 1e-07,
+      "kind": "max",
+      "passed": true
+    },
+    {
+      "gate": "nonuniform h_e redistributes evaporation (ptp/mean)",
+      "value": 0.0253848479911657,
+      "limit": 0.001,
+      "kind": "min",
+      "passed": true
+    },
+    {
+      "gate": "evaporation feedback changes end suction (rel)",
+      "value": 0.001989829680810121,
+      "limit": 0.0001,
+      "kind": "min",
+      "passed": true
+    },
+    {
+      "gate": "nonuniform heating converged",
+      "value": true,
+      "limit": true,
+      "kind": "equal",
+      "passed": true
+    },
+    {
+      "gate": "nonuniform heating: mass global (normalized)",
+      "value": 3.0446193323783124e-16,
+      "limit": 1e-08,
+      "kind": "max",
+      "passed": true
+    },
+    {
+      "gate": "nonuniform heating: mass local max (normalized)",
+      "value": 7.373687445603725e-17,
+      "limit": 1e-07,
+      "kind": "max",
+      "passed": true
+    },
+    {
+      "gate": "nonuniform heating: Darcy cell consistency (independent quadrature)",
+      "value": 1.477768718490835e-14,
+      "limit": 1e-07,
+      "kind": "max",
+      "passed": true
+    },
+    {
+      "gate": "nonuniform heating: energy global (normalized)",
+      "value": 3.258700165501301e-13,
+      "limit": 1e-08,
+      "kind": "max",
+      "passed": true
+    },
+    {
+      "gate": "nonuniform heating: energy local max (normalized)",
+      "value": 1.2864527376371282e-12,
+      "limit": 1e-07,
+      "kind": "max",
+      "passed": true
+    }
+  ],
+  "details": {
+    "refinement_endpoint": [
+      {
+        "Nx": 50,
+        "Nz": 8,
+        "load_W_m2": 942682.078076447,
+        "Q_feed_m3_s": 2.1796899917728124e-08,
+        "max_dTe_K": 14.99001250923483,
+        "max_dTsource_K": 15.614228833868875,
+        "iterations": 5,
+        "status": "PHYSICAL_CAPILLARY_LIMIT",
+        "relative_interval": 4.999999999995482e-05,
+        "monotonic": true
+      },
+      {
+        "Nx": 100,
+        "Nz": 16,
+        "load_W_m2": 942678.5682824489,
+        "Q_feed_m3_s": 2.1796818763509584e-08,
+        "max_dTe_K": 14.993055652937729,
+        "max_dTsource_K": 15.616663623243921,
+        "iterations": 5,
+        "status": "PHYSICAL_CAPILLARY_LIMIT",
+        "relative_interval": 4.9999999999960226e-05,
+        "monotonic": true
+      },
+      {
+        "Nx": 200,
+        "Nz": 32,
+        "load_W_m2": 942677.6885791768,
+        "Q_feed_m3_s": 2.1796798422808386e-08,
+        "max_dTe_K": 14.993881205713256,
+        "max_dTsource_K": 15.617259972713132,
+        "iterations": 5,
+        "status": "PHYSICAL_CAPILLARY_LIMIT",
+        "relative_interval": 5.0000000000044e-05,
+        "monotonic": true
+      }
+    ],
+    "refinement_fixed_load": [
+      {
+        "Nx": 50,
+        "Nz": 8,
+        "max_suction_Pa": 1037.4466218313519,
+        "Q_feed_m3_s": 1.086744216272369e-08,
+        "max_dTe_K": 7.647040920684246,
+        "max_dTsource_K": 7.96131308555495
+      },
+      {
+        "Nx": 100,
+        "Nz": 16,
+        "max_suction_Pa": 1037.4487056754376,
+        "Q_feed_m3_s": 1.0867442162724404e-08,
+        "max_dTe_K": 7.6478408770675825,
+        "max_dTsource_K": 7.9619591222800254
+      },
+      {
+        "Nx": 200,
+        "Nz": 32,
+        "max_suction_Pa": 1037.4492279581848,
+        "Q_feed_m3_s": 1.0867442162718369e-08,
+        "max_dTe_K": 7.6480573496430795,
+        "max_dTsource_K": 7.96211750512414
+      }
+    ],
+    "fixed_load_W_m2": 470000.0,
+    "tolerance_pair": {
+      "rtol_1e-8": {
+        "load_W_m2": 942678.5682824623,
+        "Q_feed_m3_s": 2.1796818763509697e-08,
+        "max_dTe_K": 14.993055652932062,
+        "max_dTsource_K": 15.616663623238153,
+        "iterations": 4
+      },
+      "rtol_1e-10": {
+        "load_W_m2": 942678.5682824489,
+        "Q_feed_m3_s": 2.1796818763509584e-08,
+        "max_dTe_K": 14.993055652937729,
+        "max_dTsource_K": 15.616663623243921,
+        "iterations": 5
+      }
+    },
+    "evaporation_feedback": {
+      "q_e_nonuniformity_ptp_over_mean": 0.0253848479911657,
+      "Pc_end_coupled_Pa": 1037.4492279581848,
+      "Pc_end_uniform_evaporation_Pa": 1035.38488069206
+    },
+    "table_sampling": {
+      "knot_spacing_Pa": [
+        100.0,
+        200.0
+      ],
+      "load_rel_change": 0.0002213991238988343,
+      "max_dTe_change_K": 0.0033099363161372963,
+      "note": "reported, not gated: interpolation error of the manufactured tables, distinct from device-mesh and cell-FEM convergence"
+    },
+    "tables": "MANUFACTURED_FIXTURE"
+  },
+  "seconds": 10.862488985061646
+}

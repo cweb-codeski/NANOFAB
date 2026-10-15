@@ -1,0 +1,69 @@
+{
+  "suite": "accounting",
+  "passed": true,
+  "gates": [
+    {
+      "gate": "W invariance: dryout load (rel)",
+      "value": 0.0,
+      "limit": 1e-10,
+      "kind": "max",
+      "passed": true
+    },
+    {
+      "gate": "W invariance: Pc(x) (rel to cap)",
+      "value": 1.240220047872175e-15,
+      "limit": 1e-10,
+      "kind": "max",
+      "passed": true
+    },
+    {
+      "gate": "W invariance: T_e(x) (rel to max superheat)",
+      "value": 1.4216653967273442e-15,
+      "limit": 1e-10,
+      "kind": "max",
+      "passed": true
+    },
+    {
+      "gate": "W scaling: Q(x) scales with W (rel)",
+      "value": 9.107913151364003e-16,
+      "limit": 1e-10,
+      "kind": "max",
+      "passed": true
+    },
+    {
+      "gate": "mirrored device: total input = 2 x half (evaporation) (rel)",
+      "value": 4.2677290643606684e-13,
+      "limit": 1e-08,
+      "kind": "max",
+      "passed": true
+    },
+    {
+      "gate": "mirrored device: two edge feeds carry all evaporation (rel)",
+      "value": 6.029995145690554e-16,
+      "limit": 1e-08,
+      "kind": "max",
+      "passed": true
+    },
+    {
+      "gate": "mirrored device: mean flux over 2L W equals half-device mean (rel)",
+      "value": 0.0,
+      "limit": 1e-09,
+      "kind": "max",
+      "passed": true
+    }
+  ],
+  "details": {
+    "W_m": [
+      0.01,
+      0.002
+    ],
+    "load_W_m2": [
+      942677.6885791768,
+      942677.6885791768
+    ],
+    "full_device_input_W": 94.26776885791767,
+    "half_device_input_W": 47.13388442895884,
+    "note": "a mirrored half-device has zero flow and zero axial heat flux at x = L by construction (Q(L) = 0, insulated end)"
+  },
+  "seconds": 1.122905969619751
+}

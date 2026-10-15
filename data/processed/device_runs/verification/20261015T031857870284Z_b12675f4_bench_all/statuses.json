@@ -1,0 +1,136 @@
+{
+  "suite": "statuses",
+  "passed": true,
+  "gates": [
+    {
+      "gate": "base -> PHYSICAL_CAPILLARY_LIMIT",
+      "value": "PHYSICAL_CAPILLARY_LIMIT",
+      "limit": "PHYSICAL_CAPILLARY_LIMIT",
+      "kind": "equal",
+      "passed": true
+    },
+    {
+      "gate": "coverage_ends_at_1500Pa -> TABLE_COVERAGE_LIMIT",
+      "value": "TABLE_COVERAGE_LIMIT",
+      "limit": "TABLE_COVERAGE_LIMIT",
+      "kind": "equal",
+      "passed": true
+    },
+    {
+      "gate": "coverage: no upper bracket reported",
+      "value": true,
+      "limit": true,
+      "kind": "equal",
+      "passed": true
+    },
+    {
+      "gate": "coverage: lower operating point below the base limit",
+      "value": true,
+      "limit": true,
+      "kind": "equal",
+      "passed": true
+    },
+    {
+      "gate": "geometry_limit_1800Pa -> MENISCUS_GEOMETRY_LIMIT",
+      "value": "MENISCUS_GEOMETRY_LIMIT",
+      "limit": "MENISCUS_GEOMETRY_LIMIT",
+      "kind": "equal",
+      "passed": true
+    },
+    {
+      "gate": "narrow_gradient_range -> OUTSIDE_MODEL_REGIME",
+      "value": "OUTSIDE_MODEL_REGIME",
+      "limit": "OUTSIDE_MODEL_REGIME",
+      "kind": "equal",
+      "passed": true
+    },
+    {
+      "gate": "narrow_heat_flux_range -> OUTSIDE_MODEL_REGIME",
+      "value": "OUTSIDE_MODEL_REGIME",
+      "limit": "OUTSIDE_MODEL_REGIME",
+      "kind": "equal",
+      "passed": true
+    },
+    {
+      "gate": "injected_nonfinite -> NUMERICAL_FAILURE",
+      "value": "NUMERICAL_FAILURE",
+      "limit": "NUMERICAL_FAILURE",
+      "kind": "equal",
+      "passed": true
+    },
+    {
+      "gate": "negative (condensing) load -> OUTSIDE_MODEL_REGIME",
+      "value": "OUTSIDE_MODEL_REGIME",
+      "limit": "OUTSIDE_MODEL_REGIME",
+      "kind": "equal",
+      "passed": true
+    },
+    {
+      "gate": "nonzero exit codes are distinct",
+      "value": true,
+      "limit": true,
+      "kind": "equal",
+      "passed": true
+    }
+  ],
+  "details": {
+    "runs": {
+      "base": {
+        "status": "PHYSICAL_CAPILLARY_LIMIT",
+        "exit_code": 0,
+        "reason": "limit located",
+        "upper_bracket_W_m2": 942678.5682824489,
+        "lower_operating_point_W_m2": 942631.4343540348
+      },
+      "coverage_ends_at_1500Pa": {
+        "status": "TABLE_COVERAGE_LIMIT",
+        "exit_code": 5,
+        "reason": "table coverage ends below the physical limit; the load at the coverage end is a certified lower operating point and the physical limit is unresolved above it",
+        "upper_bracket_W_m2": null,
+        "lower_operating_point_W_m2": 667928.3565579455
+      },
+      "geometry_limit_1800Pa": {
+        "status": "MENISCUS_GEOMETRY_LIMIT",
+        "exit_code": 0,
+        "reason": "limit located",
+        "upper_bracket_W_m2": 789903.8622091062,
+        "lower_operating_point_W_m2": 789864.3670159958
+      },
+      "narrow_gradient_range": {
+        "status": "OUTSIDE_MODEL_REGIME",
+        "exit_code": 4,
+        "reason": "solution leaves the closure's supported operating ranges: max dPc/dx 8.183e+05 Pa/m above supported 1e+05 Pa/m",
+        "upper_bracket_W_m2": 942678.5682824489,
+        "lower_operating_point_W_m2": 942631.4343540348
+      },
+      "narrow_heat_flux_range": {
+        "status": "OUTSIDE_MODEL_REGIME",
+        "exit_code": 4,
+        "reason": "solution leaves the closure's supported operating ranges: local q_e in [9.021e+05, 9.469e+05] W/m^2 outside supported [0, 5e+05] W/m^2 (closure load applicability)",
+        "upper_bracket_W_m2": 942678.5682824489,
+        "lower_operating_point_W_m2": 942631.4343540348
+      },
+      "injected_nonfinite": {
+        "status": "NUMERICAL_FAILURE",
+        "exit_code": 6,
+        "reason": "continuation failed at 942631 W/m^2: closure/conduction error: nonfinite q_in or h_e; the last converged admissible point is a lower bound only",
+        "upper_bracket_W_m2": null,
+        "lower_operating_point_W_m2": 941735.8897141665
+      },
+      "negative_load": {
+        "status": "OUTSIDE_MODEL_REGIME",
+        "reason": "negative heat input implies a condensing branch, which this passive evaporating model does not support"
+      }
+    },
+    "exit_codes": {
+      "ADMISSIBLE": 0,
+      "PHYSICAL_CAPILLARY_LIMIT": 0,
+      "MENISCUS_GEOMETRY_LIMIT": 0,
+      "TABLE_COVERAGE_LIMIT": 5,
+      "MISSING_VALIDATED_INPUTS": 3,
+      "OUTSIDE_MODEL_REGIME": 4,
+      "NUMERICAL_FAILURE": 6
+    }
+  },
+  "seconds": 5.807188272476196
+}

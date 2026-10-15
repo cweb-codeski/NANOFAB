@@ -89,22 +89,22 @@ def sone_bte_mass_flux(
     fluid: Fluid,
     p_vapor: float | None = None,
 ) -> float:
-    """Evaporative mass flux [kg/(m^2 s)] from the linearized Boltzmann transport equation.
+    """Evaporative mass flux [kg/(m^2 s)] from a REDUCED linearized-BTE interface relation.
 
-    This is the interface model of Vaartstra, Lu & Wang, IJHMT 136 (2019) 170, Eqs. (5)-(7):
+    Form taken from Vaartstra, Lu & Wang, IJHMT 136 (2019) 170, Eqs. (5)-(7):
         p_k / p_sat(T_l) - 1 = -C4 u_k / sqrt(2 R_s T_l)          (Sone 2000, BKW molecules)
         q''_e = rho_k u_k h_lv,   p_k = far-field vapor pressure
-    Non-unity accommodation coefficient a is included following Meland & Ytrehus, Phys. Fluids 15
-    (2003) 1348, by replacing C4 -> C4 + 2 sqrt(pi) (1 - a) / a, which reduces to Hertz-Knudsen-type
-    behavior for small a. (Verify this form against Meland & Ytrehus before relying on a ~ 1.)
+    Reductions relative to the paper (this is NOT a paper-verified implementation):
+      * the temperature-jump relation (V2019 Eq. 6, coefficient D4) is not used;
+      * rho_k is approximated by p_sat(T_l) / (R_s T_l) (linear theory), giving
+            m'' = (p_sat(T_l) - p_k) * sqrt(2 / (R_s T_l)) / C4(a);
+      * non-unity accommodation enters as C4 -> C4 + 2 sqrt(pi) (1 - a) / a. V2019 attributes its
+        nonunity-accommodation treatment to Meland & Ytrehus, Phys. Fluids 15 (2003) 1348-1350,
+        DOI 10.1063/1.1564097, which is NOT held: this correction was written from memory and is an
+        open source gap (config/sources.yaml: meland_ytrehus2003).
 
-    With rho_k ~= p_sat(T_l) / (R_s T_l) (linear theory):
-        m'' = (p_sat(T_l) - p_k) * sqrt(2 / (R_s T_l)) / C4(a)
-
-    Compared with the Schrage relation, the flux is ~14% lower at a = 1 but within ~3% at
-    a = 0.052 (the value fitted by Vaartstra et al.) for water at 100 C. At small a the
-    accommodation term dominates both models, so either boundary condition can be used for
-    replication; this function is the paper-exact one.
+    The flux is within ~3-5% of the Schrage relation at a = 0.052 for water at 100 C. That is a
+    cross-model check between two approximate relations, not verification of either.
     """
     if not (0 < accommodation <= 1):
         raise ValueError(f"accommodation coefficient must be in (0, 1], got {accommodation}")

@@ -1,0 +1,110 @@
+suite,gate,value,limit,kind,passed
+analytic,status is PHYSICAL_CAPILLARY_LIMIT,PHYSICAL_CAPILLARY_LIMIT,PHYSICAL_CAPILLARY_LIMIT,equal,True
+analytic,q_dry vs closed form (rel),8.683778474466659e-13,1e-09,max,True
+analytic,p_g(x) vs closed form (rel to Pc_limit),8.685123821168206e-13,1e-09,max,True
+analytic,Q(x) vs closed form (rel to Q(0)),5.361997072171232e-13,1e-09,max,True
+analytic,T_e - T_v vs q/h_e (rel),2.345006305411554e-12,1e-09,max,True
+analytic,T_source - T_v vs q/h_e + q t_s/k_s (rel),2.3038913163538096e-12,1e-09,max,True
+analytic,limit interval (rel),5.000000000003891e-05,0.0001,max,True
+analytic,q_dry with tabulated tau(Pc) vs quadrature closed form (rel),8.680231635481788e-13,1e-09,max,True
+analytic,constant closure endpoint: mass global (normalized),9.987753992873536e-16,1e-08,max,True
+analytic,constant closure endpoint: mass local max (normalized),7.022639526239205e-17,1e-07,max,True
+analytic,constant closure endpoint: Darcy cell consistency (independent quadrature),1.0213779983042987e-15,1e-07,max,True
+analytic,constant closure endpoint: energy global (normalized),5.374038317868259e-13,1e-08,max,True
+analytic,constant closure endpoint: energy local max (normalized),1.5491678864656809e-12,1e-07,max,True
+accounting,W invariance: dryout load (rel),0.0,1e-10,max,True
+accounting,W invariance: Pc(x) (rel to cap),1.240220047872175e-15,1e-10,max,True
+accounting,W invariance: T_e(x) (rel to max superheat),1.4216653967273442e-15,1e-10,max,True
+accounting,W scaling: Q(x) scales with W (rel),9.107913151364003e-16,1e-10,max,True
+accounting,mirrored device: total input = 2 x half (evaporation) (rel),4.2677290643606684e-13,1e-08,max,True
+accounting,mirrored device: two edge feeds carry all evaporation (rel),6.029995145690554e-16,1e-08,max,True
+accounting,mirrored device: mean flux over 2L W equals half-device mean (rel),0.0,1e-09,max,True
+zero_load,zero load converged,True,True,equal,True
+zero_load,zero load: max |Pc - Pc_feed| [Pa],0.0,1e-12,max,True
+zero_load,zero load: max |Q| [m^3/s],0.0,1e-12,max,True
+zero_load,zero load: max |T - T_v| [K],0.0,1e-12,max,True
+zero_load,zero load: mass global (normalized),0.0,1e-08,max,True
+zero_load,zero load: mass local max (normalized),0.0,1e-07,max,True
+zero_load,zero load: Darcy cell consistency (independent quadrature),0.0,1e-07,max,True
+zero_load,zero load: energy global (normalized),0.0,1e-08,max,True
+zero_load,zero load: energy local max (normalized),0.0,1e-07,max,True
+hydraulics,"same piecewise-constant input vs independent ODE integration (rel, all levels)",3.0222612291585063e-12,1e-09,max,True
+hydraulics,continuous q(x): observed order (finest pair),2.0000178720610315,"(1.8, 2.2)",range,True
+thermal,T_e observed order (finest pair),1.998881036928821,"(1.8, 2.2)",range,True
+thermal,T_source observed order (finest pair),1.9995072138183771,"(1.8, 2.2)",range,True
+thermal,finest T_e error [K],7.663334393459564e-05,0.001,max,True
+thermal,finest T_source error [K],4.386412124013361e-05,0.001,max,True
+thermal,"global energy balance (rel, all levels)",1.5324428324091705e-12,1e-08,max,True
+coupled,"(50,8) endpoint: mass global (normalized)",1.5179784568910278e-16,1e-08,max,True
+coupled,"(50,8) endpoint: mass local max (normalized)",7.352708150565915e-17,1e-07,max,True
+coupled,"(50,8) endpoint: Darcy cell consistency (independent quadrature)",1.3483467898892007e-12,1e-07,max,True
+coupled,"(50,8) endpoint: energy global (normalized)",1.9874771455030202e-14,1e-08,max,True
+coupled,"(50,8) endpoint: energy local max (normalized)",2.360732106991597e-13,1e-07,max,True
+coupled,"(50,8) limit interval (rel)",4.999999999995482e-05,0.0001,max,True
+coupled,"(50,8) end suction monotonic along continuation",True,True,equal,True
+coupled,"(50,8) moment identity (rel)",1.5125738046978767e-16,1e-09,max,True
+coupled,"(100,16) endpoint: mass global (normalized)",1.5179841086495143e-16,1e-08,max,True
+coupled,"(100,16) endpoint: mass local max (normalized)",7.589920543247572e-17,1e-07,max,True
+coupled,"(100,16) endpoint: Darcy cell consistency (independent quadrature)",1.0804605940353559e-12,1e-07,max,True
+coupled,"(100,16) endpoint: energy global (normalized)",7.467539019740677e-14,1e-08,max,True
+coupled,"(100,16) endpoint: energy local max (normalized)",4.035570485272442e-13,1e-07,max,True
+coupled,"(100,16) limit interval (rel)",4.9999999999960226e-05,0.0001,max,True
+coupled,"(100,16) end suction monotonic along continuation",True,True,equal,True
+coupled,"(100,16) moment identity (rel)",3.0251476093957543e-16,1e-09,max,True
+coupled,"(200,32) endpoint: mass global (normalized)",4.553956575682001e-16,1e-08,max,True
+coupled,"(200,32) endpoint: mass local max (normalized)",7.471335006978283e-17,1e-07,max,True
+coupled,"(200,32) endpoint: Darcy cell consistency (independent quadrature)",1.0177568925940162e-12,1e-07,max,True
+coupled,"(200,32) endpoint: energy global (normalized)",4.26827176392378e-13,1e-08,max,True
+coupled,"(200,32) endpoint: energy local max (normalized)",1.2800172195508793e-12,1e-07,max,True
+coupled,"(200,32) limit interval (rel)",5.0000000000044e-05,0.0001,max,True
+coupled,"(200,32) end suction monotonic along continuation",True,True,equal,True
+coupled,"(200,32) moment identity (rel)",3.0251476093957524e-16,1e-09,max,True
+coupled,all refinement levels solved,True,True,equal,True
+coupled,endpoint: finest-pair change load_W_m2 (rel),9.331962374753692e-07,0.002,max,True
+coupled,endpoint: finest-pair change Q_feed_m3_s (rel),9.331967385297654e-07,0.002,max,True
+coupled,endpoint: finest-pair change max_dTe_K (rel to superheat),5.5059311475194245e-05,0.002,max,True
+coupled,endpoint: finest-pair change max_dTe_K [K],0.0008255527755274272,0.02,max,True
+coupled,endpoint: finest-pair change max_dTsource_K (rel to superheat),3.8185281557243626e-05,0.002,max,True
+coupled,endpoint: finest-pair change max_dTsource_K [K],0.0005963494692107218,0.02,max,True
+coupled,endpoint: systematic convergence of load_W_m2,True,True,equal,True
+coupled,endpoint: systematic convergence of Q_feed_m3_s,True,True,equal,True
+coupled,endpoint: systematic convergence of max_dTe_K,True,True,equal,True
+coupled,endpoint: systematic convergence of max_dTsource_K,True,True,equal,True
+coupled,fixed load: finest-pair change max_suction_Pa (rel),5.034296938055671e-07,0.002,max,True
+coupled,fixed load: finest-pair change Q_feed_m3_s (rel),5.553385662258979e-13,0.002,max,True
+coupled,fixed load: finest-pair change max_dTe_K (rel to superheat),2.830425630987892e-05,0.002,max,True
+coupled,fixed load: finest-pair change max_dTe_K [K],0.00021647257549695098,0.02,max,True
+coupled,fixed load: finest-pair change max_dTsource_K (rel to superheat),1.989205057732234e-05,0.002,max,True
+coupled,fixed load: finest-pair change max_dTsource_K [K],0.00015838284411451298,0.02,max,True
+coupled,fixed load: systematic convergence of max_suction_Pa,True,True,equal,True
+coupled,fixed load: systematic convergence of Q_feed_m3_s,True,True,equal,True
+coupled,fixed load: systematic convergence of max_dTe_K,True,True,equal,True
+coupled,fixed load: systematic convergence of max_dTsource_K,True,True,equal,True
+coupled,tolerance 1e-8 vs 1e-10: dryout load (rel),1.4201831314028784e-14,0.0001,max,True
+coupled,tolerance 1e-8 vs 1e-10: max T_e [K],1.2882139799330616e-11,0.001,max,True
+coupled,tolerance 1e-8 vs 1e-10 (fixed load): max suction (rel),2.2574117103366084e-14,0.0001,max,True
+coupled,tolerance 1e-8 vs 1e-10 (fixed load): max T_e [K],1.2276402117095131e-11,0.001,max,True
+coupled,forward solve at fixed load converged,True,True,equal,True
+coupled,forward fixed load: mass global (normalized),0.0,1e-08,max,True
+coupled,forward fixed load: mass local max (normalized),7.37368744560497e-17,1e-07,max,True
+coupled,forward fixed load: Darcy cell consistency (independent quadrature),2.9887237369201303e-15,1e-07,max,True
+coupled,forward fixed load: energy global (normalized),4.946103101556605e-13,1e-08,max,True
+coupled,forward fixed load: energy local max (normalized),1.3353668053125077e-12,1e-07,max,True
+coupled,nonuniform h_e redistributes evaporation (ptp/mean),0.0253848479911657,0.001,min,True
+coupled,evaporation feedback changes end suction (rel),0.001989829680810121,0.0001,min,True
+coupled,nonuniform heating converged,True,True,equal,True
+coupled,nonuniform heating: mass global (normalized),3.0446193323783124e-16,1e-08,max,True
+coupled,nonuniform heating: mass local max (normalized),7.373687445603725e-17,1e-07,max,True
+coupled,nonuniform heating: Darcy cell consistency (independent quadrature),1.477768718490835e-14,1e-07,max,True
+coupled,nonuniform heating: energy global (normalized),3.258700165501301e-13,1e-08,max,True
+coupled,nonuniform heating: energy local max (normalized),1.2864527376371282e-12,1e-07,max,True
+statuses,base -> PHYSICAL_CAPILLARY_LIMIT,PHYSICAL_CAPILLARY_LIMIT,PHYSICAL_CAPILLARY_LIMIT,equal,True
+statuses,coverage_ends_at_1500Pa -> TABLE_COVERAGE_LIMIT,TABLE_COVERAGE_LIMIT,TABLE_COVERAGE_LIMIT,equal,True
+statuses,coverage: no upper bracket reported,True,True,equal,True
+statuses,coverage: lower operating point below the base limit,True,True,equal,True
+statuses,geometry_limit_1800Pa -> MENISCUS_GEOMETRY_LIMIT,MENISCUS_GEOMETRY_LIMIT,MENISCUS_GEOMETRY_LIMIT,equal,True
+statuses,narrow_gradient_range -> OUTSIDE_MODEL_REGIME,OUTSIDE_MODEL_REGIME,OUTSIDE_MODEL_REGIME,equal,True
+statuses,narrow_heat_flux_range -> OUTSIDE_MODEL_REGIME,OUTSIDE_MODEL_REGIME,OUTSIDE_MODEL_REGIME,equal,True
+statuses,injected_nonfinite -> NUMERICAL_FAILURE,NUMERICAL_FAILURE,NUMERICAL_FAILURE,equal,True
+statuses,negative (condensing) load -> OUTSIDE_MODEL_REGIME,OUTSIDE_MODEL_REGIME,OUTSIDE_MODEL_REGIME,equal,True
+statuses,nonzero exit codes are distinct,True,True,equal,True

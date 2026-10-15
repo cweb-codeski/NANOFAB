@@ -1,0 +1,145 @@
+schema_version: nanofab.cell_tables/1
+dataset_id: fixture_manufactured
+data_role: MANUFACTURED_FIXTURE
+provenance: MODEL_CALCULATED
+verification_only: VERIFICATION ONLY - manufactured functions, not a physical calculation
+generating_expressions:
+  K_bulk_m2: 3.0e-11 * (1 - 0.2 * (Pc/2200)^2)
+  h_e_W_m2K: 6.0e4 * (1 + 0.3 * Pc/2200)
+  min_clearance_m: 'h * (1 - Pc/(2*2200))  [geometry-limit variant: h * (1 - Pc/2000)]'
+  interface_area_m2: (l/2)^2 - pi d^2/16 times (1 + 0.1 (Pc/2200)^2)
+  contact_angle_measure_deg: 90 - 75 * Pc/2200
+  A_liquid_section_m2: 0.8 * b * h * (1 - 0.15 * Pc/2200)
+  Q_cell_m3_s: K_bulk b h Delta_p / (mu ell), Delta_p = 1 Pa
+  T_base_K: T_v + q_in / h_e, q_in = 5e5 W/m^2; Q_evap = Q_in
+source_ids: []
+source_locations: []
+geometry:
+  geometry_id: d10_l30_h25_square
+  array: square
+  d_m: 1.0e-05
+  l_m: 3.0e-05
+  h_m: 2.5e-05
+  surface_id: fixture_surface
+  receding_contact_angle_deg: 15.0
+fluid:
+  name: Water
+  property_source: IAPWS via CoolProp
+  property_version: 8.0.0
+  T_ref_K: 373.15
+  rho_kg_m3: 958.3490516048603
+  mu_Pa_s: 0.0002815820076656743
+  sigma_N_m: 0.05892058565922924
+  h_fg_J_kg: 2256403.721526573
+  k_W_mK: 0.6772105145161135
+  cp_J_kgK: 4215.673616815757
+  p_sat_Pa: 101417.9966600156
+solid:
+  name: silicon
+  k_W_mK: 148.0
+  k_status: fixture value (matches the provisional case k_s)
+vapor:
+  composition: pure_saturated_vapor
+  T_v_K: 373.15
+  p_v_Pa: 101417.9966600156
+generation:
+  method: manufactured analytic functions
+  software: tests/fixtures/device/fixture_tables.py
+  software_version: '1'
+  model_file: null
+  export_files: []
+  run_log: null
+conventions:
+  pressure: Pc = p_v - p_liquid [Pa], positive suction
+  hydraulic_normalization: 'bulk: Q = (W h K_bulk / mu) dPc/dx, A_ref = W h'
+  thermal_reference_plane: pillar_base_plane
+  area_basis: footprint
+  curvature_normal: 'V2019 Eq. (2): H > 0 for a convex liquid surface; Pc = -2 sigma
+    H'
+cell:
+  flow_length_ell_m: 1.5e-05
+  represented_width_b_m: 1.5e-05
+  symmetry_factor: 4.0
+  footprint_area_m2: 2.25e-10
+  thermal_cell_substrate_m: 1.0e-06
+boundary_conditions:
+  hydraulic: manufactured
+  thermal: manufactured
+  meniscus: manufactured
+kinetic_model:
+  name: manufactured
+  accommodation_coefficient: null
+  accommodation_treatment: none (manufactured h_e)
+  accommodation_treatment_verified: false
+pressure_interval_Pa:
+- 0.0
+- 1500.0
+physical_endpoint:
+  Pc_Pa: 2200.0
+  criterion: MANUFACTURED declared endpoint
+  demonstrated: false
+  evidence: null
+geometry_limit:
+  Pc_Pa: null
+  criterion: none reached
+  demonstrated: false
+mesh_evidence:
+  hydraulic: {}
+  thermal: {}
+  meniscus: {}
+gradient_study:
+  Pc_values_Pa: []
+  gradient_range_Pa_m: null
+  max_rel_K_variation: null
+  stokes_vs_navier_stokes_rel_diff: null
+supported_ranges:
+  pressure_gradient_Pa_m:
+  - 0.0
+  - 100000000.0
+  heat_flux_W_m2:
+  - 0.0
+  - 10000000.0
+  T_v_K:
+  - 373.15
+  - 373.15
+energy_balance_tolerance: 1.0e-09
+limitations:
+- 'VERIFICATION ONLY: manufactured functions'
+tables:
+  hydraulic:
+    file: hydraulic.csv
+    sha256: 422ba881bdd86385cbad58ccf9fc41a2491977ef286855642079f486deba911e
+    columns:
+      Pc_Pa: Pa
+      K_bulk_m2: m2
+      Q_cell_m3_s: m3/s
+      Delta_p_cell_Pa: Pa
+      ell_m: m
+      b_m: m
+      h_m: m
+      mu_Pa_s: Pa*s
+  thermal:
+    file: thermal.csv
+    sha256: 819aa9454c0fef4b4ba83a938c1daa51a855f5e4855dd894ccd2b65e17c47be4
+    columns:
+      Pc_Pa: Pa
+      h_e_W_m2K: W/m2/K
+      Q_in_W: W
+      Q_evap_W: W
+      A_footprint_m2: m2
+      T_base_K: K
+      T_v_K: K
+      q_in_W_m2: W/m2
+  meniscus:
+    file: meniscus.csv
+    sha256: c6d8a19029a693c0e04ed74c2bf0817c14788f689765df9a2e3e2fd6815fa0f6
+    columns:
+      Pc_Pa: Pa
+      state_id: '-'
+      branch_id: '-'
+      min_clearance_m: m
+      interface_area_m2: m2
+      contact_angle_measure_deg: deg
+      admissible: '-'
+      A_liquid_section_m2: m2
+      section_location: '-'

@@ -1,0 +1,83 @@
+# Named literature case: Vaartstra, Lu & Wang, IJHMT 136 (2019) 170, Sec. 3.2 / Fig. 4.
+#
+# This is a case manifest, not a scalar parameter file. nanofab.params.load_parameters() reads only
+# parameters/*.yaml (non-recursive), so it never sees this file; nanofab.device.case.load_case does.
+# Scalar inputs are references to approved entries in parameters/*.yaml, so their provenance and
+# source locations travel with them. Nothing here comes from parameters/design_targets.yaml.
+
+schema_version: nanofab.device_case/1
+case_id: vaartstra2019_fig4
+case_role: LITERATURE_REPLICATION
+description: >
+  V2019 Fig. 4 device: d = 10, l = 30, h = 25 um, L = 5 mm (edge to center), W = 10 mm,
+  t_s = 100 um, water, silicon, receding contact angle 15 deg, pure saturated water vapor at
+  373.15 K, liquid supplied at T_v, uniform heat input, fed from the two edges normal to x.
+source: vaartstra2019
+source_locations:
+  geometry_and_conditions: "Sec. 3.2; Fig. 4 caption; Sec. 2, Fig. 1(c)"
+  capillary_limit: "Sec. 2.1, Eq. (3)"
+  device_model: "Sec. 2.3; Eq. (9); App. A.3, Fig. A1"
+  dryout_definition: "Sec. 3.3 ('minimum heat flux at which Delta p_dryout was reached on the wick')"
+
+parameters:            # case symbol -> entry name in parameters/*.yaml
+  d: pillar_diameter
+  l: pillar_pitch
+  h: pillar_height
+  L: wick_feed_length
+  W: wick_width
+  t_s: substrate_thickness
+  cell_substrate: unit_cell_substrate_thickness
+  theta_rec: receding_contact_angle
+  T_v: vapor_temperature
+  fluid: working_fluid
+  k_s: silicon_thermal_conductivity
+  accommodation: accommodation_coefficient
+
+provisional_inputs:
+  k_s: >
+    148 W/(m K) is the existing provisional project choice (textbook value from memory, 300 K,
+    not re-checked). It is NOT a V2019 value and NOT a verified property at 373.15 K. V2019 does
+    not state its silicon conductivity. Non-blocking; reported as a limitation and swept.
+
+fluid_properties:
+  method: runtime            # IAPWS formulations via CoolProp at T_v; version recorded per run
+  note: "V2019 does not identify its property database."
+
+topology:
+  simulated: half_device     # 0 <= x <= L; x = 0 reservoir edge, x = L symmetry plane
+  full_device: two_edge_fed_mirrored
+  feed_suction_Pa: 0.0       # V2019 Sec. 2.3: reference pressure at the inlet (Pc(0) = 0)
+  inlet_thermal: insulated   # V2019 Sec. 2.3 symmetry at x = 0 and x = L
+
+heat_load:
+  shape: uniform             # the dryout load is searched, never prescribed from the paper
+
+capillary_limit:
+  equation: V2019_Eq3        # Pc_limit = sigma pi d cos(theta_rec) / (l^2 - pi d^2/4)
+  criterion: "V2019 capillary-limit criterion (receding angle at the pinned contact line), not post-depinning recession"
+
+cell_tables:
+  required: [hydraulic, meniscus, thermal]
+  dataset: null              # data/processed/cell_tables/<DATASET_ID>; unpopulated until a qualified physical dataset exists
+  requirements:
+    data_role: PHYSICAL_CELL_CALCULATION
+    kinetic_model: linearized_BTE_V2019_Eqs5-7
+    require_verified_accommodation: true   # blocked by source gap meland_ytrehus2003
+    thermal_reference_plane: pillar_base_plane
+    load_range_must_cover_W_m2: "the operating loads of the search (V2019 Sec. 3.3 updated cells for the operating load)"
+
+comparison_targets:          # COMPARISON ONLY; never inputs to K, h_e, theta, a, k_s or the search
+  - quantity: q_dryout
+    parameter: reference_dryout_heat_flux
+    use: COMPARISON_ONLY
+    investigation_threshold_rel: 0.05   # predeclared; not a validation tolerance
+    note: "Reported numerical result (Sec. 3.2); no experimental uncertainty applies."
+  - quantity: fig4_profiles
+    file: null
+    use: COMPARISON_ONLY
+    note: "Fig. 4(a,b) digitizations not available; blank planned rows in data/literature are not data."
+
+numerics:
+  Nx: 200
+  Nz: 32
+  rtol: 1.0e-10

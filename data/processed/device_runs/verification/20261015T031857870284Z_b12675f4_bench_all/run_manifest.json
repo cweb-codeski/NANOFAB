@@ -1,0 +1,153 @@
+{
+  "run_id": "20261015T031857870284Z_b12675f4_bench_all",
+  "command_line": "python.exe analysis/device_benchmarks.py --suite all --output data/processed/device_runs/verification",
+  "timestamp_utc": "2026-10-15T03:19:30.174468+00:00",
+  "git": {
+    "commit": "b12675f4b524aa0efaf5ef8b002a4fa458def34c",
+    "branch": "cursor/source-provenance-system",
+    "dirty": true,
+    "status_porcelain": [
+      "M .gitignore",
+      " M README.md",
+      " M analysis/baseline_estimates.py",
+      " M analysis/heat_transfer_from_comsol.py",
+      " M analysis/vaartstra_replication.py",
+      " M config/model_provenance.yaml",
+      " M config/sources.yaml",
+      " M docs/SOURCE_AUTHORITY.md",
+      " M docs/assumptions.md",
+      " M docs/comsol_unit_cell_guide.md",
+      " M docs/equations.md",
+      " M docs/literature_notes.md",
+      " M parameters/materials.yaml",
+      " M src/nanofab/evaporation.py",
+      " M src/nanofab/params.py",
+      " M src/nanofab/provenance.py",
+      " M tests/test_vaartstra2019.py",
+      "?? analysis/device_benchmarks.py",
+      "?? analysis/import_cell_tables.py",
+      "?? analysis/run_passive_device.py",
+      "?? config/data_inventory.yaml",
+      "?? config/device_assumptions.yaml",
+      "?? data/processed/cell_tables/",
+      "?? data/processed/device_runs/",
+      "?? data/processed/permeability_stage1_flow_example.csv",
+      "?? docs/cell_table_contract.md",
+      "?? docs/passive_device_model.md",
+      "?? docs/whole_wick_assumptions.md",
+      "?? parameters/cases/",
+      "?? parameters/whole_wick/",
+      "?? results/",
+      "?? src/nanofab/device/",
+      "?? src/nanofab/whole_wick/",
+      "?? tests/fixtures/",
+      "?? tests/test_cell_tables.py",
+      "?? tests/test_device_analytic.py",
+      "?? tests/test_device_coupling.py",
+      "?? tests/test_device_dryout.py",
+      "?? tests/test_device_provenance.py",
+      "?? tests/test_whole_wick.py",
+      "?? unit_cell/",
+      "?? validation/",
+      "?? whole_wick/"
+    ]
+  },
+  "environment": {
+    "python": "3.12.9 (tags/v3.12.9:fdb8142, Feb  4 2025, 15:27:58) [MSC v.1942 64 bit (AMD64)]",
+    "executable": "C:\\Users\\chase\\NANOFAB\\.venv\\Scripts\\python.exe",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "packages": {
+      "numpy": "2.5.3",
+      "scipy": "1.18.1",
+      "pandas": "3.0.6",
+      "matplotlib": "3.11.2",
+      "PyYAML": "6.0.3",
+      "CoolProp": "8.0.0",
+      "nanofab": "0.1.0",
+      "pytest": "9.1.1"
+    }
+  },
+  "model_mode": "benchmarks:all",
+  "verification_only": true,
+  "banner": "VERIFICATION ONLY - manufactured or analytical inputs; not a physical prediction",
+  "gates_predeclared": {
+    "closed_form_rel": 1e-09,
+    "w_invariance_rel": 1e-10,
+    "zero_load_abs": 1e-12,
+    "mass_global": 1e-08,
+    "mass_local": 1e-07,
+    "energy_global": 1e-08,
+    "energy_local": 1e-07,
+    "hydraulic_same_input_rel": 1e-09,
+    "observed_order_min": 1.8,
+    "observed_order_max": 2.2,
+    "thermal_finest_abs_K": 0.001,
+    "tolerance_rel": 0.0001,
+    "tolerance_abs_K": 0.001,
+    "mesh_finest_pair_rel": 0.002,
+    "mesh_finest_pair_abs_K": 0.02,
+    "limit_interval_rel": 0.0001,
+    "moment_identity_rel": 1e-09
+  },
+  "refinement_levels": [
+    [
+      50,
+      8
+    ],
+    [
+      100,
+      16
+    ],
+    [
+      200,
+      32
+    ]
+  ],
+  "suites": {
+    "analytic": {
+      "passed": true,
+      "n_gates": 13,
+      "seconds": 5.782090425491333
+    },
+    "accounting": {
+      "passed": true,
+      "n_gates": 7,
+      "seconds": 1.122905969619751
+    },
+    "zero_load": {
+      "passed": true,
+      "n_gates": 9,
+      "seconds": 0.34874916076660156
+    },
+    "hydraulics": {
+      "passed": true,
+      "n_gates": 2,
+      "seconds": 5.2337846755981445
+    },
+    "thermal": {
+      "passed": true,
+      "n_gates": 5,
+      "seconds": 0.05518937110900879
+    },
+    "coupled": {
+      "passed": true,
+      "n_gates": 63,
+      "seconds": 10.862488985061646
+    },
+    "statuses": {
+      "passed": true,
+      "n_gates": 10,
+      "seconds": 5.807188272476196
+    },
+    "reference_scales": {
+      "passed": true,
+      "n_gates": 0,
+      "seconds": 0.23823022842407227
+    }
+  },
+  "all_passed": true,
+  "plots": [
+    "plots/device/20261015T031857870284Z_b12675f4_bench_all/refinement_orders.png"
+  ],
+  "claim": "numerically verified for these cases (ANALYTICAL_EXAMPLE / MANUFACTURED_FIXTURE inputs only)"
+}

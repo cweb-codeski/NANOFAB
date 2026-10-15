@@ -156,13 +156,17 @@ derived_results:
     provenance: MODEL_CALCULATED
     source: null
     source_location: "analysis/vaartstra_replication.py"
-  kinetic_resistance_share_upper_bound:
+  kinetic_resistance_share_conditional_lower_bound:
     value: 16
     unit: percent
     provenance: MODEL_CALCULATED
     source: null
     source_location: "analysis/vaartstra_replication.py"
-    notes: "Our R''_int (flat interface area) x the paper's h_e > 60 kW/m2K bound."
+    notes: >-
+      LOWER bound: R_int/R_total = R_int h_e > R_int x 60000 W/m2K (vaartstra2019 Sec. 3.2 gives
+      h_e > 60 kW/m2K). Conditional on our R''_int, which uses an ASSUMED flat interface area and
+      an unverified nonunity-accommodation correction (meland_ytrehus2003 source gap). Previously
+      mislabelled as an upper bound.
   pitch_optimum_flat_dryout:
     value: 40
     unit: um

@@ -1,0 +1,53 @@
+{
+  "suite": "hydraulics",
+  "passed": true,
+  "gates": [
+    {
+      "gate": "same piecewise-constant input vs independent ODE integration (rel, all levels)",
+      "value": 3.0222612291585063e-12,
+      "limit": 1e-09,
+      "kind": "max",
+      "passed": true
+    },
+    {
+      "gate": "continuous q(x): observed order (finest pair)",
+      "value": 2.0000178720610315,
+      "limit": [
+        1.8,
+        2.2
+      ],
+      "kind": "range",
+      "passed": true
+    }
+  ],
+  "details": {
+    "levels": [
+      {
+        "Nx": 50,
+        "err_same_input_rel": 3.0222612291585063e-12,
+        "err_continuous_q_Pa": 0.0910079056552604,
+        "Pc_end_Pa": 1054.6027409328015
+      },
+      {
+        "Nx": 100,
+        "err_same_input_rel": 1.5373561010082168e-13,
+        "err_continuous_q_Pa": 0.022750781048671342,
+        "Pc_end_Pa": 1054.5344838139276
+      },
+      {
+        "Nx": 200,
+        "err_same_input_rel": 7.907436321891675e-13,
+        "err_continuous_q_Pa": 0.005687624803613289,
+        "Pc_end_Pa": 1054.5174206530787
+      }
+    ],
+    "observed_orders": [
+      2.000075799686064,
+      2.0000178720610315
+    ],
+    "q0_W_m2": 600000.0,
+    "q_shape": "q0 (1 + 0.5 cos(pi x / L))",
+    "tables": "MANUFACTURED_FIXTURE"
+  },
+  "seconds": 5.2337846755981445
+}
