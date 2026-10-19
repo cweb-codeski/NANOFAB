@@ -56,13 +56,21 @@ pujahari2022:
     1e-4 and 1e-6 M with zeta = -100 and -200 mV (Sec. 2.1.1, taken from Mala et al. 1997, ref.
     39, not held); Debye lengths 0.03 and 0.3 um (Sec. 3.2); E = 5e3-1e5 V/m along the wick
     (Sec. 2.1.2); Table 1 properties at 100 C (eps_r 55.4, sigma_e 0.79 uS/cm, mu 2.822e-4 Pa s);
-    reported dryout gains (Sec. 3.4, Conclusions). Calls the EO-enhanced quantity an "effective
-    permeability" (Sec. 3.3). AUDIT FINDINGS: (1) the claim that the voltages are far below
-    electrolysis (Sec. 2.1.2) is inconsistent with E = 5e3-1e5 V/m over L = 5 mm, i.e. 25-500 V;
-    (2) one conductivity (0.79 uS/cm) is used for both concentrations; (3) no ion-conservation
-    (salt accumulation at the evaporating end) model; (4) the oxide is treated only as an
-    insulator, with no field-effect change of zeta. These are model inputs and results of a
-    simulation paper, not measurements at our conditions.
+    reported dryout gains (Sec. 3.4, Conclusions); Fig. 6 digitized to
+    data/literature/pujahari2022_fig6_digitized.csv. Working fluid: dilute aqueous KCl with
+    water-like properties (end of Sec. 2.1.4). Calls the EO-enhanced quantity an "effective
+    permeability" (Sec. 3.3). AUDIT NOTES: (1) E is imposed as a uniform x-field per unit cell
+    (Eq. 8 is 1D); electrodes are not modeled, only "the negative electrode ... on the opposite
+    side of the liquid reservoir" (Sec. 2). The paper states the voltages are far below the
+    electrolysis voltage (Sec. 2.1.2) and that the field should not cause electrolysis (Sec. 3.5).
+    Converting E to a bulk drop over the 5 mm wick (25-500 V) is our extrapolation, and if valid it
+    is hard to reconcile with Sec. 2.1.2. (2) One conductivity (0.79 uS/cm) for both
+    concentrations: plausible for 1e-6 M, ~50x low for 1e-4 M; no effect on the hydraulics. (3) No
+    ion conservation: KCl enriches toward the evaporating end; precipitation is discussed only
+    after complete liquid loss (Sec. 3.5). (4) No field-effect change of zeta through the oxide.
+    (5) Their EO flux is 0.52-0.69 of mu_EO E / F (from Fig. 6), consistent in size with a
+    uniform imposed field at insulating pillar walls (our hypothesis, unconfirmed). These are model
+    inputs and results of a simulation paper, not measurements at our conditions.
 
 mala1997:
   title: "Flow characteristics of water through a microchannel between two parallel plates with electrokinetic effects"

@@ -34,6 +34,7 @@ import matplotlib.pyplot as plt  # noqa: E402
 
 from nanofab.capillary import pillar_max_capillary_pressure  # noqa: E402
 from nanofab.electroosmosis import physics as ek  # noqa: E402
+from nanofab.electroosmosis import reproduction as rp  # noqa: E402
 from nanofab.electroosmosis import wick1d as w1  # noqa: E402
 from nanofab.electroosmosis.formation_factor import formation_factor_maxwell_2d, formation_factor_numerical  # noqa: E402
 from nanofab.electroosmosis.inputs import (  # noqa: E402
@@ -42,7 +43,7 @@ from nanofab.electroosmosis.inputs import (  # noqa: E402
     load_eo_inputs,
     scenario_mobilities,
 )
-from nanofab.geometry import solid_fraction  # noqa: E402
+from nanofab.fluids import Fluid  # noqa: E402
 from nanofab.params import load_parameters  # noqa: E402
 from nanofab.permeability import pillar_wick_permeability  # noqa: E402
 
@@ -54,9 +55,9 @@ plt.rcParams.update({"font.size": 10, "axes.grid": True, "grid.alpha": 0.3, "sav
                      "figure.dpi": 100, "axes.titlesize": 10.5, "legend.fontsize": 8.5})
 
 FOOT_BASE = ("Geometry d/l/h = 10/30/25 um, L = 5 mm (vaartstra2019, PRIMARY_SOURCE); K = 2.97e-11 m2 "
-             "(COMSOL Stage 1, flat top); water at 100 C (IAPWS via CoolProp).")
-FOOT_EK = ("zeta = -100 / -200 mV (1e-4 / 1e-6 M KCl), eps_r = 55.4, E <= 1e5 V/m: pujahari2022 "
-           "(simulation inputs, PRIMARY_SOURCE for 'stated in paper', NOT measured on our device).")
+             "(COMSOL Stage 1, flat top); dilute aqueous KCl with water-like properties at 100 C (IAPWS via CoolProp).")
+FOOT_EK = ("Idealized/conditional EO under an imposed field: zeta = -100 / -200 mV (1e-4 / 1e-6 M KCl), eps_r = 55.4, "
+           "E <= 1e5 V/m from pujahari2022 (simulation inputs, NOT measured on our device).")
 
 
 def footer(fig, *lines, y=0.005):
@@ -221,7 +222,7 @@ def transport_figures(inp, liquid, wick, scen) -> list[dict]:
     ax[0].set_title("(a) three distinct EO velocities (do not confuse)")
     ax[0].set_ylim(0, U_c * 1e3 * 1.15)
     ax[0].legend(fontsize=6.6, ncol=2, loc="upper left", bbox_to_anchor=(0.0, 0.85))
-    ax[1].set_xlabel("applied field E [kV/m]   (over 5 mm: 100 kV/m = 500 V)")
+    ax[1].set_xlabel("imposed field E [kV/m]   (bulk drop over 5 mm, if E spans the wick: 100 kV/m = 500 V)")
     ax[1].set_ylabel("Q_total [mm$^3$/s]  (solid: Q_EO alone, zero gradient)")
     ax[1].set_title("(b) Q_total vs E at fixed -dp/dx (E = 0 is Case A)")
     ax[1].legend(fontsize=7)
@@ -410,12 +411,16 @@ def falsification(inp, liquid, wick, scen) -> dict:
 
 
 def voltage_scale(inp, liquid, wick, scen) -> dict:
-    """Pi = U_EO/U_cap = V eps|zeta| / (F K Pc_max) with V = E L: the needed VOLTAGE is L-independent."""
+    """Pi = U_EO/U_cap = V_bulk eps|zeta| / (F K Pc_max), V_bulk = E L: the needed bulk drop is L-independent.
+
+    V_bulk is the liquid (ohmic) potential drop over the length the field acts on. It is NOT the
+    electrode-to-electrode voltage (add interfacial drops) and is not compared with the
+    thermodynamic decomposition potential, which applies at the electrode interfaces.
+    """
     T_eps = liquid.relative_permittivity * ek.EPSILON_0
     theta0 = inp.si("wick.receding_contact_angle")
     gamma = liquid.surface_tension
     Pi5 = brentq(lambda P: float(w1.dryout_gain(P)) - 1.05, 0, 1)
-    V_dec = 1.23  # textbook standard water-decomposition voltage at 25 C; reference line only (unsourced)
 
     def V_cap(w, zeta):
         return w.F * w.K * w.Pc_max / (T_eps * abs(zeta))
@@ -440,27 +445,25 @@ def voltage_scale(inp, liquid, wick, scen) -> dict:
             a.semilogy(x * 1e6, Pi5 * np.array(V), "--", c=c, label=f"5% dryout gain, {s['zeta']*1e3:.0f} mV")
             a.semilogy(x * 1e6, V, "-", c=c, label=f"Pi = 1 (EO pressure = Pc,max), {s['zeta']*1e3:.0f} mV")
     for a, xl in ((ax[0], "pitch l [um] (d = 10, h = 25 um)"), (ax[1], "pillar height h [um] (d = 10, l = 30 um)")):
-        a.axhline(V_dec, c="k", ls=":", label="~1.23 V water decomposition (textbook, unsourced)")
         a.set_xlabel(xl)
-        a.set_ylabel("voltage across the wick V = E L [V]  (independent of L)")
+        a.set_ylabel("bulk liquid potential drop V_bulk = E L [V]  (L-independent)")
         a.legend(fontsize=6.8)
-    ax[0].set_title("(a) voltage needed vs pitch")
-    ax[1].set_title("(b) voltage needed vs height")
+    ax[0].set_title("(a) bulk potential drop needed vs pitch")
+    ax[1].set_title("(b) bulk potential drop needed vs height")
 
     # geometric similarity: scale d, l, h by s at fixed L = 5 mm
     a = ax[2]
     sc = np.logspace(-2, 0, 60)
     qA = []
     for k, s in enumerate(scen):
-        V, Gat, edl = [], [], []
+        V, edl = [], []
         for f in sc:
             w = geometry_wick(wick.d * f, wick.l * f, wick.h * f, wick.L, wick.W, theta0, gamma)
             V.append(V_cap(w, s["zeta"]))
-            Gat.append(float(w1.dryout_gain(V_dec / V[-1])))
             edl.append(s["debye_length"] / ((w.l - w.d) / 2))
             if k == 0:
                 qA.append(w1.passive_dryout_heat_flux(w1.Case("A", w, liquid, w1.Forcing())) / W_CM2)
-            rows.append({"scale": f, "zeta_V": s["zeta"], "l_um": w.l * 1e6, "V_cap_V": V[-1], "G_at_1p23V": Gat[-1],
+            rows.append({"scale": f, "zeta_V": s["zeta"], "l_um": w.l * 1e6, "V_cap_V": V[-1],
                          "debye_over_halfgap": edl[-1], "q_dry_passive_Wcm2": w1.passive_dryout_heat_flux(
                              w1.Case("A", w, liquid, w1.Forcing())) / W_CM2})
         c = COLORS[round(s["zeta"], 3)]
@@ -469,18 +472,17 @@ def voltage_scale(inp, liquid, wick, scen) -> dict:
         bad = edl > 0.1
         if bad.any():
             a.loglog(sc[bad], Pi5 * np.array(V)[bad], "x", ms=3, c=c, label=f"lambda_D > 0.1 half-gap (thin EDL invalid)")
-    a.axhline(V_dec, c="k", ls=":")
     a.set_xlabel("geometric scale factor s (d, l, h = s x 10/30/25 um; L = 5 mm)")
-    a.set_ylabel("voltage for 5% dryout gain [V]")
+    a.set_ylabel("bulk potential drop for 5% dryout gain [V]")
     a2 = a.twinx()
     a2.loglog(sc, qA, c="0.4", lw=2, alpha=0.6)
     a2.set_ylabel("passive dryout q''_dry,A [W/cm$^2$] (grey)", color="0.35")
     a.set_title("(c) V_cap = F K Pc,max/(eps|zeta|) ~ s; passive q''_dry ~ s$^2$")
     a.legend(fontsize=6.5, loc="upper left")
-    fig.suptitle("Falsification: EO gain is set by the VOLTAGE across the wick, Pi = V eps|zeta| / (F K Pc,max)", y=0.99)
+    fig.suptitle("EO gain is set by the bulk potential drop across the wick, Pi = V_bulk eps|zeta| / (F K Pc,max)", y=0.99)
     fig.tight_layout()
-    footer(fig, "Analytical K (Sangani-Acrivos + Brinkman), Maxwell F, V2019 Eq. 3 Pc,max (theta_r = 15 deg), IAPWS water at 100 C. "
-           "Electrodes assumed at the feed and at the closed end (V = E L).", FOOT_EK)
+    footer(fig, "Analytical K (Sangani-Acrivos + Brinkman), Maxwell F, V2019 Eq. 3 Pc,max (theta_r = 15 deg); dilute KCl, water-like properties (IAPWS). "
+           "V_bulk = E L assumes the field spans the wick (engineering extrapolation; electrodes not modeled in pujahari2022).", FOOT_EK)
     save(fig, "fig11_voltage_scale", bottom=0.17)
     write_csv("voltage_scale_similarity", rows)
     return out
@@ -540,63 +542,169 @@ def dryout_figures(inp, liquid, wick, scen) -> list[dict]:
     a.legend(fontsize=6.8, loc="upper left")
     fig.tight_layout()
     footer(fig, FOOT_BASE, FOOT_EK,
-           "Valid only under: thin EDL, uniform zeta on pillars AND floor, uniform E, flat meniscus K, no salt accumulation, no electrolysis gas, "
-           "no field-effect on zeta (see validity diagnostics). NOT a device prediction.")
+           "Idealized/conditional: thin EDL, uniform zeta on pillars AND floor, imposed uniform E, flat meniscus K, feed-composition electrolyte at x*, "
+           "Faradaic products not modeled, no field-effect on zeta (see validity diagnostics). NOT a device prediction.")
     save(fig, "fig8_preliminary_dryout", bottom=0.2)
     return rows
 
 
 # ---------------------------------------------------------------------------------------------
-# cross-check against pujahari2022's reported gains
+# A. reproduction of pujahari2022 Fig. 6 (digitized, PROJECT_DERIVED)
 # ---------------------------------------------------------------------------------------------
 
-def pujahari_cross_check(inp, quick: bool) -> list[dict]:
+DIGITIZED = REPO / "data" / "literature" / "pujahari2022_fig6_digitized.csv"
+
+
+def pujahari_liquid(inp):
     b = f"{SC}.property_set"
-    eps_r = inp.si(f"{SC}.relative_permittivity")
-    liq = w1.Liquid(mu=inp.si(f"{b}.mu"), rho=inp.si(f"{b}.rho"), h_fg=inp.si(f"{b}.h_fg"),
-                    surface_tension=inp.si(f"{b}.surface_tension"), relative_permittivity=eps_r)
+    return w1.Liquid(mu=inp.si(f"{b}.mu"), rho=inp.si(f"{b}.rho"), h_fg=inp.si(f"{b}.h_fg"),
+                     surface_tension=inp.si(f"{b}.surface_tension"),
+                     relative_permittivity=inp.si(f"{SC}.relative_permittivity"))
+
+
+def pujahari_reproduction(inp, quick: bool) -> tuple[list[dict], dict]:
+    """Factor-by-factor comparison with the digitized Fig. 6 dryout curves (same d, h, l, L, zeta, E)."""
+    liq = pujahari_liquid(inp)
     cc = f"{SC}.cross_check"
     d, L, th = inp.si(f"{cc}.pillar_diameter"), inp.si(f"{cc}.feed_length"), inp.si(f"{cc}.receding_contact_angle")
-    E = inp.si(f"{cc}.field_for_reported_gain")
-    zetas = list(inp.si(f"{SC}.zeta_potential"))
-    rows = []
-    fig, ax = plt.subplots(1, 2, figsize=(11, 4.2))
+    dig = pd.read_csv(DIGITIZED, comment="#")
     levels = (64, 128, 256) if quick else (128, 256, 512)
-    for a, key in zip(ax, ("tall", "short")):
-        h = inp.si(f"{cc}.{key}.pillar_height")
-        lo_l, hi_l = inp.si(f"{cc}.{key}.pitch_range")
-        pitches = np.linspace(lo_l, hi_l, 8)
-        for z in zetas:
-            m = ek.electroosmotic_mobility(eps_r, z, liq.mu)
-            rep = inp.si(f"{cc}.{key}.reported_gain_zeta{abs(z*1e3):.0f}")
-            Gm, Gn = [], []
-            for l in pitches:
-                Fnum = _F_numerical(float(d), float(l), levels)
-                wm = w1.Wick.analytical(d, l, h, L, 1e-3, th, liq.surface_tension)
-                wn = replace(wm, F=Fnum)
-                Gm.append(float(w1.dryout_gain(w1.eo_pressure_ratio(w1.Case("B", wm, liq, w1.Forcing(m, E))))))
-                Gn.append(float(w1.dryout_gain(w1.eo_pressure_ratio(w1.Case("B", wn, liq, w1.Forcing(m, E))))))
-                lam = inp.si(f"{SC}.debye_length")[zetas.index(z)]
-                rows.append({"set": key, "h_um": h * 1e6, "l_um": l * 1e6, "zeta_V": z, "phi": solid_fraction(d, l),
-                             "K_analytical_m2": wm.K, "Pc_max_Pa": wm.Pc_max, "F_maxwell": wm.F, "F_numerical": Fnum,
-                             "Pi": w1.eo_pressure_ratio(w1.Case("B", wn, liq, w1.Forcing(m, E))), "G_model": Gn[-1],
-                             "reported_lo": rep[0], "reported_hi": rep[1],
-                             "debye_over_halfgap": lam / ((l - d) / 2), "debye_over_h": lam / h,
-                             "meniscus_sag_over_h_at_Pcmax": _sag(liq.surface_tension, wm.Pc_max, d, l) / h})
-            c = COLORS[round(z, 3)]
-            a.plot(pitches * 1e6, Gn, "o-", c=c, label=f"this model, {z*1e3:.0f} mV (numerical F)")
-            a.plot(pitches * 1e6, Gm, ":", c=c, lw=1, label="this model, Maxwell F")
-            a.axhspan(rep[0], rep[1], color=c, alpha=0.18, label=f"pujahari2022 stated range, {z*1e3:.0f} mV")
-        a.set_title(f"d = 5 um, h = {h*1e6:.0f} um, L = 5 mm, E = 1e5 V/m")
+    # passive curve per height: panel a (complete) for h = 5 um; mean of c and d for h = 25 um
+    passive = {5.0: dig[(dig.panel == "a") & (dig.E_V_per_m == 0)].set_index("pitch_um").q_dry_Wcm2,
+               25.0: dig[dig.panel.isin(["c", "d"]) & (dig.E_V_per_m == 0)].groupby("pitch_um").q_dry_Wcm2.mean()}
+    rows = []
+    for panel, z in (("a", -0.1), ("b", -0.2), ("c", -0.1), ("d", -0.2)):
+        sub = dig[dig.panel == panel]
+        h_um = float(sub.h_um.iloc[0])
+        h = h_um * 1e-6
+        m = ek.electroosmotic_mobility(liq.relative_permittivity, z, liq.mu)
+        for l_um in sorted(sub.pitch_um.unique()):
+            if l_um not in passive[h_um].index:
+                continue
+            l = l_um * 1e-6
+            qA = passive[h_um][l_um]
+            w = w1.Wick.analytical(d, l, h, L, 1e-3, th, liq.surface_tension)
+            w = replace(w, F=_F_numerical(float(d), float(l), levels))
+            K_P = rp.implied_permeability(qA * W_CM2, liq.mu, L, liq.rho, h, liq.h_fg, w.Pc_max)
+            qA_model = w1.passive_dryout_heat_flux(w1.Case("A", w, liq, w1.Forcing())) / W_CM2
+            R_unif = rp.uniform_field_eo_ratio(d, l, h)
+            row = {"panel": panel, "h_um": h_um, "l_um": l_um, "zeta_mV": z * 1e3, "phi": w.phi, "F": w.F,
+                   "q_A_pujahari": qA, "q_A_model_flat": qA_model, "K_implied_over_K_flat": K_P / w.K,
+                   "R_uniform_field": R_unif, "floor_fraction_f": rp.floor_fraction(d, l, h)}
+            for E in (5e3, 1e4, 5e4, 1e5):
+                qB = sub[(sub.E_V_per_m == E) & (sub.pitch_um == l_um)].q_dry_Wcm2
+                Pi_flat = w1.eo_pressure_ratio(w1.Case("B", w, liq, w1.Forcing(m, E)))
+                Pi_KP = Pi_flat * w.K / K_P
+                tag = f"{E:.0e}"
+                row[f"G_model_flat_{tag}"] = float(w1.dryout_gain(Pi_flat))
+                row[f"G_model_KP_{tag}"] = float(w1.dryout_gain(Pi_KP))
+                row[f"G_unifE_KP_{tag}"] = float(w1.dryout_gain(R_unif * Pi_KP))
+                row[f"Pi_model_KP_{tag}"] = Pi_KP
+                row[f"G_pujahari_{tag}"] = float(qB.iloc[0] / qA) if not qB.empty else np.nan
+            if np.isfinite(row["G_pujahari_1e+05"]):
+                Pi_P = rp.inverse_dryout_gain(row["G_pujahari_1e+05"])
+                row["Pi_pujahari_1e5"] = Pi_P
+                row["R_inferred"] = Pi_P / row["Pi_model_KP_1e+05"]
+                for E in (5e3, 1e4, 5e4):  # structure test: Pi linear in E through G(Pi)
+                    tag = f"{E:.0e}"
+                    if np.isfinite(row[f"G_pujahari_{tag}"]):
+                        row[f"structure_err_{tag}"] = float(w1.dryout_gain(Pi_P * E / 1e5)) / row[f"G_pujahari_{tag}"] - 1
+            rows.append(row)
+    df = pd.DataFrame(rows)
+    # one-parameter fit per height: constant R on the 1e5 gains (Pi with the implied K)
+    fits = {}
+    for h_um, g in df.dropna(subset=["R_inferred"]).groupby("h_um"):
+        def sse(R):
+            return float(np.sum((w1.dryout_gain(R * g["Pi_model_KP_1e+05"]) - g["G_pujahari_1e+05"]) ** 2))
+        Rs = np.linspace(0.3, 1.2, 901)
+        R_fit = float(Rs[np.argmin([sse(R) for R in Rs])])
+        G_fit = w1.dryout_gain(R_fit * g["Pi_model_KP_1e+05"])
+        fits[h_um] = {"R_fit": R_fit, "max_rel_err_G": float(np.max(np.abs(G_fit / g["G_pujahari_1e+05"] - 1)))}
+        df.loc[g.index, "G_Rfit_KP_1e+05"] = G_fit
+    struct_cols = [c for c in df.columns if c.startswith("structure_err")]
+
+    def max_err(col, h_um):
+        g = df[df.h_um == h_um].dropna(subset=["G_pujahari_1e+05"])
+        return float(np.max(np.abs(g[col] / g["G_pujahari_1e+05"] - 1)))
+
+    summary = {
+        "structure_test_max_abs_rel_err": float(np.nanmax(np.abs(df[struct_cols].to_numpy()))),
+        "structure_test_median_abs_rel_err": float(np.nanmedian(np.abs(df[struct_cols].to_numpy()))),
+        "K_implied_over_K_flat": {h: [float(g.K_implied_over_K_flat.min()), float(g.K_implied_over_K_flat.max())]
+                                  for h, g in df.groupby("h_um")},
+        "R_inferred": {h: [float(g.R_inferred.min()), float(g.R_inferred.max())] for h, g in df.groupby("h_um")},
+        "R_uniform_field": {h: [float(g.R_uniform_field.min()), float(g.R_uniform_field.max())] for h, g in df.groupby("h_um")},
+        "R_fit": fits,
+        "max_rel_err_G_1e5": {h: {"model_flat": max_err("G_model_flat_1e+05", h), "model_KP": max_err("G_model_KP_1e+05", h),
+                                  "uniformE_KP": max_err("G_unifE_KP_1e+05", h)} for h in (5.0, 25.0)},
+    }
+
+    fig, ax = plt.subplots(2, 2, figsize=(12, 8.4))
+    a = ax[0, 0]
+    for h_um, mk in ((5.0, "o"), (25.0, "s")):
+        g = df[(df.h_um == h_um) & (df.zeta_mV == -100)]
+        a.plot(g.l_um, g.K_implied_over_K_flat, mk + "-", c="0.3", label=f"h = {h_um:.0f} um")
+    a.set_xlabel("pitch l [um]")
+    a.set_ylabel("K_implied / K_flat  (= q''_A,pujahari / q''_A,flat model)")
+    a.set_title("(a) passive: their dryout implies a lower K (meniscus curvature)")
+    a.legend()
+    for a, h_um in ((ax[0, 1], 25.0), (ax[1, 0], 5.0)):
+        for z in (-100, -200):
+            g = df[(df.h_um == h_um) & (df.zeta_mV == z)]
+            c = COLORS[round(z / 1e3, 3)]
+            a.plot(g.l_um, g["G_pujahari_1e+05"], "o", c=c, ms=6, label=f"pujahari2022 Fig. 6 (digitized), {z} mV")
+            a.plot(g.l_um, g["G_model_flat_1e+05"], ":", c=c, label="this model (flat K, solved field)")
+            a.plot(g.l_um, g["G_model_KP_1e+05"], "--", c=c, label="this model with their implied K")
+            a.plot(g.l_um, g["G_unifE_KP_1e+05"], "-", c=c, lw=1.6, label="implied K + uniform-imposed-field estimate")
         a.set_xlabel("pitch l [um]")
-        a.set_ylabel("dryout gain G")
-        a.legend(fontsize=7)
-    fig.suptitle("Cross-check (model vs model, NOT validation): reduced-order HS + Darcy vs pujahari2022 Poisson-Boltzmann + NS", y=0.99)
+        a.set_ylabel("dryout gain G at E = 1e5 V/m")
+        a.set_title(f"({'b' if h_um == 25 else 'c'}) d = 5 um, h = {h_um:.0f} um, L = 5 mm")
+        a.legend(fontsize=6.5)
+    a = ax[1, 1]
+    for panel, mk in (("a", "o"), ("b", "o"), ("c", "s"), ("d", "s")):
+        g = df[df.panel == panel]
+        z = g.zeta_mV.iloc[0]
+        a.plot(g.l_um, g.R_inferred, mk, c=COLORS[round(z / 1e3, 3)], mfc="none" if panel in "ab" else None,
+               label=f"inferred, h = {g.h_um.iloc[0]:.0f} um, {z:.0f} mV")
+    for h_um, ls in ((5.0, "--"), (25.0, "-")):
+        g = df[(df.h_um == h_um) & (df.zeta_mV == -100)]
+        a.plot(g.l_um, g.R_uniform_field, ls, c="k", lw=1.2, label=f"uniform-imposed-field estimate, h = {h_um:.0f} um")
+    a.axhline(1, c="0.5", lw=1, ls=":")
+    a.set_ylim(0, 1.1)
+    a.set_xlabel("pitch l [um]")
+    a.set_ylabel("R = their EO flux / (mu_EO E / F)")
+    a.set_title(f"(d) EO-flux ratio; structure test (Pi ~ E) max error {100*summary['structure_test_max_abs_rel_err']:.1f}%")
+    a.legend(fontsize=6.5, loc="lower right")
+    fig.suptitle("A. Reproduction of pujahari2022 Fig. 6, one factor at a time (model vs model, not validation)", y=0.995)
     fig.tight_layout()
-    footer(fig, "pujahari2022 property set (Table 1) and stated gain ranges (Sec. 3.4); their ranges span the pitch range and are not tied to individual pitches.",
-           "This model: flat meniscus, analytical K (Sangani-Acrivos + Brinkman), uniform evaporation. Their model: curved menisci, full EDL body force.")
-    save(fig, "fig9_pujahari_cross_check", bottom=0.17)
-    write_csv("pujahari_cross_check", rows)
+    footer(fig, "Digitized from the held PDF (analysis/digitize_pujahari2022_fig6.py, PROJECT_DERIVED; +-0.5% of axis span). pujahari2022 property set (Table 1); "
+           "theta_r = 15 deg; analytical flat K; numerical F.",
+           "Implied K: the uniform K that returns their passive dryout. Uniform-imposed-field estimate: PROJECT_DERIVED interpretation of their Eq. 8 (see docs).")
+    save(fig, "fig9_pujahari_reproduction", bottom=0.08)
+    write_csv("pujahari_reproduction", df.to_dict("records"))
+    return rows, summary
+
+
+def baseline_bands(inp, liquid, wick, scen, repro: dict) -> list[dict]:
+    """B. our current wick: G and q''_B under the two unresolved factors (EO flux model, passive K)."""
+    ps = load_parameters()
+    A = w1.Case("A", wick, liquid, w1.Forcing())
+    qA_flat = w1.passive_dryout_heat_flux(A)
+    k_v2019 = ps["reference_dryout_heat_flux"] / qA_flat  # PROJECT_DERIVED: K the 1D model needs to return 82 W/cm2
+    R_lo, R_hi = repro["R_inferred"][25.0]
+    rows = []
+    for s in scen:
+        for E in inp.si(f"{SC}.electric_field"):
+            for k_lab, kf in (("COMSOL flat K", 1.0), ("V2019-implied K", k_v2019)):
+                for r_lab, R in (("solved field (similitude)", 1.0), ("pujahari-equivalent R max", R_hi),
+                                 ("pujahari-equivalent R min", R_lo)):
+                    w = replace(wick, K=kf * wick.K)
+                    Pi = R * w1.eo_pressure_ratio(w1.Case("B", w, liquid, w1.Forcing(s["mobility"], E)))
+                    qA = w1.passive_dryout_heat_flux(w1.Case("A", w, liquid, w1.Forcing())) / W_CM2
+                    G = float(w1.dryout_gain(Pi))
+                    rows.append({"zeta_mV": s["zeta"] * 1e3, "E_V_per_m": E, "passive_K": k_lab, "K_factor": kf,
+                                 "EO_flux_model": r_lab, "R": R, "Pi": Pi, "G": G, "q_A_Wcm2": qA, "q_B_Wcm2": qA * G})
+    write_csv("baseline_bands", rows)
     return rows
 
 
@@ -616,10 +724,41 @@ def _sag(gamma, Pc, d, l):
 # validity diagnostics
 # ---------------------------------------------------------------------------------------------
 
+FARADAY = ek.ELEMENTARY_CHARGE * ek.AVOGADRO  # C/mol (exact SI)
+
+
+def electrolyte_reevaluation(inp, liquid, scen) -> list[dict]:
+    """Ionic strength, Debye length and conductivity of the two pujahari2022 KCl cases at 100 C."""
+    T = inp.si("operating.vapor_temperature")
+    eps_r = liquid.relative_permittivity
+    sigma_t1 = inp.si(f"{SC}.electrical_conductivity")
+    lam_kcl_lo, lam_kcl_hi = inp.si("exploration_ranges.kcl_molar_conductivity_100C")  # S m2/mol
+    c_w = 10 ** (-inp.si("exploration_ranges.water_pKw_100C") / 2) * 1e3  # mol/m3 of H+ (= OH-)
+    rows = []
+    for s in scen:
+        c = s["concentration"]  # mol/m3
+        rows.append({
+            "case": s["label"], "c_KCl_M": c / 1e3, "ionic_strength_KCl_only_M": c / 1e3,
+            "ionic_strength_with_intrinsic_H_OH_M": (c + c_w) / 1e3,
+            "debye_stated_um": s["debye_length"] * 1e6,
+            "debye_KCl_only_um": ek.debye_length(eps_r, T, c) * 1e6,
+            "debye_with_intrinsic_um": ek.debye_length(eps_r, T, c + c_w) * 1e6,
+            "sigma_table1_uS_cm": sigma_t1 / 1e-4,
+            "sigma_KCl_only_est_uS_cm": [c * lam_kcl_lo / 1e-4, c * lam_kcl_hi / 1e-4],
+            "zeta_mV": s["zeta"] * 1e3,
+            "grahame_charge_C_m2": ek.grahame_surface_charge(eps_r, T, c, s["zeta"]),
+            "zeta_over_thermal_voltage": abs(s["zeta"]) / ek.thermal_voltage(T),
+        })
+    write_csv("electrolyte_reevaluation", rows)
+    return rows
+
+
 def diagnostics(inp, liquid, wick, scen) -> list[dict]:
     T = inp.si("operating.vapor_temperature")
-    sigma = inp.si(f"{SC}.electrical_conductivity")
-    spacing = inp.si(f"{SC}.electrode_spacing")
+    p_v = Fluid(inp.config.get("operating.fluid")).p_sat(T)
+    sigma_t1 = inp.si(f"{SC}.electrical_conductivity")
+    lam_kcl_lo, lam_kcl_hi = inp.si("exploration_ranges.kcl_molar_conductivity_100C")
+    length = inp.si(f"{SC}.field_application_length")
     eps_ox = inp.si("exploration_ranges.oxide_relative_permittivity")
     t_ox_lo, t_ox_hi = inp.si("exploration_ranges.oxide_thickness")
     halfgap = (wick.l - wick.d) / 2
@@ -627,32 +766,43 @@ def diagnostics(inp, liquid, wick, scen) -> list[dict]:
     for s in scen:
         lam, z, c = s["debye_length"], s["zeta"], s["concentration"]
         sig_native = ek.grahame_surface_charge(liquid.relative_permittivity, T, c, z)
+        sig_est = sigma_t1 + c * lam_kcl_hi  # Table 1 value taken as the solvent background + KCl estimate (upper)
         for E in inp.si(f"{SC}.electric_field"):
             B = w1.Case("B", wick, liquid, w1.Forcing(s["mobility"], E))
             q = w1.assisted_dryout_heat_flux(B)
             U0 = float(w1.feed_velocity(B, q))
+            s_ratio = w1.eo_superficial_velocity(B) / U0
             gradp0 = liquid.mu / wick.K * (U0 - w1.eo_superficial_velocity(B))
-            V = E * spacing
+            V_bulk = E * length
             re = w1.reynolds_numbers(B, U0)
-            rows.append({
-                "zeta_mV": z * 1e3, "conc_M": c / 1e3, "E_V_per_m": E, "voltage_over_spacing_V": V,
+            row = {
+                "zeta_mV": z * 1e3, "conc_M": c / 1e3, "E_V_per_m": E,
+                "V_bulk_if_field_spans_wick_V": V_bulk,
                 "q_dry_B_Wcm2": q / W_CM2, "U_feed_at_dryout_m_s": U0,
                 "Re_K_feed": float(re["Re_K"]), "Re_gap_feed": float(re["Re_gap"]),
                 "debye_over_halfgap": lam / halfgap, "debye_over_h": lam / wick.h,
                 "thin_edl_flux_factor_halfgap": ek.thin_edl_flux_factor(lam, z, T, halfgap),
                 "dukhin_lower_bound_halfgap": ek.dukhin_number_lower_bound(lam, z, T, halfgap),
-                "joule_over_qdry": float(ek.joule_heat_flux(sigma, E, wick.h, wick.F)) / q,
-                "sigma_for_1pct_joule_uS_cm": 0.01 * q * wick.F / (E**2 * wick.h) / 1e-4,
-                "streaming_over_conduction_at_feed": float(ek.streaming_to_conduction_ratio(s["mobility"], abs(gradp0), sigma, E)),
-                "electroviscous_beta": ek.electroviscous_coefficient(s["mobility"], liquid.mu, wick.K, sigma, wick.F),
                 "native_charge_C_m2": sig_native,
-                "field_effect_ratio_tox_hi_Vhalf": ek.field_effect_charge_ratio(eps_ox, t_ox_hi, V / 2, sig_native),
-                "field_effect_ratio_tox_lo_Vhalf": ek.field_effect_charge_ratio(eps_ox, t_ox_lo, V / 2, sig_native),
-                "oxide_field_tox_hi_V_per_um": V / 2 / t_ox_hi / 1e6,
-                "salt_Peclet_D_1e-7": U0 * wick.L / 1e-7, "salt_Peclet_D_1e-9": U0 * wick.L / 1e-9,
-                # sealed system, zero net ion flux: c U = D dc/dx -> c(L)/c(0) = exp(U0 L / 2D) (migration neglected)
-                "log10_closed_end_enrichment_D_1e-7": U0 * wick.L / (2 * 1e-7) / math.log(10),
-            })
+                "field_effect_ratio_tox_hi_Vhalf": ek.field_effect_charge_ratio(eps_ox, t_ox_hi, V_bulk / 2, sig_native),
+                "field_effect_ratio_tox_lo_Vhalf": ek.field_effect_charge_ratio(eps_ox, t_ox_lo, V_bulk / 2, sig_native),
+                "oxide_field_tox_hi_V_per_um": V_bulk / 2 / t_ox_hi / 1e6,
+                # salt: advective enrichment (Pe >> 1, ions stay in the liquid)
+                "dryout_location_from_closed_end_um": s_ratio * wick.L * 1e6,
+                "c_over_cfeed_at_dryout_location": 1 / s_ratio,
+                "debye_at_dryout_location_um": lam * math.sqrt(s_ratio) * 1e6,
+                "enrichment_layer_um_D1e-9": rp.enrichment_layer_width(1e-9, wick.porosity, wick.L, U0) * 1e6,
+                "enrichment_layer_um_D1e-8": rp.enrichment_layer_width(1e-8, wick.porosity, wick.L, U0) * 1e6,
+            }
+            for lab, sig in (("table1", sigma_t1), ("kcl_est", sig_est)):
+                I = sig / wick.F * E * wick.area  # A per half-wick cross-section W h
+                gas = 0.75 * I / FARADAY  # mol/s of H2 + O2 if all current is water splitting (upper bound)
+                row[f"current_uA_{lab}"] = I * 1e6
+                row[f"gas_uL_per_hour_{lab}"] = gas * ek.AVOGADRO * ek.BOLTZMANN_CONSTANT * T / p_v * 1e9 * 3600
+                row[f"joule_over_qdry_{lab}"] = float(ek.joule_heat_flux(sig, E, wick.h, wick.F)) / q
+                row[f"streaming_over_conduction_{lab}"] = float(ek.streaming_to_conduction_ratio(s["mobility"], abs(gradp0), sig, E))
+                row[f"electroviscous_beta_{lab}"] = ek.electroviscous_coefficient(s["mobility"], liquid.mu, wick.K, sig, wick.F)
+            rows.append(row)
     write_csv("validity_diagnostics", rows)
 
     fig, ax = plt.subplots(2, 3, figsize=(12.5, 6.4))
@@ -661,39 +811,44 @@ def diagnostics(inp, liquid, wick, scen) -> list[dict]:
         c = COLORS[round(s["zeta"], 3)]
         lam, z, conc = s["debye_length"], s["zeta"], s["concentration"]
         sig_native = ek.grahame_surface_charge(liquid.relative_permittivity, T, conc, z)
+        sig_est = sigma_t1 + conc * lam_kcl_hi
         qd = np.array([w1.assisted_dryout_heat_flux(w1.Case("B", wick, liquid, w1.Forcing(s["mobility"], e))) for e in E])
         U0 = qd * wick.L / (liquid.rho * liquid.h_fg * wick.h)
+        s_ratio = s["mobility"] * E / wick.F / U0
         lab = f"{z*1e3:.0f} mV"
         ax[0, 0].loglog(E, liquid.rho * U0 * math.sqrt(wick.K) / liquid.mu, c=c, label=f"Re_K at feed, {lab}")
         ax[0, 1].semilogx(E, [ek.dukhin_number_lower_bound(lam, z, T, halfgap)] * len(E), c=c, label=f"Du lower bound, {lab}")
         ax[0, 1].semilogx(E, [1 - ek.thin_edl_flux_factor(lam, z, T, halfgap)] * len(E), "--", c=c, label=f"finite-EDL flux error, {lab}")
-        ax[0, 2].loglog(E, ek.joule_heat_flux(sigma, E, wick.h, wick.F) / qd, c=c, label=f"Joule / q''_dry (0.79 uS/cm), {lab}")
+        I_t1 = sigma_t1 / wick.F * E * wick.area
+        I_est = sig_est / wick.F * E * wick.area
+        ax[0, 2].loglog(E, I_t1 * 1e6, ":", c=c, label=f"current, Table 1 sigma, {lab}")
+        ax[0, 2].loglog(E, I_est * 1e6, "-", c=c, label=f"current, KCl-corrected sigma, {lab}")
         gp = liquid.mu / wick.K * np.abs(U0 - s["mobility"] * E / wick.F)
-        ax[1, 0].loglog(E, ek.streaming_to_conduction_ratio(s["mobility"], gp, sigma, E), c=c, label=f"i_stream/i_cond at feed, {lab}")
+        ax[1, 0].loglog(E, ek.streaming_to_conduction_ratio(s["mobility"], gp, sigma_t1, E), ":", c=c, label=f"Table 1 sigma, {lab}")
+        ax[1, 0].loglog(E, ek.streaming_to_conduction_ratio(s["mobility"], gp, sig_est, E), "-", c=c, label=f"KCl-corrected sigma, {lab}")
         for t, ls in ((t_ox_hi, "-"), (t_ox_lo, "--")):
-            ax[1, 1].loglog(E, [ek.field_effect_charge_ratio(eps_ox, t, e * spacing / 2, sig_native) for e in E], ls, c=c,
+            ax[1, 1].loglog(E, [ek.field_effect_charge_ratio(eps_ox, t, e * length / 2, sig_native) for e in E], ls, c=c,
                             label=f"t_ox = {t*1e6:.1f} um, {lab}")
+        ax[1, 2].loglog(E, 1 / s_ratio, c=c, label=f"c/c_feed at dryout location, {lab}")
     ax[0, 0].axhline(1, c="k", lw=1)
     ax[0, 0].set_title("inertia: Darcy-Forchheimer onset Re_K ~ 1-10")
     ax[0, 1].axhline(0.1, c="k", lw=1)
     ax[0, 1].set_title("thin-EDL / surface conduction (need << 1)")
-    ax[0, 2].set_title("Joule heating (negligible)")
+    ax[0, 2].set_ylabel("DC current per half-wick [uA]")
+    ax[0, 2].set_title("current that a Faradaic reaction must carry (DC)")
     ax[1, 0].axhline(0.1, c="k", lw=1)
     ax[1, 0].set_title("streaming-current coupling (need << 1)")
     ax[1, 1].axhline(1, c="k", lw=1)
     ax[1, 1].set_title("field-effect charge / native charge (need << 1)")
-    a = ax[1, 2]
-    a.loglog(E, E * spacing, c="k", label="V = E x 5 mm")
-    a.axhline(1.23, c="tab:red", ls="--", label="~1.2 V water decomposition (textbook, unsourced)")
-    a.set_title("applied voltage vs electrolysis")
+    ax[1, 2].set_title("advective KCl enrichment c/c_feed = 1/(1 - x*/L)")
     for a in ax.ravel():
-        a.set_xlabel("E [V/m]")
-        a.legend(fontsize=6.5)
-    fig.suptitle("Validity diagnostics of the reduced-order EO model at the predicted Case B dryout point", y=0.995)
+        a.set_xlabel("imposed field E [V/m]")
+        a.legend(fontsize=6.3)
+    fig.suptitle("Validity diagnostics of the idealized EO model at the predicted Case B dryout point (dilute KCl)", y=0.995)
     fig.tight_layout()
-    footer(fig, FOOT_EK, "Oxide eps_r 3.9 ASSUMED; t_ox swept 0.1-2 um (REQUIRES_SOURCE); substrate assumed floating at mid potential (V/2 across oxide). "
-           "Du uses the m = 0 Bikerman lower bound (cited from memory).")
-    save(fig, "fig10_validity_diagnostics", bottom=0.1)
+    footer(fig, FOOT_EK, "Current = (sigma/F) E W h. KCl-corrected sigma = Table 1 value + c x 475 S cm2/mol (ASSUMED, from memory). Oxide eps_r 3.9 ASSUMED; "
+           "t_ox 0.1-2 um (REQUIRES_SOURCE); floating substrate (V_bulk/2 across oxide); V_bulk = E x 5 mm is an extrapolation. Du: m = 0 Bikerman lower bound.")
+    save(fig, "fig10_validity_diagnostics", bottom=0.13)
     return rows
 
 
@@ -730,17 +885,18 @@ def main() -> None:
     dr = dryout_figures(inp, liquid, wick, scen)
     write_csv("dryout_vs_field", dr)
     summary["dryout_at_literature_fields"] = [r for r in dr if r["E_V_per_m"] in (0.0, 5e3, 1e4, 1e5)]
-    print("[x] pujahari2022 cross-check ...")
-    cc = pujahari_cross_check(inp, args.quick)
-    summary["pujahari_cross_check"] = pd.DataFrame(cc).groupby(["set", "zeta_V"]).agg(
-        G_min=("G_model", "min"), G_max=("G_model", "max"), rep_lo=("reported_lo", "first"),
-        rep_hi=("reported_hi", "first"), F_rel_max=("F_numerical", "max")).reset_index().to_dict("records")
-    print("[v] validity diagnostics ...")
+    print("[A] pujahari2022 reproduction (digitized Fig. 6) ...")
+    _, repro = pujahari_reproduction(inp, args.quick)
+    summary["A_pujahari_reproduction"] = repro
+    print("[B] baseline bands ...")
+    summary["B_baseline_bands"] = [r for r in baseline_bands(inp, liquid, wick, scen, repro) if r["E_V_per_m"] == 1e5]
+    print("[v] electrolyte and validity diagnostics ...")
+    summary["electrolyte"] = electrolyte_reevaluation(inp, liquid, scen)
     summary["diagnostics"] = diagnostics(inp, liquid, wick, scen)
     summary["requires_source"] = [m.__dict__ for m in inp.missing.values()]
     with open(OUT / "summary.json", "w", encoding="utf-8") as fh:
         json.dump(summary, fh, indent=2, default=float)
-    print(json.dumps({k: summary[k] for k in ("passive_benchmark", "falsification", "pujahari_cross_check")}, indent=1, default=float))
+    print(json.dumps({k: summary[k] for k in ("passive_benchmark", "A_pujahari_reproduction")}, indent=1, default=float))
     print(f"\nWrote figures and tables to {OUT}")
 
 

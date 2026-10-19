@@ -71,6 +71,7 @@ _UNIT_TABLE: dict[str, tuple[float, str]] = {
     "mol/m3": (1.0, "mol/m3"),
     "mol/L": (1e3, "mol/m3"),
     "m2/V/s": (1.0, "m2/V/s"),
+    "S*cm2/mol": (1e-4, "S*m2/mol"),
 }
 
 

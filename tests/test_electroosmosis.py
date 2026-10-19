@@ -9,7 +9,10 @@ from scipy.integrate import quad
 
 from nanofab import dryout as dryout1d
 from nanofab.electroosmosis import formation_factor as ff
+import pandas as pd
+
 from nanofab.electroosmosis import physics as ek
+from nanofab.electroosmosis import reproduction as rp
 from nanofab.electroosmosis import wick1d as w1
 from nanofab.electroosmosis.inputs import (
     MissingInputError,
@@ -20,11 +23,12 @@ from nanofab.electroosmosis.inputs import (
 )
 from nanofab.params import ParameterError, _to_si
 from nanofab.permeability import pillar_wick_permeability
-from nanofab.provenance import COMSOL_EXTRACTED, MODEL_CALCULATED, PRIMARY_SOURCE
+from nanofab.provenance import COMSOL_EXTRACTED, MODEL_CALCULATED, PRIMARY_SOURCE, REPO_ROOT
 from nanofab.whole_wick.darcy import FeedSpec, solve_darcy
 from nanofab.whole_wick.grid import Grid
 
 T100 = 373.15
+DIGITIZED = REPO_ROOT / "data" / "literature" / "pujahari2022_fig6_digitized.csv"
 
 
 @pytest.fixture(scope="module")
@@ -317,6 +321,57 @@ def test_requires_source_blocks_device_predictions(inp, tmp_path):
     bad.write_text("requires_source:\n  zeta_x: {unit: mV, needed_for: x, value: -50}\n", encoding="utf-8")
     with pytest.raises(ParameterError, match="has a value"):
         load_eo_inputs(bad)
+
+
+# ------------------------------------------------------------------ pujahari2022 reproduction tools
+
+def test_inverse_dryout_gain_roundtrip():
+    for P in (0.0, 0.05, 0.6, 3.0, 25.0):
+        assert rp.inverse_dryout_gain(float(w1.dryout_gain(P))) == pytest.approx(P, abs=1e-9)
+
+
+def test_implied_permeability_roundtrip(wick, liquid):
+    q = w1.passive_dryout_heat_flux(w1.Case("A", wick, liquid, w1.Forcing()))
+    K = rp.implied_permeability(q, liquid.mu, wick.L, liquid.rho, wick.h, liquid.h_fg, wick.Pc_max)
+    assert K == pytest.approx(wick.K, rel=1e-12)
+
+
+def test_uniform_field_ratio_limits():
+    # tall, dense pillars: sidewalls dominate and see half the insulating-wall slip -> R -> 1/2
+    assert rp.uniform_field_eo_ratio(5e-6, 8e-6, 2e-3) == pytest.approx(0.5, abs=0.01)
+    # vanishing height: floor only, full field on the floor -> R -> 1 + phi
+    d, l = 5e-6, 30e-6
+    assert rp.uniform_field_eo_ratio(d, l, 1e-9) == pytest.approx(1 + math.pi * d**2 / (4 * l**2), rel=1e-4)
+
+
+def test_advective_enrichment_conserves_salt_flux():
+    L = 5e-3
+    x = np.linspace(0, 0.99 * L, 50)
+    Q = 1 - x / L  # Q(x)/Q0 for uniform evaporation
+    assert np.allclose(Q * rp.advective_enrichment(x, L), 1.0)
+    assert rp.enrichment_layer_width(1e-9, 0.9, L, 0.1) == pytest.approx(math.sqrt(1e-9 * 0.9 * L / 0.1))
+
+
+def test_digitized_pujahari_fig6_is_self_consistent_and_obeys_linear_eo_structure():
+    dig = pd.read_csv(DIGITIZED, comment="#")
+    # the passive curve is drawn twice (panels a/b and c/d): same physical case
+    for p1, p2, interior in (("a", "b", (9, 14)), ("c", "d", (12.5, 45))):
+        a = dig[(dig.panel == p1) & (dig.E_V_per_m == 0)].set_index("pitch_um").q_dry_Wcm2
+        b = dig[(dig.panel == p2) & (dig.E_V_per_m == 0)].set_index("pitch_um").q_dry_Wcm2
+        common = [l for l in a.index.intersection(b.index) if interior[0] <= l <= interior[1]]
+        assert common and np.max(np.abs(b[common] / a[common] - 1)) < 0.02
+    # their field dependence follows G(Pi) with Pi proportional to E (the structure of wick1d)
+    errs = []
+    for panel in "abcd":
+        sub = dig[dig.panel == panel]
+        pas = dig[(dig.panel == ("a" if panel in "ab" else "d")) & (dig.E_V_per_m == 0)].set_index("pitch_um").q_dry_Wcm2
+        for l in sub.pitch_um.unique():
+            q5 = sub[(sub.E_V_per_m == 1e5) & (sub.pitch_um == l)].q_dry_Wcm2
+            q4 = sub[(sub.E_V_per_m == 5e4) & (sub.pitch_um == l)].q_dry_Wcm2
+            if l in pas.index and not q5.empty and not q4.empty:
+                P = rp.inverse_dryout_gain(q5.iloc[0] / pas[l])
+                errs.append(float(w1.dryout_gain(0.5 * P)) * pas[l] / q4.iloc[0] - 1)
+    assert np.median(np.abs(errs)) < 0.01 and np.max(np.abs(errs)) < 0.06
 
 
 def test_reynolds_numbers_scale_linearly(wick, liquid):
