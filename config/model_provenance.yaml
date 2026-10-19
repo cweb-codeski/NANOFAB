@@ -78,6 +78,24 @@ equations:
     source: lee1995_spreading
     source_location: null
     verified: false
+  helmholtz_smoluchowski_mobility:
+    provenance: ASSUMED
+    source: kirby2010
+    source_location: null
+    verified: false
+    notes: "mu_EO = -eps zeta / mu (thin EDL). Textbook relation cited from memory; pujahari2022 Sec. 1 refers to the HS slip formulation (dutta_beskok2001)."
+  eo_similitude_superficial_velocity:
+    provenance: ASSUMED
+    source: cummings2000
+    source_location: null
+    verified: false
+    notes: "U_EO = mu_EO E / F for uniform zeta, insulating solid, thin EDL, no surface conduction. Leading-order F (Maxwell 2D) verified numerically in electroosmosis.formation_factor."
+  eo_darcy_superposition_and_dryout_gain:
+    provenance: PROJECT_DERIVED
+    source: pujahari2022
+    source_location: "problem set-up of Sec. 2 (feed at x = 0, closed end, E along x)"
+    verified: false
+    notes: "U = (K/mu)(-dp/dx) + U_EO and G(Pi) = (1 + Pi + sqrt(1 + 2 Pi))/2 derived by us (docs/electroosmosis_model.md); verified against an independent FV solve."
 
 boundary_conditions:
   unit_cell_heat_input_1um_below_pillars:
@@ -167,6 +185,20 @@ derived_results:
       h_e > 60 kW/m2K). Conditional on our R''_int, which uses an ASSUMED flat interface area and
       an unverified nonunity-accommodation correction (meland_ytrehus2003 source gap). Previously
       mislabelled as an upper bound.
+  dryout_heat_flux_flat_meniscus_comsol_K:
+    value: 99.3
+    unit: W/cm2
+    provenance: MODEL_CALCULATED
+    source: null
+    source_location: "analysis/eo_assisted_wick.py (Case A, K = 2.9698e-11 m2 COMSOL Stage 1)"
+    notes: "Same 1D flat-meniscus capillary limit as the 100.6 W/cm2 estimate, with the COMSOL K (-1.3%). vaartstra2019: 82 W/cm2."
+  eo_dryout_gain_pujahari_scenario:
+    value: [1.30, 1.57]
+    unit: "-"
+    provenance: MODEL_CALCULATED
+    source: null
+    source_location: "analysis/eo_assisted_wick.py, E = 1e5 V/m, zeta = -100 / -200 mV"
+    notes: "PRELIMINARY, conditional on assumptions EO1-EO12 in docs/electroosmosis_model.md. Not a device prediction."
   pitch_optimum_flat_dryout:
     value: 40
     unit: um

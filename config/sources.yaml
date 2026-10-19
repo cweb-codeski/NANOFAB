@@ -37,24 +37,109 @@ vaartstra2019:
 
 pujahari2022:
   title: "Electro-osmosis Aided Thin-Film Evaporation from a Micropillar Wick Structure"
-  authors: ["Pujahari", "DasGupta", "Bhattacharya"]
+  authors: ["Ankita Pujahari", "Sunando DasGupta", "Anandaroop Bhattacharya"]
   year: 2022
   venue: "Langmuir 38 (2022) 8442-8455"
   doi: "10.1021/acs.langmuir.2c01048"
   supporting_information_doi: "10.1021/acs.langmuir.2c01048.s001"
   supporting_information_url: "https://acs.figshare.com/articles/journal_contribution/Electro-osmosis_Aided_Thin-Film_Evaporation_from_a_Micropillar_Wick_Structure/20201943"
   type: PRIMARY_SOURCE
-  role: FUTURE_AUDIT_REFERENCE
-  scope: [device_scale_model, electro_osmosis]
-  bibliography_verified: "no"
-  content_verified: false
-  access_status: "article PDF HELD (not read in the passive-device task); Supporting Information NOT HELD"
+  role: ELECTROOSMOSIS_REFERENCE
+  scope: [device_scale_model, electro_osmosis, fluid_properties]
+  bibliography_verified: pdf
+  content_verified: partial
+  access_status: "article PDF HELD and read (text extraction; equations partly garbled); Supporting Information NOT HELD"
   local_path: "C:/Users/chase/Downloads/NANOFAB PROJECT RESEARCH/research documents/research papers/electro osmosis aided thin film evaporation from a micropillar wick structure.pdf"
   notes: >
-    Citation details as supplied in the project brief (not checked against the article; author
-    initials not recorded). Not used by the passive
-    device model. Differences from vaartstra2019 are listed as future audit items in
-    docs/passive_device_model.md; no electro-osmotic or electrode physics is implemented.
+    Numerical study (COMSOL Poisson-Boltzmann + Navier-Stokes with rho_e E body force per unit
+    cell, linked cell-by-cell in MATLAB). Used by src/nanofab/electroosmosis/ for: KCl-water at
+    1e-4 and 1e-6 M with zeta = -100 and -200 mV (Sec. 2.1.1, taken from Mala et al. 1997, ref.
+    39, not held); Debye lengths 0.03 and 0.3 um (Sec. 3.2); E = 5e3-1e5 V/m along the wick
+    (Sec. 2.1.2); Table 1 properties at 100 C (eps_r 55.4, sigma_e 0.79 uS/cm, mu 2.822e-4 Pa s);
+    reported dryout gains (Sec. 3.4, Conclusions). Calls the EO-enhanced quantity an "effective
+    permeability" (Sec. 3.3). AUDIT FINDINGS: (1) the claim that the voltages are far below
+    electrolysis (Sec. 2.1.2) is inconsistent with E = 5e3-1e5 V/m over L = 5 mm, i.e. 25-500 V;
+    (2) one conductivity (0.79 uS/cm) is used for both concentrations; (3) no ion-conservation
+    (salt accumulation at the evaporating end) model; (4) the oxide is treated only as an
+    insulator, with no field-effect change of zeta. These are model inputs and results of a
+    simulation paper, not measurements at our conditions.
+
+mala1997:
+  title: "Flow characteristics of water through a microchannel between two parallel plates with electrokinetic effects"
+  authors: ["G.M. Mala", "D. Li", "C. Werner", "H.-J. Jacobasch", "Y.B. Ning"]
+  year: 1997
+  venue: "International Journal of Heat and Fluid Flow 18 (1997) 489-496"
+  doi: unknown
+  type: PRIMARY_SOURCE
+  bibliography_verified: reference_list
+  content_verified: false
+  local_path: null
+  notes: "pujahari2022 ref. 39: origin of the zeta = -100 / -200 mV values for 1e-4 / 1e-6 M KCl. Measurement temperature and surface not checked."
+
+dutta_beskok2001:
+  title: "Analytical solution of combined electroosmotic/pressure driven flows in two-dimensional straight channels: finite Debye layer effects"
+  authors: ["P. Dutta", "A. Beskok"]
+  year: 2001
+  venue: "Analytical Chemistry 73 (2001) 1979-1986"
+  doi: unknown
+  type: PRIMARY_SOURCE
+  bibliography_verified: reference_list
+  content_verified: false
+  local_path: null
+  notes: "pujahari2022 ref. 25: superposition of EO and pressure-driven flow; limits of the HS slip condition."
+
+cummings2000:
+  title: "Conditions for similitude between the fluid velocity and electric field in electroosmotic flow"
+  authors: ["E.B. Cummings", "S.K. Griffiths", "R.H. Nilson", "P.H. Paul"]
+  year: 2000
+  venue: "Analytical Chemistry 72 (2000) 2526-2532"
+  doi: unknown
+  type: ASSUMED
+  bibliography_verified: "no"
+  content_verified: false
+  local_path: null
+  notes: >
+    NOT HELD; citation from memory. Cited for U_EO = mu_EO E_local (uniform zeta, thin EDL,
+    insulating walls, no imposed pressure gradient), which gives U_EO,superficial = mu_EO E / F.
+
+kirby2010:
+  title: "Micro- and Nanoscale Fluid Mechanics: Transport in Microfluidic Devices"
+  authors: ["B.J. Kirby"]
+  year: 2010
+  venue: "Cambridge University Press (textbook)"
+  doi: null
+  type: ASSUMED
+  bibliography_verified: "no"
+  content_verified: false
+  local_path: null
+  notes: "NOT HELD; from memory. Generic reference for the Helmholtz-Smoluchowski relation, Debye length, Gouy-Chapman and Grahame relations."
+
+rayleigh1892:
+  title: "On the influence of obstacles arranged in rectangular order upon the properties of a medium"
+  authors: ["Lord Rayleigh"]
+  year: 1892
+  venue: "Philosophical Magazine 34 (1892) 481-502"
+  doi: unknown
+  type: ASSUMED
+  bibliography_verified: "no"
+  content_verified: false
+  local_path: null
+  notes: >
+    NOT HELD; from memory. Effective conductivity of square arrays of cylinders; leading term is
+    the Maxwell 2D result F = (1 + phi)/(1 - phi) for insulating cylinders. The repo verifies that
+    leading term numerically (electroosmosis.formation_factor).
+
+lyklema_fics:
+  title: "Fundamentals of Interface and Colloid Science, Vol. II"
+  authors: ["J. Lyklema"]
+  year: unknown
+  venue: "Academic Press (book)"
+  doi: null
+  type: ASSUMED
+  bibliography_verified: "no"
+  content_verified: false
+  local_path: null
+  notes: "NOT HELD; from memory. Cited for the Bikerman surface conductance and the Dukhin number."
 
 vaartstra2019_thesis:
   title: "Comprehensive modeling of thin film evaporation in micropillar wicks"

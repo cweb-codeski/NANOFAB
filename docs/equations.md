@@ -136,3 +136,17 @@ Kirchhoff transform \(\Psi(P_c)=\int\tau\,dP_c\) and the evaporation-moment iden
 $$\int_{P_c(0)}^{P_c(L)}\frac{\tau}{\mu}\,dP_c=\int_0^L\frac{x\,q''_e(x)}{\rho h_{fg}}\,dx$$
 
 Full derivation, numerics, statuses and verification gates: `docs/passive_device_model.md`.
+
+## Electroosmotic assistance (`src/nanofab/electroosmosis/`)
+
+Thin-EDL Helmholtz-Smoluchowski mobility and superficial EO velocity (uniform zeta, insulating
+solid, no surface conduction; F = formation factor, geometric):
+
+$$\mu_{EO}=-\frac{\varepsilon_r\varepsilon_0\zeta}{\mu},\qquad U=\frac{K}{\mu}\left(-\frac{dp}{dx}\right)+\frac{\mu_{EO}E}{F},\qquad F_{Maxwell}=\frac{1+\phi}{1-\phi}$$
+
+K is the same intrinsic permeability in the passive and assisted cases. Uniform-flux half-wick
+capillary limit with EO, \(\Pi=\mu U_{EO}L/(KP_{c,max})=V\varepsilon|\zeta|/(FKP_{c,max})\):
+
+$$\frac{q''_{dry,EO}}{q''_{dry,0}}=\frac{1+\Pi+\sqrt{1+2\Pi}}{2},\qquad \text{over-pumping (}P_c(L)<0\text{) when } U_0<2U_{EO}$$
+
+Derivations, assumptions and validity diagnostics: `docs/electroosmosis_model.md`.
