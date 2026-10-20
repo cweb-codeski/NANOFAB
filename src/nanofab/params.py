@@ -62,6 +62,16 @@ _UNIT_TABLE: dict[str, tuple[float, str]] = {
     "m2": (1.0, "m2"),
     "m/s2": (1.0, "m/s2"),
     "kg/s": (1.0, "kg/s"),
+    "kJ/kg": (1e3, "J/kg"),
+    "Pa/m": (1.0, "Pa/m"),
+    # electrokinetics
+    "mV": (1e-3, "V"),
+    "S/m": (1.0, "S/m"),
+    "uS/cm": (1e-4, "S/m"),
+    "mol/m3": (1.0, "mol/m3"),
+    "mol/L": (1e3, "mol/m3"),
+    "m2/V/s": (1.0, "m2/V/s"),
+    "S*cm2/mol": (1e-4, "S*m2/mol"),
 }
 
 

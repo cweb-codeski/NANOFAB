@@ -24,6 +24,7 @@ tracking, analytical sanity checks, and post-processing of COMSOL CSV exports.
 | `analysis/` | Scripts: baseline estimates, permeability / heat transfer from COMSOL exports |
 | `src/nanofab/device/` | Passive device-scale model (V2019 framework): table-driven Darcy transport + x-z substrate conduction, dryout search |
 | `parameters/cases/` | Named device cases (manifests referencing `parameters/*.yaml` entries) |
+| `src/nanofab/electroosmosis/` | 1D passive vs electroosmotically assisted wick (same K, same geometry); inputs in `parameters/electroosmosis/`, see `docs/electroosmosis_model.md` and `MODEL_STATUS.md` |
 | `comsol/` | COMSOL model notes (`.mph` files are gitignored) |
 | `data/` | Raw data, COMSOL exports, literature digitizations, processed results |
 | `tests/` | pytest checks of analytical limits and identities |
@@ -57,6 +58,11 @@ python analysis/run_passive_device.py --case parameters/cases/vaartstra2019_fig4
 python analysis/run_passive_device.py --case parameters/cases/vaartstra2019_fig4.yaml --search-dryout --output data/processed/device_runs/vaartstra_prediction
 #   (currently exits 3, MISSING_VALIDATED_INPUTS: no qualified physical cell tables exist yet)
 python analysis/import_cell_tables.py --manifest PATH_TO_EXPORT_MANIFEST --output data/processed/cell_tables/DATASET_ID
+
+# Passive vs electroosmotic wick (docs/electroosmosis_model.md) -> results/electroosmosis/
+python analysis/permeability_from_comsol.py data/comsol_exports/stage1_flow.csv --dp 1 --mu 2.816e-4
+python analysis/eo_assisted_wick.py
+python analysis/eo_field_treatment_test.py   # uniform vs solved field (docs/eo_field_treatment_test.md)
 
 # Tests
 pytest

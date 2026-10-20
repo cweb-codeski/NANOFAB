@@ -1,0 +1,236 @@
+# Inputs for the passive-vs-electroosmotic (EO) wick comparison (src/nanofab/electroosmosis/).
+#
+# Leaf schema as in parameters/*.yaml: {value, unit, provenance, source, source_location}.
+# `ref: name` copies an entry (with its provenance) from parameters/*.yaml. `defaults:` sets
+# provenance for the leaves below it. Bare numbers are rejected (whole_wick.config loader).
+#
+# Sections
+#   wick                  ONE geometry shared by Case A (passive) and Case B (EO). Enforced in code.
+#   operating             fluid state
+#   literature_scenarios  electrokinetic values stated in a held paper, used for bounded scenarios
+#   exploration_ranges    sweep axes for falsification. NOT property values.
+#   requires_source       device inputs we do not have (value: null). The model refuses
+#                         device-specific EO predictions until they are filled.
+
+wick:
+  pillar_diameter: {ref: pillar_diameter}
+  pillar_pitch: {ref: pillar_pitch}
+  pillar_height: {ref: pillar_height}
+  feed_length: {ref: wick_feed_length}
+  width: {ref: wick_width}
+  receding_contact_angle: {ref: receding_contact_angle}
+  permeability:
+    value: 2.9698e-11
+    unit: m2
+    provenance: COMSOL_EXTRACTED
+    source: null
+    source_location: "data/processed/permeability_stage1_flow.csv, hmax = 0.5 um (Stage 1 creeping flow, quarter cell, flat symmetry top, dp = 1 Pa, mu0 = 2.816e-4 Pa s)"
+    notes: >
+      Intrinsic (geometric) permeability. Identical in Case A and Case B and never a function of
+      the electric field. Valid only for d = 10, l = 30, h = 25 um with a flat meniscus.
+  # Electrical formation factor F = sigma_bulk / sigma_eff. 'maxwell_2d' = (1 + phi)/(1 - phi),
+  # verified numerically by electroosmosis.formation_factor (MODEL_CALCULATED). Replace with a
+  # COMSOL_EXTRACTED leaf from an Electric Currents study on the Stage 1 cell when it exists.
+  formation_factor: maxwell_2d
+
+operating:
+  # Thermophysical (hydraulic/thermal) properties: water at T_v from IAPWS via CoolProp. This is the
+  # dilute-solution approximation stated by pujahari2022 (end of Sec. 2.1.4: "as the concentrations
+  # of electrolyte are much less, it has a negligible effect on the fluid properties"). It is NOT a
+  # statement that the electrokinetic working fluid is pure water: the electrochemical system is
+  # dilute aqueous KCl (literature_scenarios below).
+  fluid: Water
+  vapor_temperature: {ref: vapor_temperature}
+
+literature_scenarios:
+  pujahari2022:
+    defaults: {provenance: PRIMARY_SOURCE, source: pujahari2022}
+    electrolyte: "dilute aqueous KCl (Table 1: KCl-water electrolytic solution at 100 C, ~1 bar saturation)"
+    relative_permittivity:
+      value: 55.4
+      unit: "-"
+      source_location: "Table 1 (at 100 C; from eps(T) = 305.7 exp(-T/219), Sec. 2.1.1, citing Han et al., ref. 28)"
+      notes: "An IAPWS dielectric-constant release would be the authoritative value; not held."
+    electrical_conductivity:
+      value: 0.79
+      unit: uS/cm
+      source_location: "Table 1 ('KCl-Water Electrolytic Solution' at 100 C)"
+      notes: >
+        One value for both concentrations. It enters pujahari2022 only through Eq. 8, which with a
+        uniform field does not affect the flow, so it does not change their (or our) hydraulic
+        results. It matters for current, Joule heat and Faradaic rates. Consistency estimates
+        (inputs from memory, REQUIRES_SOURCE): KCl alone ~0.4-0.5 uS/cm at 1e-6 M and ~40-50 uS/cm
+        at 1e-4 M at 100 C; intrinsic H+/OH- of water at 100 C is of order the Table 1 value. So
+        0.79 uS/cm is plausible for the 1e-6 M case and ~50x low for the 1e-4 M case.
+    # Paired lists: index 0 and index 1 belong together.
+    concentration:
+      value: [1.0e-4, 1.0e-6]
+      unit: mol/L
+      source_location: "Sec. 2.1.1 (KCl, following Mala et al. 1997, ref. 39)"
+    zeta_potential:
+      value: [-100, -200]
+      unit: mV
+      source_location: "Sec. 2.1.1 ('resulting in zeta potentials of -200 and -100 mV' for 1e-6 and 1e-4 M)"
+      notes: "Values originate in mala1997 (not held); temperature dependence of zeta not addressed."
+    debye_length:
+      value: [0.03, 0.3]
+      unit: um
+      source_location: "Sec. 3.2"
+    electric_field:
+      value: [5.0e+3, 1.0e+4, 1.0e+5]
+      unit: V/m
+      source_location: "Sec. 2.1.2 (range 5e3-1e5 V/m, along the wick); Fig. 5 uses 1e4 and 1e5"
+    field_application_length:
+      value: 5
+      unit: mm
+      provenance: ASSUMED
+      source: pujahari2022
+      source_location: "Sec. 2 (negative electrode 'on the opposite side of the liquid reservoir'); Sec. 2.1.2 ('for the considered range of electric field and wick length')"
+      notes: >
+        ENGINEERING EXTRAPOLATION, not a reproduction of the paper. pujahari2022 prescribes E as a
+        uniform x-field in each unit cell (Eq. 8 is 1D; BC dphi/dx = E on the cell faces); no
+        electrode, electrode gap, material, area or interfacial drop is modeled in the main text
+        (the Supporting Information, not held, gives the power estimate). V_bulk = E * this length is
+        the bulk liquid potential drop IF the field spans the whole 5 mm wick; the electrode-to-
+        electrode voltage would add the interfacial (Faradaic/capacitive) drops.
+    # The paper's own property set (reproduced only for the cross-check of its reported gains).
+    property_set:
+      mu: {value: 2.822e-4, unit: Pa*s, source_location: "Table 1"}
+      rho: {value: 960, unit: kg/m3, source_location: "Table 1"}
+      surface_tension: {value: 0.058, unit: N/m, source_location: "Table 1"}
+      h_fg: {value: 2260, unit: kJ/kg, source_location: "Table 1"}
+    cross_check:
+      pillar_diameter: {value: 5, unit: um, source_location: "Sec. 3.4"}
+      feed_length: {value: 5, unit: mm, source_location: "Sec. 3.4"}
+      receding_contact_angle: {value: 15, unit: deg, source_location: "Sec. 1-2 (dryout threshold, after zhu2016 / vaartstra2019)"}
+      tall:
+        pillar_height: {value: 25, unit: um, source_location: "Sec. 3.4, Fig. 6c,d"}
+        pitch_range: {value: [10, 45], unit: um, source_location: "Sec. 3.4"}
+        reported_gain_zeta100: {value: [1.40, 1.45], unit: "-", source_location: "Sec. 3.4 ('around 1.4-1.45 times')"}
+        reported_gain_zeta200: {value: [1.74, 1.80], unit: "-", source_location: "Sec. 3.4 ('1.74-1.8 times')"}
+      short:
+        pillar_height: {value: 5, unit: um, source_location: "Sec. 3.4, Fig. 6a,b"}
+        pitch_range: {value: [8, 18], unit: um, source_location: "Sec. 3.4"}
+        reported_gain_zeta100: {value: [1.9, 2.6], unit: "-", source_location: "Sec. 3.4 ('1.9-2.6')"}
+        reported_gain_zeta200: {value: [1.7, 4.18], unit: "-", source_location: "Sec. 3.4 ('1.7-4.18'); abstract: up to 320% increment at 1e5 V/m"}
+      field_for_reported_gain: {value: 1.0e+5, unit: V/m, source_location: "Abstract ('for an external electric field of 10^5 V/m')"}
+
+exploration_ranges:
+  defaults: {provenance: USER_PROVIDED, source: null, source_location: "sweep axis for falsification; not a property value"}
+  eo_mobility:
+    value: [1.0e-9, 1.0e-6]
+    unit: m2/V/s
+    notes: "Log sweep of mu_EO = -eps zeta / mu, spanning ~2 decades either side of the pujahari2022 values (1.7e-7, 3.5e-7 at 100 C)."
+  electric_field:
+    value: [0, 1.0e+5]
+    unit: V/m
+    notes: "Upper end = the largest field in pujahari2022. Fields above it are shown only as 'beyond literature-bound range'."
+  permeability_factor:
+    value: [0.63, 1.0]
+    unit: "-"
+    provenance: ASSUMED
+    source: vaartstra2019
+    source_location: "lower end = 1 - 0.37, the curvature calibration in parameters/whole_wick/cell_types.yaml (ASSUMED)"
+    notes: "Band on the effective K seen by the flow if the meniscus recedes. Multiplies the COMSOL flat-top K."
+  feed_length:
+    value: [1, 10]
+    unit: mm
+    notes: "Same range as the wick_feed_length sweep in parameters/geometry.yaml."
+  pillar_pitch:
+    value: [15, 60]
+    unit: um
+  pillar_height:
+    value: [5, 50]
+    unit: um
+  heat_flux:
+    value: [0, 300]
+    unit: W/cm2
+  oxide_thickness:
+    value: [0.1, 2.0]
+    unit: um
+    notes: "Oxide thickness is a design input (requires_source). Swept only for the field-effect diagnostic."
+  kcl_molar_conductivity_100C:
+    value: [400, 475]
+    unit: S*cm2/mol
+    provenance: ASSUMED
+    source: null
+    source_location: null
+    notes: >
+      Consistency-check band only, from memory, REQUIRES_SOURCE: ~400 from limiting ionic
+      conductivities of K+ and Cl- at 100 C; ~475 from Walden scaling of 149.9 S cm2/mol (25 C) by
+      the IAPWS viscosity ratio. Used for current, Joule heat and Faradaic-rate diagnostics only.
+  water_pKw_100C:
+    value: 12.27
+    unit: "-"
+    provenance: ASSUMED
+    source: null
+    source_location: null
+    notes: "From memory (IAPWS ionization-constant release not held). Gives [H+] = [OH-] ~ 7e-7 M, comparable to the 1e-6 M KCl case."
+  oxide_relative_permittivity:
+    value: 3.9
+    unit: "-"
+    provenance: ASSUMED
+    source: null
+    source_location: null
+    notes: "Same ASSUMED SiO2 value as parameters/whole_wick/cell_types.yaml (from memory, unchecked)."
+
+# Device inputs that no held source provides. `value` must stay null until a source is registered;
+# then move the entry into a scenario with full provenance.
+requires_source:
+  zeta_potential_device:
+    unit: mV
+    needed_for: "mu_EO; the whole EO effect is linear in zeta"
+    notes: "On OUR pillar surface (native or thermal oxide), with OUR electrolyte, at the operating temperature (~100 C). Measure (streaming potential/current) or cite."
+  electrolyte_composition_and_ionic_strength:
+    unit: mol/L
+    needed_for: "Debye length, zeta, conductivity; thin-EDL validity"
+    notes: "Include intrinsic H+/OH- at temperature (comparable to 1e-6 M KCl at 100 C) and any dissolved CO2."
+  electrical_conductivity_device:
+    unit: uS/cm
+    needed_for: "Joule heating, current, streaming coupling, electrolysis rate"
+  relative_permittivity_at_operating_T:
+    unit: "-"
+    needed_for: "mu_EO"
+    notes: "IAPWS static dielectric constant release would be AUTHORITATIVE_DATABASE; currently pujahari2022 Table 1."
+  applied_voltage:
+    unit: V
+    needed_for: "electrode-to-electrode voltage; with the electrode geometry it sets the bulk field E and the oxide-field limit"
+  electrode_spacing:
+    unit: mm
+    needed_for: "length over which E acts; whether electrodes sit at the feed and at the closed end (device centre)"
+  electrode_material_and_reaction_management:
+    unit: "-"
+    needed_for: "how the DC current is carried at the electrodes (Faradaic products: H2/O2 non-condensables and pH fronts in a sealed vapor chamber), or whether capacitive/AC/membrane schemes avoid it"
+  oxide_thickness_and_substrate_potential:
+    unit: um
+    needed_for: "field-effect change of zeta along the wick; dielectric breakdown; electrowetting cross-coupling"
+  dielectric_breakdown_field:
+    unit: V/m
+    needed_for: "upper bound on usable V"
+  ion_diffusivities_at_T:
+    unit: m2/s
+    needed_for: "Dukhin number (beyond the lower bound), salt accumulation Peclet number"
+  liquid_vapor_interface_zeta:
+    unit: mV
+    needed_for: "whether the free surface also slips electroosmotically (the similitude assumes it is uncharged and shear-free)"
+  zeta_temperature_dependence:
+    unit: mV/K
+    needed_for: "extrapolating room-temperature zeta (mala1997) to ~100 C"
+  zeta_concentration_dependence:
+    unit: mV/decade
+    needed_for: "zeta along the wick as KCl enriches by 1/(1 - x/L); the pujahari2022 pair implies ~50 mV/decade between 1e-6 and 1e-4 M only"
+  water_ionization_constant_at_T:
+    unit: "-"
+    needed_for: "intrinsic H+/OH- (ionic strength, Debye length, conductivity) of the 1e-6 M case at 100 C (IAPWS release on the ionization constant)"
+  kcl_molar_conductivity_at_T:
+    unit: S*cm2/mol
+    needed_for: "conductivity of each KCl case at 100 C (Table 1 gives one value for both)"
+  kcl_solubility_at_T:
+    unit: mol/kg
+    needed_for: "when the closed-end enrichment layer precipitates"
+  electrode_reactions_and_faradaic_efficiency:
+    unit: "-"
+    needed_for: "which reactions carry the DC current (water splitting, chloride oxidation, electrode dissolution) and the gas / pH-front production rate"
+  electrode_area_and_overpotential:
+    unit: A/m2
+    needed_for: "current density and interfacial voltage; electrode-to-electrode voltage = bulk drop + interfacial drops"
