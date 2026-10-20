@@ -4,7 +4,7 @@ Revision 2 (2026-10-18): corrected audit after re-reading pujahari2022 and digit
 Equations and assumptions: `docs/electroosmosis_model.md`. Regenerate with
 `python analysis/eo_assisted_wick.py` (≈3 min) → `results/electroosmosis/` (gitignored).
 Re-digitize with `python analysis/digitize_pujahari2022_fig6.py` (needs dev-only PyMuPDF).
-Tests: `pytest` → **201 passed** (163 pre-existing + 38 electroosmosis).
+Tests: `pytest` → **211 passed** (163 pre-existing + 38 electroosmosis + 10 planform field-treatment).
 
 **Classification of all EO results:** *idealized/conditional electroosmotic hydraulic predictions
 under an imposed electric field.* They are not device predictions.
@@ -64,6 +64,18 @@ Source: digitized Fig. 6 (`data/literature/pujahari2022_fig6_digitized.csv`, PRO
   floor slip is screened by √K_s. It gives R = 0.54–0.80. It matches the inferred R at small pitch
   but over-predicts it at large pitch, so it is a strong partial explanation, **not** confirmed.
 - **Which baseline is physical is unresolved:** our solved-field value or their ~0.6× value.
+- **Independent 2D test (revision 3, `docs/eo_field_treatment_test.md`):** a resolved Laplace +
+  Stokes planform calculation with identical HS slip, ζ, μ and mean field gives
+  Q_uniform/Q_solved = 0.50–0.63 (R_field = Q_solved/Q_uniform = 1.59–1.98) in the tall-pillar
+  limit, with no fitting.
+  - It agrees with R_inferred within 0.03 for h = 25 µm at l = 12.5–25 µm.
+  - 23 of 26 inferred points lie between the exact 2D limit and a heuristic floor bridge.
+  - Verified: current and mass conservation (~1e-13), similitude (Case B = 1/F), F vs the FV
+    solver (7e-5), K vs Sangani–Acrivos (0.05%), reversal, E → 0, and spectral convergence.
+  - Conclusion: field treatment explains the **magnitude**. The pitch and height trend at large
+    pitch and short pillars needs 3D (floor and meniscus).
+  - Physically, insulating pillars under a DC field require the solved field, so mu_EO E/F remains
+    our baseline.
 
 ## B. Our current wick (d/l/h = 10/30/25 µm, L = 5 mm, COMSOL K), at E = 1e5 V/m
 
@@ -124,6 +136,9 @@ for any (d, l, h, L), with the B-band caveats (R and passive K) applied on top.
 4. `fig8_preliminary_dryout.png`, labelled "idealized/conditional", with the B-band numbers.
 
 ## Single most important next calculation
+
+Status: the 2D Python version is done (above). The remaining step is the 3D COMSOL version
+specified in `docs/eo_field_treatment_test.md`, which adds the floor and finite height.
 
 **A unit-cell EO-flux calculation with the two field treatments, on identical geometry.** Use the
 same quarter cell, flat top, zero ΔP and thin-EDL slip (or PB body force) on pillars and floor.

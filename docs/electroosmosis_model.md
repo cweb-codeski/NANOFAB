@@ -217,6 +217,11 @@ factor at the same d, h, l, L, ζ and E (`results/electroosmosis/fig9_pujahari_r
 The earlier "smaller pitch gives smaller gain" disagreement was partly a misreading: their stated
 gain ranges are the extremes of U-shaped curves (h = 25 µm), not ranges over every pitch.
 
+**Independent test of item 4** (`docs/eo_field_treatment_test.md`): a resolved 2D planform
+Laplace + Stokes calculation finds Q_uniform/Q_solved = 0.50–0.63 in the tall-pillar limit, with no
+fitting. That is the observed magnitude; for h = 25 µm at l = 12.5–25 µm it agrees with R_inferred
+within 0.03. Height dependence (floor and meniscus) needs the 3D COMSOL check specified there.
+
 ## Assumption register
 
 | # | Assumption | Consequence if wrong | Diagnostic in the code |

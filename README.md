@@ -62,6 +62,7 @@ python analysis/import_cell_tables.py --manifest PATH_TO_EXPORT_MANIFEST --outpu
 # Passive vs electroosmotic wick (docs/electroosmosis_model.md) -> results/electroosmosis/
 python analysis/permeability_from_comsol.py data/comsol_exports/stage1_flow.csv --dp 1 --mu 2.816e-4
 python analysis/eo_assisted_wick.py
+python analysis/eo_field_treatment_test.py   # uniform vs solved field (docs/eo_field_treatment_test.md)
 
 # Tests
 pytest
