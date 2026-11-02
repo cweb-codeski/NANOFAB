@@ -62,16 +62,29 @@ _UNIT_TABLE: dict[str, tuple[float, str]] = {
     "m2": (1.0, "m2"),
     "m/s2": (1.0, "m/s2"),
     "kg/s": (1.0, "kg/s"),
+    # heat-transfer coefficient
+    "W/m2/K": (1.0, "W/m2/K"),
+    "kW/m2/K": (1e3, "W/m2/K"),
+    # surface tension
+    "mN/m": (1e-3, "N/m"),
     "kJ/kg": (1e3, "J/kg"),
     "Pa/m": (1.0, "Pa/m"),
-    # electrokinetics
+    # voltage
+    "V": (1.0, "V"),
+    "kV": (1e3, "V"),
     "mV": (1e-3, "V"),
+    # electrokinetics
     "S/m": (1.0, "S/m"),
     "uS/cm": (1e-4, "S/m"),
     "mol/m3": (1.0, "mol/m3"),
     "mol/L": (1e3, "mol/m3"),
     "m2/V/s": (1.0, "m2/V/s"),
     "S*cm2/mol": (1e-4, "S*m2/mol"),
+    # electric field
+    "V/m": (1.0, "V/m"),
+    "kV/m": (1e3, "V/m"),
+    "MV/m": (1e6, "V/m"),
+    "V/um": (1e6, "V/m"),
 }
 
 
@@ -109,6 +122,11 @@ def _to_si(value: Any, unit: str, name: str) -> tuple[Any, str]:
         )
     factor, si_unit = _UNIT_TABLE[unit]
     return float(value) * factor, si_unit
+
+
+def parse_entry(name: str, entry: Any, file: str, sources: dict) -> Parameter:
+    """Validate one ``{value, unit, provenance, source, source_location}`` mapping and convert to SI."""
+    return _parse_entry(name, entry, file, sources)
 
 
 def _parse_entry(name: str, entry: Any, file: str, sources: dict) -> Parameter:

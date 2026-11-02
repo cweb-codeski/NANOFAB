@@ -4,7 +4,15 @@ Revision 2 (2026-10-18): corrected audit after re-reading pujahari2022 and digit
 Equations and assumptions: `docs/electroosmosis_model.md`. Regenerate with
 `python analysis/eo_assisted_wick.py` (≈3 min) → `results/electroosmosis/` (gitignored).
 Re-digitize with `python analysis/digitize_pujahari2022_fig6.py` (needs dev-only PyMuPDF).
-Tests: `pytest` → **211 passed** (163 pre-existing + 38 electroosmosis + 10 planform field-treatment).
+Tests: `pytest` → **212 passed** (127 passive/device/provenance + 36 whole-wick + 38 electroosmosis +
+10 planform field-treatment + 1 repository-integrity), from a clean checkout.
+Repository note (2026-11-01): the 211 previously reported here included `tests/test_whole_wick.py`, and
+`src/nanofab/electroosmosis/inputs.py` imports `nanofab.whole_wick`, but the whole-wick package, its
+inputs and the `params.py`/`provenance.py`/`config/sources.yaml` additions it needs were never
+committed. A clean checkout of `9b9ea2b` therefore failed at test collection (137 passed, 1 collection
+error). They are now committed unchanged from the original working tree. EO, whole-wick case and
+validation outputs regenerated from the clean checkout match the earlier results (identical, or within
+1e-15 relative round-off for the EO tables).
 
 **Classification of all EO results:** *idealized/conditional electroosmotic hydraulic predictions
 under an imposed electric field.* They are not device predictions.

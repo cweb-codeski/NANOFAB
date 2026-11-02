@@ -25,6 +25,21 @@ Files involved:
 | `ASSUMED` | Not supported by a held source: a modeling choice, an engineering guess, or a value from a citation we have not checked. If an unverified citation exists, it goes in `source` with a note. | optional |
 | `DESIGN_TARGET` | A project goal (for example 100 W/cm²). Lives only in `parameters/design_targets.yaml`. | no |
 | `PROJECT_CONTEXT` | Chase's notes, the project brief, Drive documents. These explain intent and priorities; they are not scientific evidence. | yes |
+| `COMSOL_EXTRACTED` | Post-processed from one of our COMSOL unit-cell runs. `source_location` names the export file or `.mph` model and stage. Kept apart from `MODEL_CALCULATED` so COMSOL results and Python analytical results are never confused. | no (`null`) |
+| `USER_PROVIDED` | A case-definition choice made by the user, such as a hotspot position, a field mask or a grid size. Not a physical claim. | no |
+
+The whole-wick model reports every value in one of five categories (`provenance.report_category`):
+
+| Report category | Provenance classes |
+| --- | --- |
+| literature value | `PRIMARY_SOURCE`, `AUTHORITATIVE_DATABASE`, `PROJECT_DERIVED` |
+| extracted from COMSOL | `COMSOL_EXTRACTED` |
+| analytical value | `MODEL_CALCULATED` |
+| estimate | `ASSUMED` |
+| user-provided value | `USER_PROVIDED`, `DESIGN_TARGET`, `PROJECT_CONTEXT` |
+
+A derived property table inherits the weakest provenance of its inputs (`provenance.weakest`). For
+example, an h_e table built from a PRIMARY_SOURCE geometry and an ASSUMED h_e level is ASSUMED.
 
 A value's provenance describes how **this value** was obtained, not how reputable the source is.
 For example, the 19% permeability reduction uses the PRIMARY_SOURCE value of 82 W/cm², but the

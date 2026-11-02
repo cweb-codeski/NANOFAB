@@ -23,6 +23,10 @@ data/raw/*
 plots/*
 !plots/README.md
 
+# Generated whole-wick results (regenerate with whole_wick/run_*.py)
+results/*
+!results/README.md
+
 # OS / editor
 .DS_Store
 Thumbs.db
