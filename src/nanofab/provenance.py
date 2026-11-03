@@ -37,6 +37,51 @@ VALID_PROVENANCE = frozenset(
 # Categories that must name a registered source.
 REQUIRES_SOURCE = frozenset({PRIMARY_SOURCE, AUTHORITATIVE_DATABASE, PROJECT_DERIVED, PROJECT_CONTEXT})
 
+# Five reporting categories used by the whole-wick model (docs/whole_wick_assumptions.md, D8).
+LITERATURE = "literature value"
+COMSOL = "extracted from COMSOL"
+ANALYTICAL = "analytical value"
+ESTIMATE = "estimate"
+USER = "user-provided value"
+
+REPORT_CATEGORY = {
+    PRIMARY_SOURCE: LITERATURE,
+    AUTHORITATIVE_DATABASE: LITERATURE,
+    PROJECT_DERIVED: LITERATURE,
+    COMSOL_EXTRACTED: COMSOL,
+    MODEL_CALCULATED: ANALYTICAL,
+    ASSUMED: ESTIMATE,
+    DESIGN_TARGET: USER,
+    PROJECT_CONTEXT: USER,
+    USER_PROVIDED: USER,
+}
+
+# Weakest-first order used when a derived quantity inherits provenance from several inputs.
+# User design choices (e.g. a chosen pitch) do not downgrade a calculated result; ASSUMED inputs do.
+_WEAKNESS_ORDER = (
+    ASSUMED,
+    MODEL_CALCULATED,
+    COMSOL_EXTRACTED,
+    USER_PROVIDED,
+    DESIGN_TARGET,
+    PROJECT_CONTEXT,
+    PROJECT_DERIVED,
+    AUTHORITATIVE_DATABASE,
+    PRIMARY_SOURCE,
+)
+
+
+def report_category(label: str) -> str:
+    """Map a provenance class to one of the five whole-wick reporting categories."""
+    return REPORT_CATEGORY[validate_provenance(label)]
+
+
+def weakest(*labels: str) -> str:
+    """Return the least authoritative of ``labels`` (an ASSUMED input makes the result ASSUMED)."""
+    for label in labels:
+        validate_provenance(label)
+    return min(labels, key=_WEAKNESS_ORDER.index)
+
 # Categories that may appear as literature replication targets.
 LITERATURE_TARGET_PROVENANCE = frozenset({PRIMARY_SOURCE, PROJECT_DERIVED})
 

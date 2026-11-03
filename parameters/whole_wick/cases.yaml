@@ -1,0 +1,79 @@
+# Heat-flux maps, geometry/material maps, electrowetting voltage maps and the cases.
+# Every case is run under the same heat map and operating point (Stage F).
+
+defaults:
+  provenance: USER_PROVIDED
+  source: null
+  source_location: "case definition"
+
+heat_maps:
+  uniform_50:
+    type: uniform
+    q: {value: 50, unit: W/cm2, notes: "Operating point. Equal to the vaartstra2019 unit-cell flux (Sec. 3.1)."}
+
+  gaussian_hotspot:
+    type: gaussian
+    background: {value: 30, unit: W/cm2}
+    hotspots:
+      - x: {value: 6.5, unit: mm}
+        y: {value: 5.0, unit: mm}
+        sigma: {value: 0.75, unit: mm}
+        peak_increment: {value: 120, unit: W/cm2}
+
+  v2019_center_hotspot:
+    type: patches
+    background: {value: 50, unit: W/cm2, provenance: PROJECT_DERIVED, source: vaartstra2019, source_location: "A.4, Fig. A2(a)"}
+    patches:
+      - x_min: {value: 4.5, unit: mm, provenance: PROJECT_DERIVED, source: vaartstra2019, source_location: "A.4: hotspot on 0.9 < x/L <= 1, mirrored about the center"}
+        x_max: {value: 5.5, unit: mm, provenance: PROJECT_DERIVED, source: vaartstra2019, source_location: "A.4"}
+        y_min: {value: 0, unit: mm}
+        y_max: {value: 10, unit: mm}
+        q: {value: 100, unit: W/cm2, provenance: PROJECT_DERIVED, source: vaartstra2019, source_location: "A.4, Fig. A2"}
+
+  user_die_map:
+    type: file
+    path: parameters/whole_wick/heat_maps/example_die_map.csv
+    unit: W/cm2
+    provenance: USER_PROVIDED
+    source: null
+    source_location: "illustrative 8x8 die power map (not from a real chip)"
+
+geometry_maps:
+  uniform:
+    type: uniform
+    cell_type: si_d10_l30_h25
+
+  graded:
+    type: feed_distance_bands
+    bands:
+      - {max_distance: {value: 1.5, unit: mm}, cell_type: si_d10_l40_h25}
+      - {max_distance: {value: 3.5, unit: mm}, cell_type: si_d10_l30_h25}
+      - {cell_type: si_d10_l22_h25}
+
+# Applied electrowetting voltage V (magnitude, volts) across the dielectric coating of each cell.
+# Voltage may only be applied to cell types with a dielectric_coating (cell_types.yaml).
+# Electrical power is UNRESOLVED (no electrode/circuit model); only V is reported.
+voltage_maps:
+  none:
+    type: zero
+
+  global:
+    type: uniform
+    V: {value: 10, unit: V, source_location: "case definition; below the ~11 V at which cos(theta_V) reaches 1 for 1 um SiO2"}
+
+  selective:
+    type: vulnerability_mask
+    reference_case: passive_uniform
+    evaluate_at: dryout          # dryout | nominal (decision D11)
+    threshold: {value: 0.7, unit: "-", notes: "cells with required Pc / Pc_max(0) >= threshold in the passive case"}
+    V: {value: 10, unit: V, source_location: "case definition; same voltage as the global case"}
+
+cases:
+  passive_uniform: {geometry_map: uniform, voltage_map: none}          # 1. passive, V = 0
+  global_ew: {geometry_map: uniform, voltage_map: global}              # 2. globally actuated
+  selective_ew: {geometry_map: uniform, voltage_map: selective}        # 3. selectively actuated
+  passive_graded: {geometry_map: graded, voltage_map: none}            # geometry-only comparison
+
+comparison:
+  reference_case: passive_uniform
+  heat_maps: [uniform_50, gaussian_hotspot, v2019_center_hotspot, user_die_map]

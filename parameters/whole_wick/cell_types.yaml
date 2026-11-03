@@ -1,0 +1,165 @@
+# Unit-cell designs (cell types) available to the whole-wick model, and where their properties
+# come from. A graded wick is a map of these cell types (decision D9, assumption W21).
+#
+# Electrical assistance is modeled ONLY as electrowetting on a dielectric coating
+# (src/nanofab/whole_wick/electrowetting.py, docs/whole_wick_assumptions.md D1):
+#   cos(theta_V) = cos(theta_0) + eps_r eps_0 V^2 / (2 gamma t_dielectric)
+#   Pc_max(V)    = 2 gamma cos(theta_V) / r_eff
+# Voltage changes Pc_max only. K(Pc) and h_e(Pc) do not depend on V (pinned meniscus, A9).
+#
+# Property recipes (src/nanofab/whole_wick/properties.py):
+#   K:     analytical_flat | analytical_curvature | constant | table
+#   h_e:   placeholder_linear | constant | table
+#   k_eff: parallel | constant
+# `table` reads a long-format CSV written by unit_cell/build_property_tables.py from COMSOL
+# Stage 5 exports. Use it as soon as those exports exist; the placeholders below are not physics.
+
+table_resolution:
+  n_pc: {value: 21, unit: "-", provenance: USER_PROVIDED, source: null, source_location: "Pc points in generated tables"}
+
+materials:
+  silicon:
+    thermal_conductivity: {ref: silicon_thermal_conductivity}
+  copper:
+    thermal_conductivity:
+      value: 401
+      unit: W/m/K
+      provenance: AUTHORITATIVE_DATABASE
+      source: incropera_fhmt
+      source_location: "Table A.1, pure Cu at 300 K (from memory, not re-checked)"
+      notes: "Only used to exercise spatially varying pillar materials. Not a design recommendation."
+
+dielectric_coatings:
+  sio2_1um:
+    epsilon_r:
+      value: 3.9
+      unit: "-"
+      provenance: ASSUMED
+      source: null
+      source_location: null
+      notes: "Thermal SiO2 relative permittivity, commonly quoted value written from memory; not checked against a held source."
+    t_dielectric:
+      value: 1.0
+      unit: um
+      provenance: USER_PROVIDED
+      source: null
+      source_location: "design choice; coating thickness also adds thermal resistance not yet modeled (EW5)"
+    saturation_angle:
+      value: 0
+      unit: deg
+      provenance: ASSUMED
+      source: mugele_baret2005
+      source_location: null
+      notes: >
+        0 = only the physical bound cos(theta_V) <= 1. Real electrowetting saturates at a finite
+        angle (mugele_baret2005, not held). If theta_sat > theta_0 the voltage has NO effect.
+        Swept in whole_wick/run_sweeps.py.
+
+property_recipes:
+  analytical_flat_placeholder_he:
+    K: {method: analytical_flat}
+    h_e:
+      method: placeholder_linear
+      h_e_at_zero_pc:
+        value: 60
+        unit: kW/m2/K
+        provenance: ASSUMED
+        source: vaartstra2019
+        source_location: "Sec. 3.2 states h_e > 60 kW/m2K at 82 W/cm2 (a lower bound, used here as a level)"
+      rise_at_pc_max:
+        value: 0.3
+        unit: "-"
+        provenance: ASSUMED
+        source: vaartstra2019
+        source_location: "Sec. 1, Sec. 3.2: h_e varies ~30%, highest at device center"
+        notes: "Makes the 30% trend an INPUT. Do not cite whole-wick h_e variation as validation (W18)."
+    k_eff: {method: parallel}
+
+  curvature_K_placeholder_he:
+    K:
+      method: analytical_curvature
+      reduction_at_pc_max:
+        value: 0.37
+        unit: "-"
+        provenance: ASSUMED
+        source: vaartstra2019
+        source_location: "calibrated: makes the uniform 1D dryout match the 82 W/cm2 of Sec. 3.2"
+        notes: >
+          K(Pc) = K_flat (1 - a Pc/Pc_max(V=0)); the 1D dryout scales as (1 - a/2), and a = 0.37
+          gives 100.6 -> 82 W/cm2. This is a CALIBRATION, so agreement with 82 W/cm2 is not
+          validation. Replace with COMSOL Stage 3/5 K(Pc).
+    h_e:
+      method: placeholder_linear
+      h_e_at_zero_pc: {value: 60, unit: kW/m2/K, provenance: ASSUMED, source: vaartstra2019, source_location: "Sec. 3.2 (bound used as level)"}
+      rise_at_pc_max: {value: 0.3, unit: "-", provenance: ASSUMED, source: vaartstra2019, source_location: "Sec. 1, Sec. 3.2"}
+    k_eff: {method: parallel}
+
+  comsol_stage1_K:
+    K:
+      method: constant
+      value:
+        value: 2.9698e-11
+        unit: m2
+        provenance: COMSOL_EXTRACTED
+        source: null
+        source_location: "data/processed/permeability_stage1_flow.csv, hmax = 0.5 um (Stage 1, flat top)"
+        notes: "Valid ONLY for d = 10, l = 30, h = 25 um. -1.3% vs the analytical K."
+    h_e:
+      method: placeholder_linear
+      h_e_at_zero_pc: {value: 60, unit: kW/m2/K, provenance: ASSUMED, source: vaartstra2019, source_location: "Sec. 3.2 (bound used as level)"}
+      rise_at_pc_max: {value: 0.3, unit: "-", provenance: ASSUMED, source: vaartstra2019, source_location: "Sec. 1, Sec. 3.2"}
+    k_eff: {method: parallel}
+
+# theta_0: zero-voltage RECEDING contact angle on the wick's top surface (the dielectric, if coated).
+# r_eff:   'from_geometry' = 2 (l^2 - pi d^2/4) / (pi d), which makes Pc_max(0) identical to
+#          vaartstra2019 Eq. 3. A value leaf (e.g. from the COMSOL Stage 3 depinning curvature) overrides it.
+cell_types:
+  si_d10_l30_h25:
+    pillar_material: silicon
+    substrate_material: silicon
+    pillar_diameter: {ref: pillar_diameter}
+    pillar_pitch: {ref: pillar_pitch}
+    pillar_height: {ref: pillar_height}
+    theta_0: {ref: receding_contact_angle}
+    r_eff: from_geometry
+    dielectric_coating: sio2_1um
+    property_recipe: analytical_flat_placeholder_he
+
+  si_d10_l40_h25:
+    pillar_material: silicon
+    substrate_material: silicon
+    pillar_diameter: {ref: pillar_diameter}
+    pillar_pitch: {value: 40, unit: um, provenance: USER_PROVIDED, source: null, source_location: "graded-wick design: open zone near the feed"}
+    pillar_height: {ref: pillar_height}
+    theta_0: {ref: receding_contact_angle}
+    r_eff: from_geometry
+    dielectric_coating: sio2_1um
+    property_recipe: analytical_flat_placeholder_he
+
+  si_d10_l22_h25:
+    pillar_material: silicon
+    substrate_material: silicon
+    pillar_diameter: {ref: pillar_diameter}
+    pillar_pitch: {value: 22, unit: um, provenance: USER_PROVIDED, source: null, source_location: "graded-wick design: dense zone far from the feed"}
+    pillar_height: {ref: pillar_height}
+    theta_0: {ref: receding_contact_angle}
+    r_eff: from_geometry
+    dielectric_coating: sio2_1um
+    property_recipe: analytical_flat_placeholder_he
+
+  cu_d10_l30_h25:
+    pillar_material: copper
+    substrate_material: silicon
+    pillar_diameter: {ref: pillar_diameter}
+    pillar_pitch: {ref: pillar_pitch}
+    pillar_height: {ref: pillar_height}
+    theta_0:
+      value: 15
+      unit: deg
+      provenance: ASSUMED
+      source: null
+      source_location: null
+      notes: "Placeholder equal to the Si/SiO2 value. Water on Cu depends on oxidation and contamination."
+    r_eff: from_geometry
+    property_recipe: analytical_flat_placeholder_he
+    # no dielectric_coating: applying voltage here raises an error

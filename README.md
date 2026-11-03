@@ -22,9 +22,13 @@ tracking, analytical sanity checks, and post-processing of COMSOL CSV exports.
 | `parameters/` | YAML inputs; every entry has `value`, `unit`, `status`, `source` |
 | `src/nanofab/` | Python library (fluids, capillary, permeability, dryout, evaporation, conduction, ...) |
 | `analysis/` | Scripts: baseline estimates, permeability / heat transfer from COMSOL exports |
+| `unit_cell/` | Hand-off from unit-cell COMSOL sweeps to whole-wick lookup tables |
 | `src/nanofab/device/` | Passive device-scale model (V2019 framework): table-driven Darcy transport + x-z substrate conduction, dryout search |
 | `parameters/cases/` | Named device cases (manifests referencing `parameters/*.yaml` entries) |
+| `whole_wick/` | Whole-wick reduced-order model: README, case and sweep runners (code in `src/nanofab/whole_wick/`) |
+| `validation/` | Whole-wick validation script and report |
 | `src/nanofab/electroosmosis/` | 1D passive vs electroosmotically assisted wick (same K, same geometry); inputs in `parameters/electroosmosis/`, see `docs/electroosmosis_model.md` and `MODEL_STATUS.md` |
+| `results/` | Generated whole-wick outputs (regenerate; not committed) |
 | `comsol/` | COMSOL model notes (`.mph` files are gitignored) |
 | `data/` | Raw data, COMSOL exports, literature digitizations, processed results |
 | `tests/` | pytest checks of analytical limits and identities |
@@ -59,6 +63,11 @@ python analysis/run_passive_device.py --case parameters/cases/vaartstra2019_fig4
 #   (currently exits 3, MISSING_VALIDATED_INPUTS: no qualified physical cell tables exist yet)
 python analysis/import_cell_tables.py --manifest PATH_TO_EXPORT_MANIFEST --output data/processed/cell_tables/DATASET_ID
 
+# Whole-wick model (see whole_wick/README.md)
+python whole_wick/run_cases.py
+python whole_wick/run_sweeps.py
+python validation/run_validation.py
+
 # Passive vs electroosmotic wick (docs/electroosmosis_model.md) -> results/electroosmosis/
 python analysis/permeability_from_comsol.py data/comsol_exports/stage1_flow.csv --dp 1 --mu 2.816e-4
 python analysis/eo_assisted_wick.py
@@ -72,7 +81,8 @@ pytest
 
 Every input in `parameters/*.yaml` has `value`, `unit`, `provenance`, `source` and
 `source_location`. `provenance` is one of `PRIMARY_SOURCE`, `AUTHORITATIVE_DATABASE`,
-`PROJECT_DERIVED`, `MODEL_CALCULATED`, `ASSUMED`, `DESIGN_TARGET` or `PROJECT_CONTEXT`. `source`
+`PROJECT_DERIVED`, `MODEL_CALCULATED`, `ASSUMED`, `DESIGN_TARGET`, `PROJECT_CONTEXT`,
+`COMSOL_EXTRACTED` or `USER_PROVIDED`. `source`
 is an id in `config/sources.yaml`. The loader rejects an invalid label, a missing source where
 one is required, or an unregistered source id. Project design targets live only in
 `parameters/design_targets.yaml`, kept apart from replication inputs. The definitions, the

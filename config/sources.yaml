@@ -422,6 +422,21 @@ schrage1953:
     DISCREPANCY: vaartstra2019 ref. [22] prints the year as 1954 ("Columbia Press, 1954"); the
     year 1953 used in our docstrings is from memory. Both are preserved until checked.
 
+mugele_baret2005:
+  title: "Electrowetting: from basics to applications"
+  authors: ["F. Mugele", "J.-C. Baret"]
+  year: 2005
+  venue: "J. Phys.: Condens. Matter 17 (2005) R705"
+  doi: null
+  type: ASSUMED
+  bibliography_verified: false
+  content_verified: false
+  local_path: null
+  notes: >
+    NOT HELD; citation from memory. Cited for the Lippmann-Young equation
+    cos(theta_V) = cos(theta_0) + eps_r eps_0 V^2 / (2 gamma t) and for contact-angle saturation.
+    Obtain and check before any electrowetting result is reported outside the project.
+
 lienhard_textbook:
   title: "A Heat Transfer Textbook, 4th ed."
   authors: ["J.H. Lienhard IV", "J.H. Lienhard V"]

@@ -1,0 +1,63 @@
+# Whole-wick model: domain, grid, substrate, operating point, boundary conditions, solver.
+#
+# Leaf schema as in parameters/*.yaml: {value, unit, provenance, source, source_location}.
+# `ref: name` copies an entry (with its provenance) from parameters/*.yaml.
+# `defaults:` sets provenance for every leaf below it. Bare numbers are rejected by the loader.
+# Pressure convention (docs/whole_wick_assumptions.md, D7): Pc = p_v - p_l >= 0.
+
+domain:
+  length_x:
+    value: 10
+    unit: mm
+    provenance: PROJECT_DERIVED
+    source: vaartstra2019
+    source_location: "Sec. 3.2: fed from both x edges with L = 5 mm edge-to-center, so 2L = 10 mm; Sec. 1: 1 cm x 1 cm wick"
+  length_y: {ref: wick_width}
+
+grid:
+  defaults: {provenance: USER_PROVIDED, source: null, source_location: "grid choice; see validation/ grid study"}
+  nx: {value: 40, unit: "-", notes: "dx = 250 um = 8.3 pitches at l = 30 um (W2 needs >= 3)"}
+  ny: {value: 40, unit: "-", notes: "dy = 250 um; needed to resolve hotspots with sigma ~ 0.75 mm"}
+
+substrate:
+  material: silicon
+  thickness: {ref: substrate_thickness}
+
+operating:
+  fluid: Water
+  vapor_temperature: {ref: vapor_temperature}
+  # Liquid-vapor surface tension gamma, used in Lippmann-Young and in Pc_max(V).
+  # 'from_fluid' = IAPWS value via CoolProp at T_v (AUTHORITATIVE_DATABASE, 58.9 mN/m at 100 C).
+  # Or give a leaf, e.g. {value: 58.9, unit: mN/m, provenance: ..., source: ..., source_location: ...}.
+  surface_tension: from_fluid
+
+feeds:
+  edges:
+    left:
+      Pc_feed: {value: 0, unit: Pa, provenance: ASSUMED, source: null, source_location: null,
+                notes: "Flat reservoir meniscus at the feed (assumption W13)."}
+    right:
+      Pc_feed: {value: 0, unit: Pa, provenance: ASSUMED, source: null, source_location: null,
+                notes: "Flat reservoir meniscus at the feed (assumption W13)."}
+  # Optional independent supply limit (decision D3). Uncomment to activate.
+  # max_mass_flow: {value: 1.0e-5, unit: kg/s, provenance: ASSUMED, source: null, source_location: null}
+
+# Fixed-temperature edges, e.g. {left: {T: {value: 100, unit: degC, ...}}}. Empty = all adiabatic,
+# as in the vaartstra2019 device model (Sec. 2.3, symmetry at x = 0 and x = L).
+thermal_edges: {}
+
+gravity_inplane:
+  defaults: {provenance: ASSUMED, source: null, source_location: "horizontal wick (assumption W17)"}
+  gx: {value: 0, unit: m/s2}
+  gy: {value: 0, unit: m/s2}
+
+solver:
+  defaults: {provenance: USER_PROVIDED, source: null, source_location: "solver setting"}
+  face_average: harmonic           # harmonic | arithmetic (decision D5)
+  extrapolation_policy: warn       # warn (clip + report) | raise
+  dry_model: onset                 # onset | dry_patch (decision D3, assumption W11/W20)
+  h_dry: {value: 0, unit: W/m2/K, provenance: ASSUMED, source_location: "dry cells do not evaporate (W20)"}
+  # No electrical heating is added: electrical power is unresolved until an electrode/circuit model exists (D14).
+  tol: {value: 1.0e-8, unit: "-", notes: "max |dPc| / max(Pc_max) between Picard iterations"}
+  max_iter: {value: 200, unit: "-"}
+  relax: {value: 1.0, unit: "-"}
