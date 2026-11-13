@@ -37,20 +37,36 @@ python -m venv .venv
 pip install -e ".[dev]"
 ```
 
+## Where to start
+
+| Document | Purpose |
+| --- | --- |
+| `docs/comsol_unit_cell_guide.md` | **Canonical workflow**: geometry cases, Stages 1-7, build procedures, checks |
+| `docs/modeling_audit_2026-11.md` | Prioritized audit, source/assumption register, blockers |
+| `docs/validation_and_experiments.md` | Verification vs validation, literature benchmarks, experiment plan and matrix |
+| `docs/stage2_undergrad_assignment.md` | Current undergraduate task (Stage 2) |
+| `parameters/unit_cell/cases.yaml` | Reference (10/30/25 µm) and proposed (20/50/40 µm) cases, kept separate |
+
 ## Common commands
 
 ```powershell
+# Hand-calculation equivalents of every COMSOL stage, reference vs proposed cell
+python analysis/case_hand_checks.py
+
+# Compare the two independent Stage 1 builds of the reference cell
+python analysis/stage1_crosscheck.py
+
 # Analytical sanity-check table for the baseline geometry
 python analysis/baseline_estimates.py
 
 # Analytical models vs Vaartstra, Lu & Wang (IJHMT 2019) reported values
 python analysis/vaartstra_replication.py
 
-# Permeability from a COMSOL Stage 1 export
-python analysis/permeability_from_comsol.py data/comsol_exports/stage1_flow.csv
+# Permeability from a COMSOL Stage 1 export (--case when d/l/hp are not export columns)
+python analysis/permeability_from_comsol.py data/comsol_exports/stage1_flow.csv --case reference_d10_l30_h25
 
-# Effective evaporative h from a COMSOL Stage 4/5 export
-python analysis/heat_transfer_from_comsol.py data/comsol_exports/stage4_thermal.csv
+# Effective evaporative h from a COMSOL Stage 2/4/5 export (needs an hmax column to write output)
+python analysis/heat_transfer_from_comsol.py data/comsol_exports/stage4_thermal.csv --case reference_d10_l30_h25
 
 # Passive device-scale model (docs/passive_device_model.md)
 python analysis/device_benchmarks.py --suite all --output data/processed/device_runs/verification
@@ -72,7 +88,8 @@ pytest
 
 Every input in `parameters/*.yaml` has `value`, `unit`, `provenance`, `source` and
 `source_location`. `provenance` is one of `PRIMARY_SOURCE`, `AUTHORITATIVE_DATABASE`,
-`PROJECT_DERIVED`, `MODEL_CALCULATED`, `ASSUMED`, `DESIGN_TARGET` or `PROJECT_CONTEXT`. `source`
+`PROJECT_DERIVED`, `MODEL_CALCULATED`, `ASSUMED`, `DESIGN_TARGET`, `PROJECT_CONTEXT`,
+`COMSOL_EXTRACTED` or `USER_PROVIDED`. `source`
 is an id in `config/sources.yaml`. The loader rejects an invalid label, a missing source where
 one is required, or an unregistered source id. Project design targets live only in
 `parameters/design_targets.yaml`, kept apart from replication inputs. The definitions, the
@@ -81,10 +98,11 @@ affects performance should be swept rather than trusted (see `docs/assumptions.m
 
 ## Current status
 
-Phase 1 (learn and reproduce). The baseline is the Vaartstra, Lu & Wang (IJHMT 136, 2019)
+Phase 1 (learn and reproduce). The reference case is the Vaartstra, Lu & Wang (IJHMT 136, 2019)
 device: d = 10 µm, l = 30 µm, h = 25 µm, L = 5 mm, water at 100 °C (all `PRIMARY_SOURCE`).
-Replication targets are in `data/literature/vaartstra2019_targets.csv`. Start with
-`docs/comsol_unit_cell_guide.md`.
+The proposed wick (20/50/40 µm, user design inputs) is a separate case with its own runs.
+Replication targets are in `data/literature/vaartstra2019_targets.csv`. Per-stage evidence status
+is in `docs/comsol_unit_cell_guide.md` §0 and `MODEL_STATUS.md`.
 
 The passive device model (`src/nanofab/device/`) is numerically verified on analytical and
 manufactured inputs. A V2019 literature comparison is blocked until qualified unit-cell tables

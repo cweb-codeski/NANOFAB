@@ -1,0 +1,16 @@
+# Stage 2 (flat interface, conduction, linearized interfacial resistance), reference geometry.
+# Reported by: Chase, text exports from stage2_flat_interface.mph, COMSOL 6.3.0.420 (transcribed 2026-11-13).
+# Status: REPORTED_UNVERIFIED.
+# The two Q_in columns and the two T_base columns carry NO mesh, dataset or selection identifiers.
+#   Do NOT treat them as successive meshes, do NOT average them, and do NOT form an energy balance:
+#   no Q_evap column is part of this report.
+# Q_in = 1.125e-4 W equals q0*(l/2)^2 = 50 W/cm^2 * (15 um)^2 exactly; a Global Evaluation of that
+#   expression only echoes the input. It does not show that the heater boundary carries that heat.
+# A separately assembled file (data/comsol_exports/stage2_flat_d10_l30_h25.txt, gitignored) labels
+#   the rows "coarser"/"finer" by inference and picks a Q_evap column; that labelling is not
+#   evidence (config/data_inventory.yaml).
+column,quantity,value,unit
+Q_in_col1,Q_in,1.125e-4,W
+Q_in_col2,Q_in,1.125e-4,W
+T_base_col1,T_base,381.19638568455605,K
+T_base_col2,T_base,381.21757382818055,K

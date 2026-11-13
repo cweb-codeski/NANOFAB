@@ -1,4 +1,26 @@
-# MODEL_STATUS — Passive vs Electroosmotically Assisted Micropillar Wick
+# MODEL_STATUS
+
+## Workflow status, all stages (2026-11-13)
+
+Canonical plan: `docs/comsol_unit_cell_guide.md` (§0 has the per-stage, per-case table). Audit:
+`docs/modeling_audit_2026-11.md`. Evidence labels: EXECUTED_EVIDENCE, STORED_DERIVED,
+REPORTED_UNVERIFIED, PROPOSED, ANALYTICAL_ESTIMATE, SYNTHETIC.
+
+| What | Case | Label | Note |
+| --- | --- | --- | --- |
+| Stage 1 K = 2.9698e-11 m² (Chase, `permeability1.mph`) | reference | STORED_DERIVED | finest pair 1.02e-3; one low gradient; flat shear-free top |
+| Stage 1 K = 2.9711e-11 m² (student) | reference | REPORTED_UNVERIFIED | agrees with Chase within 0.05% at matching meshes |
+| Stage 2 T_base 381.196 / 381.218 K (Chase, `stage2_flat_interface.mph`) | reference | REPORTED_UNVERIFIED | columns unlabeled; no Q_evap in report; not meshes, not averaged |
+| 2D EO field-treatment test (Python) | both | verified Python model | tall-pillar limit only; COMSOL Stage 2A pending |
+| Stages 1Q, 2A, 3-6 in COMSOL | both | PROPOSED | — |
+| Anything for 20/50/40 µm from COMSOL | proposed | none | reference results must not be transferred |
+
+No COMSOL model was built or solved during the 2026-11-13 revision (COMSOL not available in that
+environment).
+
+---
+
+# Passive vs Electroosmotically Assisted Micropillar Wick
 
 Revision 2 (2026-10-18): corrected audit after re-reading pujahari2022 and digitizing its Fig. 6.
 Equations and assumptions: `docs/electroosmosis_model.md`. Regenerate with

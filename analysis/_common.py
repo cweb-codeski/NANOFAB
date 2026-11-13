@@ -29,12 +29,22 @@ def find_column(table: ComsolTable, name: str, required: bool = True) -> str | N
     return None
 
 
-def geometry_columns(table: ComsolTable, ps: ParameterSet) -> dict[str, "object"]:
-    """Per-row pillar d, l, h [m]: from sweep columns d / l / hp (or h) if present, else parameters.
+def geometry_columns(table: ComsolTable, ps: ParameterSet, case: str | None = None) -> dict[str, "object"]:
+    """Per-row pillar d, l, h [m]: from sweep columns d / l / hp (or h) if present, else a named case.
 
+    ``case`` is a key of parameters/unit_cell/cases.yaml (e.g. ``proposed_d20_l50_h40``). Without it,
+    missing columns fall back to the reference geometry in parameters/geometry.yaml and a warning is
+    printed, because footprint and cross-section areas would silently be wrong for another geometry.
     COMSOL reserves ``h`` (mesh element size), so the COMSOL guide names the pillar height ``hp``.
     """
+    from nanofab.geometry_cases import load_geometry_cases
+
+    fallback = None
+    if case is not None:
+        c = load_geometry_cases()[case]
+        fallback = {"d": c.d, "l": c.l, "h": c.hp}
     out = {}
+    used_default = []
     aliases = {"d": ("d",), "l": ("l",), "h": ("hp", "h")}
     for key, pname in (("d", "pillar_diameter"), ("l", "pillar_pitch"), ("h", "pillar_height")):
         col = next((c for c in table.data.columns if c.lower() in aliases[key]), None)
@@ -44,6 +54,12 @@ def geometry_columns(table: ComsolTable, ps: ParameterSet) -> dict[str, "object"
             if scale is None:
                 raise ValueError(f"Column {col} has unsupported unit '{unit}'")
             out[key] = table.data[col].to_numpy(dtype=float) * scale
+        elif fallback is not None:
+            out[key] = fallback[key]
         else:
             out[key] = ps[pname]
+            used_default.append(key)
+    if used_default:
+        print(f"WARNING: no {'/'.join(used_default)} column in the export and no --case given; using the "
+              "REFERENCE geometry from parameters/geometry.yaml. Pass --case for any other geometry.")
     return out

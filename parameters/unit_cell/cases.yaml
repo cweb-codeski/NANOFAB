@@ -1,0 +1,178 @@
+# Unit-cell and device geometry cases, kept SEPARATE (docs/comsol_unit_cell_guide.md, Sec. 1).
+#
+# Loaded by src/nanofab/geometry_cases.py. This file lives in a subfolder so that
+# nanofab.params.load_parameters (which reads parameters/*.yaml) does not merge it with the
+# replication inputs.
+#
+# Leaf schema as in parameters/*.yaml: {value, unit, provenance, source, source_location, notes}.
+# `ref: name` copies an entry (with provenance) from parameters/*.yaml.
+# An input that is not yet defined is written {value: null, status: UNRESOLVED, notes: ...}.
+# The loader returns it as unresolved and refuses to hand out a number for it.
+#
+# Rules (enforced by tests/test_geometry_cases.py):
+#   * reference and proposed cases never share a COMSOL-derived quantity (K, h_e, F, menisci);
+#     each case has its own Stage 1-5 results.
+#   * coupon dimensions, active-array dimensions, heater footprint, substrate thickness, reservoir
+#     geometry and feed distance are separate keys; none is inferred from another.
+
+cases:
+  reference_d10_l30_h25:
+    role: REFERENCE
+    description: >
+      Vaartstra et al. (2019) baseline cell. Used for learning, analytical checks and matched
+      literature comparison. Do not use it to predict the proposed wick.
+    unit_cell:
+      pillar_diameter: {ref: pillar_diameter}
+      pillar_pitch: {ref: pillar_pitch}
+      pillar_height: {ref: pillar_height}
+      unit_cell_substrate_thickness: {ref: unit_cell_substrate_thickness}
+      receding_contact_angle: {ref: receding_contact_angle}
+      vapor_temperature: {ref: vapor_temperature}
+      unit_cell_heat_flux: {ref: unit_cell_heat_flux}
+    device:
+      feed_length: {ref: wick_feed_length}
+      wick_width: {ref: wick_width}
+      substrate_thickness: {ref: substrate_thickness}
+      heater_footprint:
+        value: null
+        status: UNRESOLVED
+        notes: "vaartstra2019 applies a uniform flux over the wick (Sec. 3.2); no separate heater footprint is stated."
+      reservoir_geometry:
+        value: null
+        status: UNRESOLVED
+        notes: "vaartstra2019 idealizes the supply as Pc = 0 at x = 0 (Sec. 2.3); no reservoir is modeled."
+
+  proposed_d20_l50_h40:
+    role: PROPOSED_DESIGN
+    description: >
+      User-specified design inputs for the proposed wick. NOT measured fabrication dimensions.
+      Replace with metrology (SEM/profilometry of d, pitch, height, sidewall profile, oxide
+      thickness) before any validation comparison.
+    unit_cell:
+      pillar_diameter:
+        value: 20
+        unit: um
+        provenance: USER_PROVIDED
+        source: null
+        source_location: "design input stated by Chase (2026-11-13 workflow brief); mask/CAD value unverified"
+      pillar_pitch:
+        value: 50
+        unit: um
+        provenance: USER_PROVIDED
+        source: null
+        source_location: "design input stated by Chase (2026-11-13 workflow brief); center-to-center, square array"
+      pillar_height:
+        value: 40
+        unit: um
+        provenance: USER_PROVIDED
+        source: null
+        source_location: "design input stated by Chase (2026-11-13 workflow brief); DRIE target, not measured"
+      unit_cell_substrate_thickness:
+        value: 1
+        unit: um
+        provenance: ASSUMED
+        source: null
+        source_location: "modeling convention copied from vaartstra2019 Sec. 2.2 so h_e is defined identically in both cases"
+        notes: "Not the physical substrate thickness. It only places the heated plane 1 um below the pillar base."
+      receding_contact_angle:
+        value: 15
+        unit: deg
+        provenance: ASSUMED
+        source: vaartstra2019
+        source_location: "Sec. 3.1 value for water on SiO2 (via raj2013), transferred without evidence"
+        sweep: [5, 40]
+        notes: >
+          The proposed surface is thermal SiO2 grown after DRIE with unknown cleaning and storage
+          history. Receding angles on real oxide drift with contamination. Measure on a coupon
+          processed with the wick, and sweep until then.
+      vapor_temperature:
+        value: 100
+        unit: degC
+        provenance: ASSUMED
+        source: null
+        source_location: "matched to the reference so the Stage 2 duplicate isolates geometry"
+        notes: "The experimental vapor state (open air vs. pure vapor, pressure) is unresolved; see device.vapor_environment."
+      unit_cell_heat_flux:
+        value: 50
+        unit: W/cm2
+        provenance: ASSUMED
+        source: null
+        source_location: "matched to the reference (vaartstra2019 Sec. 3.1 value) for the geometry-only comparison"
+    device:
+      array_columns:
+        value: 205
+        unit: "-"
+        provenance: USER_PROVIDED
+        source: null
+        source_location: "Wick_V2.cat as reported by Chase; native file not inspected (units/scale unverified)"
+      array_rows:
+        value: 155
+        unit: "-"
+        provenance: USER_PROVIDED
+        source: null
+        source_location: "Wick_V2.cat as reported by Chase; native file not inspected"
+      array_start_reference_x:
+        value: -10
+        unit: mm
+        provenance: USER_PROVIDED
+        source: null
+        source_location: "Wick_V2.cat as reported; meaning (first pillar center? array corner?) UNRESOLVED"
+      array_start_reference_y:
+        value: -7.5
+        unit: mm
+        provenance: USER_PROVIDED
+        source: null
+        source_location: "Wick_V2.cat as reported; meaning UNRESOLVED"
+      coupon_x_min: {value: -12.5, unit: mm, provenance: USER_PROVIDED, source: null, source_location: "Coupon_V2.cat as reported (referenced by Wick_V2.cat); not inspected"}
+      coupon_y_min: {value: -10, unit: mm, provenance: USER_PROVIDED, source: null, source_location: "Coupon_V2.cat as reported; not inspected"}
+      coupon_x_max: {value: 12.5, unit: mm, provenance: USER_PROVIDED, source: null, source_location: "Coupon_V2.cat as reported; not inspected"}
+      coupon_y_max: {value: 10, unit: mm, provenance: USER_PROVIDED, source: null, source_location: "Coupon_V2.cat as reported; not inspected"}
+      feed_length:
+        value: null
+        status: UNRESOLVED
+        notes: >
+          Liquid travel distance from the supplied edge to the farthest wetted point. Depends on
+          which edges contact the reservoir and on the active-array placement. NOT the coupon size
+          and NOT the array span unless the feed arrangement says so.
+      substrate_thickness:
+        value: null
+        status: UNRESOLVED
+        notes: "Wafer/coupon thickness under the pillars. The CAD-brief 0.32 mm Si insert is an illustration placeholder."
+      heater_footprint:
+        value: null
+        status: UNRESOLVED
+        notes: "Heater size and position relative to the active array. Needed before any heated comparison."
+      reservoir_geometry:
+        value: null
+        status: UNRESOLVED
+        notes: >
+          Upstream (anode) reservoir level relative to the wick, entrance geometry, and the
+          hydraulic boundary condition of the downstream cathode compartment (sealed, vented
+          free surface, or gas-filled). Each choice changes the EO prediction.
+      vapor_environment:
+        value: null
+        status: UNRESOLVED
+        notes: "Open laboratory air (diffusion-limited evaporation) or a degassed pure-vapor chamber at stated pressure."
+      cad_scale_and_units:
+        value: null
+        status: UNRESOLVED
+        notes: >
+          Wick_V2.cat references a separate Coupon_V2.cat; its unit metadata and saved scale were
+          not checked in the native application. The array geometry is not verified until both
+          are opened and measured there.
+
+# Shared inputs for hand checks of electrokinetic regimes (analysis/case_hand_checks.py).
+screening_checks:
+  water_relative_permittivity_298K:
+    value: 78.4
+    unit: "-"
+    provenance: ASSUMED
+    source: null
+    source_location: "commonly tabulated value for water at 25 C, from memory (not checked against IAPWS)"
+    notes: "Used only for Debye-length screening at room temperature. Replace with a held source before reporting."
+  room_temperature:
+    value: 25
+    unit: degC
+    provenance: ASSUMED
+    source: null
+    source_location: "nominal unheated-experiment temperature; measure the actual liquid temperature"

@@ -29,6 +29,49 @@ stage1_flow_raw_local:
     - "the referenced .mph model is not present in the repository"
     - "note in the header says it is the corrected third column pair of a larger export held outside the repository"
 
+stage1_student_reported:
+  path: data/reported/stage1_student_reference_d10_l30_h25.csv
+  data_role: REPORTED_RESULT
+  classification: "undergraduate's independent Stage 1 build, transcribed from a report (REPORTED_UNVERIFIED)"
+  content: >
+    hmax 2/1/0.5/0.25 um; finest K = 2.9711e-11 m^2; last change 5.05e-4 (coarser denominator).
+    Agrees with permeability_stage1_flow_processed within 0.05% at matching meshes
+    (analysis/stage1_crosscheck.py).
+  qualified_for_prediction: false
+  reasons:
+    - "no raw export, .mph, selections, viscosity, dp or BC record"
+    - "same flat-interface, single-gradient limitations as the stored Stage 1 result"
+
+stage2_chase_reported:
+  path: data/reported/stage2_chase_reported_columns.csv
+  data_role: REPORTED_RESULT
+  classification: "Chase's Stage 2 text-export values (stage2_flat_interface.mph, COMSOL 6.3.0.420), transcribed"
+  content: "two Q_in columns (1.125e-4 W) and two T_base columns (381.19638568455605, 381.21757382818055 K)"
+  qualified_for_prediction: false
+  reasons:
+    - "columns carry no mesh, dataset or selection identifiers: not successive meshes, not to be averaged"
+    - "no Q_evap in the report, so no energy balance"
+    - "Q_in equals the q0*(l/2)^2 input echo"
+
+stage2_assembled_local:
+  path: data/comsol_exports/stage2_flat_d10_l30_h25.txt
+  data_role: STORED_DERIVED_RESULT
+  classification: "local file (gitignored) assembled from four exported tables; row order and Q_evap column choice were INFERRED"
+  qualified_for_prediction: false
+  reasons:
+    - "header states that the coarser/finer row labels were inferred from meniscus area (hmax not exported)"
+    - "Q_evap for row 2 was taken from a column that balances to 4e-12, consistent with integrating the BC expression (a tautology), not a flux-based balance"
+    - "pillar trimming and T_base selection unverified (docs/modeling_audit_2026-11.md, item 1)"
+
+h_evap_stage2_processed:
+  path: data/processed/h_evap_stage2_flat_d10_l30_h25.csv
+  data_role: STORED_DERIVED_RESULT
+  classification: "h = 6.2e4 W/m^2K derived from stage2_assembled_local (untracked local file)"
+  qualified_for_prediction: false
+  reasons:
+    - "inherits the inferred row labels and column choice of stage2_assembled_local"
+    - "flat interface, linearized ASSUMED closure: not comparable with vaartstra2019 h_e (> 60 kW/m^2K) despite the similar number"
+
 permeability_stage1_flow_example:
   path: data/processed/permeability_stage1_flow_example.csv
   data_role: SYNTHETIC_PARSER_EXAMPLE

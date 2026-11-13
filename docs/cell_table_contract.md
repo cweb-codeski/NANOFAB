@@ -55,6 +55,13 @@ Required conventions (exact strings; no automatic reconciliation):
 | area_basis | `footprint` |
 | curvature_normal | free text stating the V2019 Eq. (2) normal convention |
 
+Additional recording requirements (2026-11-13, no schema change): `geometry.geometry_id` must be a
+case key of `parameters/unit_cell/cases.yaml` (`reference_d10_l30_h25` or
+`proposed_d20_l50_h40`); `boundary_conditions.hydraulic` must state the liquid-vapor interface
+shear condition (`shear_free` per V2019 Sec. 2.2, or `no_slip` per fleming2020); `kinetic_model`
+names the closure exactly as in `docs/comsol_unit_cell_guide.md` §9. Tables with different
+interface conditions or closures are separate datasets.
+
 ## Columns and units
 
 | Table | Column | Unit | Required |

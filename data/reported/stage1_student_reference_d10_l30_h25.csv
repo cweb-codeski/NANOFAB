@@ -1,0 +1,14 @@
+# Stage 1 (passive, isothermal, flat interface) permeability, reference geometry d/l/hp = 10/30/25 um.
+# Reported by: undergraduate researcher, independent build from docs/comsol_unit_cell_guide.md (transcribed 2026-11-13).
+# Status: REPORTED_UNVERIFIED. Raw export, .mph file, selections, mu, dp and cell convention not supplied.
+# Known from the report: maximum element size per row; Q and K as listed; relative changes computed
+#   with the preceding (coarser) K in the denominator; final change ~0.0505%.
+# Reported heading typo: the expected permeability heading should read ~3e-11 m^2.
+# Not known: viscosity used, dp, quarter vs full cell, inlet/outlet BC options, Laminar vs Creeping Flow,
+#   boundary layers, element order, solver tolerance. K/Q = 11.264 m^-1 here, which equals
+#   mu/(hp*dp) for mu = 2.816e-4 Pa s, hp = 25 um, dp = 1 Pa (quarter-cell convention); consistent but not proof.
+hmax_um,Q_m3_s,K_m2
+2,2.6007e-12,2.9295e-11
+1,2.6286e-12,2.9608e-11
+0.5,2.6363e-12,2.9696e-11
+0.25,2.6377e-12,2.9711e-11

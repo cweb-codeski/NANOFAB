@@ -124,6 +124,13 @@ Brinkman-shear. It equals the 2D value as h → ∞ and 1 as h → 0.
 
 ## COMSOL verification specification
 
+> **Superseded for NANOFAB runs by Stage 2A of `docs/comsol_unit_cell_guide.md` (§7).** Stage 2A
+> uses the Stage 1 quarter cell. That cell is exact for this linear problem: the x-planes are
+> equipotentials and constant-pressure planes. Stage 2A adds an exact similitude check
+> (Ũ·F = 1), signed current and Joule-power checks, floor/pillar ζ splits and an interface
+> bracket. The full-cell specification below is kept as the original record and remains a valid
+> alternative, e.g. for the pujahari2022 cells.
+
 **Geometry (one per case below):** full cell x, y ∈ [−l/2, l/2], z ∈ [0, h]. The cylindrical pillar
 (diameter d) is centred and spans 0 ≤ z ≤ h, with a flat top at z = h. Remove the pillar from the
 liquid domain.

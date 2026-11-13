@@ -17,6 +17,7 @@ Cell convention (--cell):
 Usage:
     python analysis/permeability_from_comsol.py data/comsol_exports/stage1_flow.csv
     python analysis/permeability_from_comsol.py export.txt --mu 7.97e-4 --cell full
+    python analysis/permeability_from_comsol.py stage1_proposed.csv --case proposed_d20_l50_h40 --mu 2.816e-4
 """
 
 from __future__ import annotations
@@ -52,6 +53,8 @@ def main() -> None:
     ap.add_argument("--mu", type=float, help="viscosity [Pa s] used in COMSOL (default: CoolProp at T_v)")
     ap.add_argument("--cell", choices=["quarter", "full"], default="quarter")
     ap.add_argument("--tolerance", type=float, default=0.02, help="mesh-convergence tolerance")
+    ap.add_argument("--case", help="geometry case in parameters/unit_cell/cases.yaml when d/l/hp are not columns "
+                                   "(e.g. reference_d10_l30_h25, proposed_d20_l50_h40)")
     args = ap.parse_args()
 
     ps = load_parameters()
@@ -65,7 +68,7 @@ def main() -> None:
         dp = df[single_column_with_unit(table, "Pa", args.dp_col)].to_numpy(dtype=float)
 
     mu = args.mu if args.mu is not None else Fluid(ps["working_fluid"]).mu_l(ps["vapor_temperature"])
-    geo = geometry_columns(table, ps)
+    geo = geometry_columns(table, ps, args.case)
     d, l, h = (np.broadcast_to(geo[k], q.shape).astype(float) for k in ("d", "l", "h"))
 
     if args.cell == "quarter":

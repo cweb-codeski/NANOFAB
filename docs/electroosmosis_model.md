@@ -266,6 +266,10 @@ Audit notes on `pujahari2022` (also in `config/sources.yaml`):
 
 ## COMSOL hand-off (same quarter cell as Stage 1)
 
+The executable procedure is Stage 2A of `docs/comsol_unit_cell_guide.md` (§7), which supersedes
+the notes below where they differ. The reference results here (K, F, Pi, G) are for the
+10/30/25 µm cell only. The proposed 20/50/40 µm cell needs its own Stage 1, 1Q and 2A results.
+
 - **Priority: field treatment (resolves the R = 0.52–0.69 discrepancy).** Use the pujahari2022
   cells (d = 5 µm; h = 25 µm with l = 10 and 45 µm; h = 5 µm with l = 8 and 18 µm) and our
   baseline. Use a flat top, zero ΔP, and the same thin-EDL slip (or the PB body force) on pillars

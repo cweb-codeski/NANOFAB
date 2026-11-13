@@ -325,10 +325,18 @@ adera2016:
   venue: "International Journal of Heat and Mass Transfer 101 (2016) 280-294"
   doi: unknown
   type: PRIMARY_SOURCE
-  bibliography_verified: reference_list
-  content_verified: false
-  local_path: null
-  notes: "vaartstra2019 ref. [12]. Brinkman + uniform evaporation dryout model; superheat data used to fit a = 0.052."
+  bibliography_verified: pdf
+  content_verified: partial
+  local_path: "C:/Users/chase/Downloads/NANOFAB PROJECT RESEARCH/research documents/research papers/design of micropillar wicks for thin-film evaporation.pdf"
+  notes: >
+    vaartstra2019 ref. [12]. EXPERIMENTAL + model paper. Brinkman + uniform evaporation dryout
+    model; superheat data used by vaartstra2019 to fit a = 0.052. Checked 2026-11-13 (PDF text):
+    environmental chamber evacuated to remove noncondensables, then held near saturation at
+    24 C / 3 kPa (Sec. 4); heater temperature from an RTD; combined sensible + convective + ohmic
+    heat loss was 62% of input power and was subtracted from all reported heat fluxes (Sec. 4,
+    Fig. 6); several conditions report "boiling before dryout". Consequence: the fitted a = 0.052
+    absorbs this loss correction and the 24 C state; transferring it to 100 C or to other
+    surfaces is an assumption.
 
 byon_kim2011:
   title: "The effect of meniscus on the permeability of micro-post arrays"
@@ -605,7 +613,63 @@ comsol_docs:
   notes: >
     Authority for COMSOL implementation details. The steps in docs/comsol_unit_cell_guide.md have
     NOT yet been checked against these manuals; record the COMSOL version and manual sections
-    when they are.
+    when they are. COMSOL was not installed in the environment that wrote the 2026-11-13 guide
+    revision, so menu paths there are unexecuted instructions; licensed modules are unknown.
+
+comsol_blog_eof_edl:
+  title: "Modeling Electroosmotic Flow and the Electrical Double Layer"
+  authors: ["F. Schlegel (COMSOL)"]
+  year: 2013
+  venue: "COMSOL Blog, https://www.comsol.com/blogs/modeling-electroosmotic-flow-electrical-double-layer"
+  doi: null
+  type: AUTHORITATIVE_DATABASE
+  bibliography_verified: web
+  content_verified: true
+  local_path: null
+  notes: >
+    Read 2026-11-13. States: compute the Debye length first; if it is much smaller than the
+    geometric length scale use the electroosmotic velocity wall condition (Helmholtz-Smoluchowski,
+    u = eps zeta grad_T V / eta); otherwise use no-slip walls and resolve the EDL with
+    Electrostatics + Transport of Diluted Species + Laminar Flow with a rho_e E volume force and a
+    fine boundary-layer mesh. The two treatments are alternatives (never both).
+
+comsol_kb_1261:
+  title: "Performing a Mesh Refinement Study (Knowledge Base 1261)"
+  authors: ["COMSOL AB"]
+  year: unknown
+  venue: "https://www.comsol.com/support/knowledgebase/1261"
+  doi: null
+  type: AUTHORITATIVE_DATABASE
+  bibliography_verified: web
+  content_verified: true
+  local_path: null
+  notes: >
+    Read 2026-11-13. Recommends a mesh-size parameter swept with a Parametric Sweep (manual
+    refinement), comparison of results with a Join dataset (Difference), and notes that global
+    integrals converge fastest, local values slowest, and derivatives at sharp corners are locally
+    non-convergent. Basis for tracking convergence of integral outputs (K, Q_EO, Q_evap, T_base
+    averages) rather than point maxima at pillar edges.
+
+fleming2020:
+  title: "Local Meniscus Curvature During Steady-State Evaporation from Micropillar Arrays"
+  authors: ["E. Fleming", "K. Tsuchiya", "D. Banerjee", "G. Zhu"]
+  year: 2020
+  venue: "ACS Applied Materials & Interfaces 12 (2020) 43266-43272"
+  doi: "10.1021/acsami.0c11965"
+  type: PRIMARY_SOURCE
+  scope: [meniscus_shape, permeability, interface_boundary_condition, experiment]
+  bibliography_verified: pdf
+  content_verified: partial
+  local_path: "C:/Users/chase/Downloads/NANOFAB PROJECT RESEARCH/research documents/research papers/Local Meniscus Curvature During Steady-State Evaporation from micropillar arrays.pdf"
+  notes: >
+    EXPERIMENTAL. Thin-film interference profiling of local meniscus curvature in a pure-vapor
+    environment on SOI micropillar wicks (10 mm x 20 mm samples). Unit-cell permeability from
+    COMSOL creeping flow with periodic pressure BCs on Young-Laplace menisci, with both shear-free
+    and no-slip liquid-vapor interfaces (Sec. 2). Measured curvature agreed much better with the
+    NO-SLIP interface (abstract; Sec. 3.1, Figs. 4-5), attributed to surface-tension gradients
+    (contamination, surface charge, thermal Marangoni). Notes that rate-of-rise or spreading
+    tests give the product K*dPc, not each separately (Sec. 1). Bracket for the V2019 shear-free
+    interface assumption.
 
 # ---------------------------------------------------------------------------------------------
 # Project context (not scientific authority)

@@ -28,9 +28,17 @@ Expected export columns (names matched case-insensitively; override with flags):
     T_base (K)  Surface Average of T on the pillar-base / substrate-top boundary
     T_lv   (K)  Surface Average of T on the meniscus
     optional: T_max (K), and sweep columns such as Pc (Pa), d / l / h (m), accommodation (1)
+    optional: A_base (m^2) Surface Integration of 1 over the T_base selection; must equal the
+              footprint, otherwise the selection or the pillar trimming is wrong
+    required for writing the processed table: hmax (or another mesh/row identifier column).
+              Rows without an identifier cannot be assigned to meshes (see data/reported/README.md).
+
+A Global Evaluation of q0*(l/2)^2 only echoes the input. Q_in should be the Surface Integration of
+the inward normal heat flux over the heater boundary, which also checks that selection.
 
 Usage:
     python analysis/heat_transfer_from_comsol.py data/comsol_exports/stage4_thermal.csv
+    python analysis/heat_transfer_from_comsol.py stage2_proposed.csv --case proposed_d20_l50_h40
 """
 
 from __future__ import annotations
@@ -56,6 +64,10 @@ def main() -> None:
     ap.add_argument("--T-vapor", type=float, help="vapor temperature [K] (default: parameters)")
     ap.add_argument("--cell", choices=["quarter", "full"], default="quarter")
     ap.add_argument("--energy-tol", type=float, default=0.01)
+    ap.add_argument("--abase-col", default="A_base")
+    ap.add_argument("--case", help="geometry case in parameters/unit_cell/cases.yaml when d/l/hp are not columns")
+    ap.add_argument("--write-unlabeled", action="store_true",
+                    help="write the processed table even if rows carry no mesh/row identifier (not recommended)")
     args = ap.parse_args()
 
     ps = load_parameters()
@@ -73,11 +85,20 @@ def main() -> None:
     T_lv = df[lv_col].to_numpy(dtype=float)
     Q_evap = df[qevap_col].to_numpy(dtype=float) if qevap_col else None
 
-    l = np.broadcast_to(geometry_columns(table, ps)["l"], Q_in.shape).astype(float)
+    l = np.broadcast_to(geometry_columns(table, ps, args.case)["l"], Q_in.shape).astype(float)
     A_fp = (l / 2) ** 2 if args.cell == "quarter" else l**2
 
+    abase_col = find_column(table, args.abase_col, required=False)
+    if abase_col:
+        area_err = np.abs(df[abase_col].to_numpy(dtype=float) / A_fp - 1)
+        if (area_err > 1e-6).any():
+            print(f"WARNING: {args.abase_col} differs from the footprint by up to {area_err.max():.2e}. The T_base "
+                  "selection is not exactly the pillar-base plane of this cell (wrong faces, or an untrimmed pillar).")
+    else:
+        print(f"NOTE: no {args.abase_col} column; the T_base selection area was not checked against the footprint.")
+
     q = Q_in / A_fp
-    used = {qin_col, base_col, lv_col, qevap_col}
+    used = {qin_col, base_col, lv_col, qevap_col, abase_col}
     out = pd.DataFrame({c: df[c] for c in df.columns if c not in used})
     out["q_W_cm2"] = q / 1e4
     out["T_base_minus_Tv_K"] = T_base - T_v
@@ -102,6 +123,14 @@ def main() -> None:
     print(out.to_string(index=False, float_format=lambda v: f"{v:.4g}"))
     print("\nR_wick/R_int/kinetic_fraction are APPARENT splits at the area-averaged meniscus temperature"
           " (see docstring); they depend on the averaging convention and are not unique resistances.")
+
+    mesh_col = find_column(table, "hmax", required=False) or find_column(table, "mesh", required=False)
+    if mesh_col is None:
+        print("\nWARNING: rows carry no hmax/mesh identifier, so they cannot be assigned to meshes and no "
+              "convergence statement is possible.")
+        if not args.write_unlabeled:
+            print("Processed table NOT written (pass --write-unlabeled to override).")
+            return
 
     PROCESSED_DIR.mkdir(parents=True, exist_ok=True)
     dest = PROCESSED_DIR / f"h_evap_{args.export.stem}.csv"

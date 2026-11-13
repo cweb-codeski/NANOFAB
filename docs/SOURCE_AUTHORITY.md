@@ -25,6 +25,8 @@ Files involved:
 | `ASSUMED` | Not supported by a held source: a modeling choice, an engineering guess, or a value from a citation we have not checked. If an unverified citation exists, it goes in `source` with a note. | optional |
 | `DESIGN_TARGET` | A project goal (for example 100 W/cm²). Lives only in `parameters/design_targets.yaml`. | no |
 | `PROJECT_CONTEXT` | Chase's notes, the project brief, Drive documents. These explain intent and priorities; they are not scientific evidence. | yes |
+| `COMSOL_EXTRACTED` | Post-processed from one of our COMSOL unit-cell runs. `source_location` names the export file or `.mph` model and stage. Kept apart from `MODEL_CALCULATED` so COMSOL results and Python analytical results are never confused. | no (`null`) |
+| `USER_PROVIDED` | A case-definition choice made by the user, such as a hotspot position, a field mask or a grid size. Not a physical claim. | no |
 
 A value's provenance describes how **this value** was obtained, not how reputable the source is.
 For example, the 19% permeability reduction uses the PRIMARY_SOURCE value of 82 W/cm², but the
@@ -170,7 +172,27 @@ base, from the figure); heat input depth 1 µm below the pillar base.
 - Sangani-Acrivos / Drummond-Tahir coefficients, Lee et al. (1995) spreading formula,
   Carey/Faghri editions, Breck kinetic diameter: all cited from memory.
 - Which IAPWS releases CoolProp 8.0 implements for each water property.
-- The COMSOL guide steps have not been checked against COMSOL documentation.
+- The COMSOL guide steps have been checked against official COMSOL guidance only for the
+  thin-EDL electroosmotic slip vs resolved-EDL choice (`comsol_blog_eof_edl`) and for mesh
+  refinement studies (`comsol_kb_1261`). Menu paths and node options remain unchecked against the
+  6.3 manuals.
+
+## Additions from the 2026-11-13 workflow audit
+
+Read from held PDFs (`docs/modeling_audit_2026-11.md`):
+
+| Source | Experiment or simulation | Consequential statement |
+| --- | --- | --- |
+| `vaartstra2019` | simulation | a = 0.052 fitted to Adera A1 (Sec. 3.4); h_e "validation" uses the fitted value; dryout compared to an air-ambient experiment as a trend (Fig. 6b) |
+| `adera2016` | experiment + model | chamber evacuated, then held near saturation at 24 °C / 3 kPa; 62% of heater power lost and subtracted; boiling before dryout in several conditions (Sec. 4, Fig. 6) |
+| `pujahari2022` | simulation only | EO model checked against an analytical channel solution; thermal checks reuse Zhu and Adera data (Sec. 3.1) |
+| `fleming2020` | experiment | no-slip liquid-vapor interface fits measured curvature much better than shear-free (Sec. 3.1, Figs. 4-5) |
+| `ravi2014` | experiment | K and capillary pressure determined separately (abstract) |
+
+Authority note: for **physical behavior of real interfaces**, an experiment on comparable wicks
+(fleming2020) outranks a modeling choice in a simulation paper (vaartstra2019 Sec. 2.2). For
+**replicating vaartstra2019**, its own choices govern. Keep both, as a bracket, until our own
+measurement decides (rule 9).
 - Year of SAND92-2347C; DOI of narayanan2024_interpack.
 
 ## Rules for Future Modeling Work

@@ -31,7 +31,9 @@ qualification status: `config/device_assumptions.yaml` (summarized in `docs/pass
 | A16 | Silicon k = 148 W/(m·K) | Stage 2-4, device substrate | substrate ΔT < 1 K at 1 µm; ≈ 0.55 K across t_s = 100 µm at 82 W/cm² | **ASSUMED, provisional.** A textbook value recalled for 300 K, not re-checked against the table, not verified at 373.15 K, and not a V2019 value (V2019 does not state its silicon conductivity; vaartstra2020 uses 153 at 20 °C). Silicon k falls with temperature, so the 373 K value is likely lower. Non-blocking for the device model; sweep 120-153. |
 | A17 | Advancing contact angle 30° | not used in baseline | – | ASSUMED (no source). |
 | A18 | Water kinetic diameter 0.265 nm | Knudsen estimate only | – | ASSUMED (citation unverified). Affects only the Kn sanity check. |
-| A19 | T_e = mean temperature of the pillar-base plane | Stage 2, 4 | – | PROJECT_DERIVED reading of V2019 Fig. 2(b) ("surface (red line)"), supported by the thesis drawing (Fig. 4b, p. 20), where the red line runs along the substrate top. Text never names the surface. |
+| A19 | T_e = mean temperature of the pillar-base plane | Stage 2, 4 | – | PROJECT_DERIVED reading of V2019 Fig. 2(b) ("surface (red line)"), supported by the thesis drawing (Fig. 4b, p. 20), where the red line runs along the substrate top. Text never names the surface. Export the selection area (A_base) to prove it is the whole plane. |
+| A20 | Liquid-vapor interface is shear-free | Stage 1, 2A, 3 | flat K × 0.69 (ref) / 0.72 (proposed) if no-slip | V2019 Sec. 2.2 choice. fleming2020 (experiment, Sec. 3.1) found no-slip fits measured curvature much better. **Bracket both** (guide Stage 1Q, 2A R4, 3H); decide by Exp-1/Exp-2. |
+| A21 | Linear Darcy (K independent of gradient) at device gradients | Stage 1, 5, 6 | Re_K ≈ 1.7 (ref, L = 5 mm); 2-8 (proposed, illustrative L) | Unverified. Stage 1Q periodic-cell Navier-Stokes sweep; 1% rule of the cell-table contract. |
 
 ## Consequences already visible
 

@@ -61,11 +61,33 @@ def brinkman_height_factor(K_s: float, h: float) -> float:
     return 1.0 - math.tanh(bh) / bh
 
 
-def pillar_wick_permeability(d: float, l: float, h: float) -> float:
-    """Effective permeability K_eff [m^2] of a pillar wick of height h (Brinkman-corrected)."""
+def brinkman_no_slip_top_factor(K_s: float, h: float) -> float:
+    """Finite-height factor with no slip at BOTH z = 0 and z = h: 1 - 2 tanh(beta h/2)/(beta h) [-].
+
+    The immobile-interface bracket for a flat top. fleming2020 (Sec. 3.1, Figs. 4-5) found
+    measured meniscus curvature agreed much better with a no-slip than a shear-free liquid-vapor
+    interface. Tends to 1 for tall pillars and to (beta h)^2 / 12 for short ones (plane
+    Poiseuille between two plates, K = h^2/12).
+    """
+    bh = h / math.sqrt(K_s)
+    if bh < 1e-4:
+        return bh**2 / 12
+    return 1.0 - 2.0 * math.tanh(bh / 2) / bh
+
+
+def pillar_wick_permeability(d: float, l: float, h: float, top: str = "shear_free") -> float:
+    """Effective permeability K_eff [m^2] of a pillar wick of height h (Brinkman-corrected).
+
+    ``top`` is the flat liquid-surface condition: "shear_free" (vaartstra2019 Sec. 2.2) or
+    "no_slip" (immobilized interface bracket, see ``brinkman_no_slip_top_factor``).
+    """
     check_pillar_geometry(d, l, h)
     K_s = sangani_acrivos_permeability(d, l)
-    return K_s * brinkman_height_factor(K_s, h)
+    if top == "shear_free":
+        return K_s * brinkman_height_factor(K_s, h)
+    if top == "no_slip":
+        return K_s * brinkman_no_slip_top_factor(K_s, h)
+    raise ValueError(f"top must be 'shear_free' or 'no_slip', got {top!r}")
 
 
 def brinkman_velocity_profile(z: float, K_s: float, h: float, dpdx: float, mu: float) -> float:
