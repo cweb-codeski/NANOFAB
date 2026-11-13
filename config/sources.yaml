@@ -34,6 +34,14 @@ vaartstra2019:
     equations, boundary conditions, assumptions (App. A.1), replication targets, mesh convergence.
     Does not state silicon conductivity or the source of water properties. Used COMSOL 5.3a
     (ref. [25]). PDF text extraction drops minus signs in exponents (e.g. Table A1, A.1).
+    Added 2026-11-13 rev. B (journal page = PDF page + 169): Fig. 6 caption (p. 175) gives A1 =
+    d/l/h 5/12/82 um and A2 = 12/20/90 um (adera2016 devices 1 and 5), notes "we accommodated for
+    2D flow" because those devices were fed on all sides; the receding angle, substrate and
+    property temperature used for the A1/A2 runs are NOT stated (Adera measured ~70 deg on those
+    surfaces). Accommodation ref. [27] = Meland, Frezzotti, Ytrehus, Hafskjold, Phys. Fluids 16
+    (2004) 223; method ref. [28] = Meland & Ytrehus, Phys. Fluids 15 (2003) 1348 (p. 177). Flow
+    domain for permeability (Fig. 2c) and its inlet/outlet BCs are not specified beyond "a pressure
+    difference was imposed across the cell" (p. 172).
 
 pujahari2022:
   title: "Electro-osmosis Aided Thin-Film Evaporation from a Micropillar Wick Structure"
@@ -71,6 +79,20 @@ pujahari2022:
     (5) Their EO flux is 0.52-0.69 of mu_EO E / F (from Fig. 6), consistent in size with a
     uniform imposed field at insulating pillar walls (our hypothesis, unconfirmed). These are model
     inputs and results of a simulation paper, not measurements at our conditions.
+    RE-CHECK 2026-11-13 rev. B (journal page = PDF page + 8441): EDL resolved by Poisson-Boltzmann
+    (Eqs. 5-6) with psi = zeta "at the bottom wall (z = 0) and at the pillar walls" and zero normal
+    derivative at the meniscus; flow "u, v, w = 0 at the bottom wall and at the pillar walls" with
+    body force rho_e E (Eq. 7, p. 8446); "a constant electric field is considered to be acting
+    along each unit cell to calculate the volumetric force" (p. 8446). So NO Helmholtz-Smoluchowski
+    slip and no solved field around pillars; our uniform-field comparison is its thin-EDL
+    equivalent, which is approximate where lambda_D/half-gap ~ 0.1 (1e-6 M, d = 5 um, small
+    pitch). Thermal: Schrage (Eq. 9) with a = 0.052 taken from vaartstra2019, where it was fitted
+    with a linearized-BTE closure (p. 8447): a closure/parameter mismatch (~3% in flux at that a,
+    our calculation). Temperature check (Fig. 3b, p. 8449) uses d/l/h = 5/12/82 um, i.e. Adera
+    device 1 = the data set vaartstra2019 used to FIT a, so it is not independent. U_i is the
+    integral over the liquid midplane area (Sec. 2.1.2), not a superficial velocity. Power "in
+    the order of milliwatts (Supplementary Information)" (p. 8452) is not checkable (SI not held).
+    eps(T) = 305.7 exp(-T/219) (p. 8446) gives 55.7 at 373 K.
 
 mala1997:
   title: "Flow characteristics of water through a microchannel between two parallel plates with electrokinetic effects"
@@ -169,7 +191,15 @@ vaartstra2019_thesis:
     rendered page images. Checked: Re_h ~ 10^1 (p. 23, 51); heat input 1 um below pillar base
     (p. 20); T_e red line at substrate top (Fig. 4b, p. 20); c4* = -2.13204, d4* = -0.44675
     (p. 22). Confirmed NOT stated: silicon properties, water property source, the
-    Meland-Ytrehus correction form, Sangani-Acrivos.
+    Meland-Ytrehus correction form, Sangani-Acrivos. Added 2026-11-13 rev. B: Eqs. 6-7 are the
+    "total accommodation" (a = 1) solution and "must be corrected for fluids such as water"
+    (p. 21); a = 0.052 "is not intended to represent the theoretical evaporation/condensation
+    coefficients because it absorbs the non-idealities of the experiments" (p. 22); fitted "to the
+    last point on (A1)" because low-flux points are offset ("the intercept is not zero"), then
+    checked against A2 (p. 32); comparison to mean superheat "is not an entirely satisfactory
+    validation" (p. 33). Fig. 7 (p. 23) plots q''_e(dT_int) for a = 0.052; digitized to
+    data/literature/vaartstra2019_thesis_fig7_digitized.csv. Fig. 4a (p. 20) shows a 1/8
+    triangular domain for the meniscus/thermal studies.
 
 vaartstra2020:
   title: "Capillary-fed, thin film evaporation devices"
@@ -329,14 +359,23 @@ adera2016:
   content_verified: partial
   local_path: "C:/Users/chase/Downloads/NANOFAB PROJECT RESEARCH/research documents/research papers/design of micropillar wicks for thin-film evaporation.pdf"
   notes: >
-    vaartstra2019 ref. [12]. EXPERIMENTAL + model paper. Brinkman + uniform evaporation dryout
-    model; superheat data used by vaartstra2019 to fit a = 0.052. Checked 2026-11-13 (PDF text):
-    environmental chamber evacuated to remove noncondensables, then held near saturation at
-    24 C / 3 kPa (Sec. 4); heater temperature from an RTD; combined sensible + convective + ohmic
-    heat loss was 62% of input power and was subtracted from all reported heat fluxes (Sec. 4,
-    Fig. 6); several conditions report "boiling before dryout". Consequence: the fitted a = 0.052
-    absorbs this loss correction and the 24 C state; transferring it to 100 C or to other
-    surfaces is an assumption.
+    vaartstra2019 ref. [12]. EXPERIMENTAL + model paper. Checked 2026-11-13 (PDF text; journal
+    page = PDF page + 279). MEASURED: backside RTD temperatures, heater V and I, chamber state,
+    incoming/outgoing water flow and temperature. Chamber evacuated "to remove all noncondensable
+    gases" (Sec. 3, p. 282), then "maintained at 24 C and corresponding saturation pressure 3 kPa"
+    (p. 284). Wall superheat INFERRED by 1D conduction through 1 um SiO2 + 650 um Si (Eq. 2,
+    p. 285). Heat loss: "The combined heat loss via sensible, convection, and ohmic was 62% of the
+    input heating power. This heat loss was deducted from the input power in all the heat fluxes
+    reported in this study" (Sec. 4, p. 286). The characterization figure is for device 1 (Fig. 6
+    caption). Components: sensible measured, convective ASSUMED (10 W/m2K "conservatively"), ohmic
+    computed from measured resistance. Devices: Table 2 (p. 284); device 1 = d/L/H 5/12/82 um
+    (= vaartstra2019 "A1"), device 5 = 12/20/90 um (= "A2"). Receding angle INFERRED by matching
+    interferometry to Surface Evolver: 65 deg (diagonal) and 75 deg (lateral), average 70 deg,
+    attributed to C4F8 residue from DRIE (Sec. 5.1.3, Fig. 9, p. 288). Own interfacial model:
+    Schrage with "the experimentally obtained average accommodation coefficient (0.08)" (Eq. 16,
+    p. 289), i.e. a fitted value. Own experiments are "in the absence of nucleate boiling"
+    (Sec. 4, p. 285). CORRECTION (2026-11-13 rev. B): the "boiling before dryout" entries are in
+    Table 1 (p. 282), a summary of OTHER groups' studies, not Adera's data.
 
 byon_kim2011:
   title: "The effect of meniscus on the permeability of micro-post arrays"
@@ -662,14 +701,21 @@ fleming2020:
   content_verified: partial
   local_path: "C:/Users/chase/Downloads/NANOFAB PROJECT RESEARCH/research documents/research papers/Local Meniscus Curvature During Steady-State Evaporation from micropillar arrays.pdf"
   notes: >
-    EXPERIMENTAL. Thin-film interference profiling of local meniscus curvature in a pure-vapor
-    environment on SOI micropillar wicks (10 mm x 20 mm samples). Unit-cell permeability from
-    COMSOL creeping flow with periodic pressure BCs on Young-Laplace menisci, with both shear-free
-    and no-slip liquid-vapor interfaces (Sec. 2). Measured curvature agreed much better with the
-    NO-SLIP interface (abstract; Sec. 3.1, Figs. 4-5), attributed to surface-tension gradients
-    (contamination, surface charge, thermal Marangoni). Notes that rate-of-rise or spreading
-    tests give the product K*dPc, not each separately (Sec. 1). Bracket for the V2019 shear-free
-    interface assumption.
+    EXPERIMENT + MODEL (journal page = PDF page + 43265). MEASURED: local meniscus curvature by
+    thin-film interference (best-fit to simulated fringe images, Sec. 2.2), heater power and
+    temperatures, in degassed DI water vapor at room temperature, "~20 mbar" (p. 43268), after
+    Piranha treatment (p. 43267). Geometry (Table 1, p. 43267): d/pitch/height = 60/90/50 and
+    80/120/50 um, solid fraction 0.35, wicking length ~10 mm, vertical wick with gravity in the
+    Darcian model (Eqs. 1-3). The NO-SLIP conclusion is an INFERENCE from comparing measured
+    curvature with a semianalytical Darcian model whose K(kappa) comes from COMSOL creeping flow
+    with periodic pressure BCs, shear-free vs no-slip interface, evaporation neglected in the flow
+    (p. 43269); model bands cover heat-flux uncertainty and spreading limits. Quotes: "we find much
+    better agreement using a no-slip condition" (abstract, p. 43266); "This finding contradicts
+    typical analytical or numerical methods" (p. 43270). Proposed causes are surface-tension
+    gradients (contamination, surface charge, thermal Marangoni), not measured. Also reports
+    possible depinning near the top and near dryout (p. 43269-43270). Their geometry (phi = 0.35)
+    differs from ours (0.087, 0.126); the size of the no-slip effect for our cells is OUR
+    calculation. Bracket for the V2019 shear-free assumption, not a matched benchmark.
 
 # ---------------------------------------------------------------------------------------------
 # Project context (not scientific authority)

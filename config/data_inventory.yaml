@@ -60,8 +60,25 @@ stage2_assembled_local:
   qualified_for_prediction: false
   reasons:
     - "header states that the coarser/finer row labels were inferred from meniscus area (hmax not exported)"
-    - "Q_evap for row 2 was taken from a column that balances to 4e-12, consistent with integrating the BC expression (a tautology), not a flux-based balance"
-    - "pillar trimming and T_base selection unverified (docs/modeling_audit_2026-11.md, item 1)"
+    - "model-file inspection (data/reported/stage2_chase_identified_from_model_file.md): row 1 = automatic-mesh solution, row 2 = Study 2/Solution 1 after the hmax sweep (probably 0.25 um); not a sweep pair"
+    - "row-2 Q_evap = integral of ht.ntflux on the Robin boundary, which equals hi*(T-Tv) exactly (implied hi 4.200000e5): an identity, not a flux-based balance"
+    - "pillar trimming confirmed from the geometry sequence; T_base selection (boundaries 6, 10) area still unchecked"
+
+stage2_raw_tables_local:
+  path: data/comsol_exports/stage2_raw_chase/
+  data_role: STORED_DERIVED_RESULT
+  classification: "unmodified copies of Chase's four Stage 2 tables from D:/NANOFAB/COMSOL (gitignored); hashes in data/reported/stage2_chase_identified_from_model_file.md"
+  qualified_for_prediction: false
+  reasons:
+    - "evaluated on Study 2/Solution 1 only; the four hmax sweep solutions were not evaluated"
+    - "Q_in is the q0*(l/2)^2 echo; no A_base or interior-plane flux"
+
+vaartstra2019_thesis_fig7:
+  path: data/literature/vaartstra2019_thesis_fig7_digitized.csv
+  data_role: LITERATURE_DIGITIZATION
+  classification: "PROJECT_DERIVED digitization of the authors' calculated q''_e(dT) at a = 0.052 (thesis p. 23)"
+  qualified_for_prediction: false
+  reasons: ["implementation check of the evaporation law at one accommodation value; not experimental data"]
 
 h_evap_stage2_processed:
   path: data/processed/h_evap_stage2_flat_d10_l30_h25.csv

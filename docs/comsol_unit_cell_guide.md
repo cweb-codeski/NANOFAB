@@ -34,7 +34,7 @@ yet.
 | --- | --- | --- |
 | 1 flat-top flow | Chase `STORED_DERIVED` (K = 2.9698e-11 m² at hmax 0.5 µm); student `REPORTED_UNVERIFIED` (K = 2.9711e-11 m² at 0.25 µm). Builds agree within 0.05% at matching meshes (`analysis/stage1_crosscheck.py`) | `PROPOSED` |
 | 1Q qualification (gradient/inertia, interface bracket, reduced-cell check) | `PROPOSED` | `PROPOSED` (high priority: Re_K ≈ 2-8 at device gradients) |
-| 2 flat-top conduction | Chase `REPORTED_UNVERIFIED` (two unlabeled T_base values, see §6) | `PROPOSED` |
+| 2 flat-top conduction | Chase `STORED_DERIVED`: model file inspected (hi = 4.2e5, trimmed pillar, hmax sweep 2/1/0.5/0.25 µm solved); the exported values are the automatic mesh and probably 0.25 µm, not a sweep pair (§6) | `PROPOSED` |
 | 2A isothermal EO, flat top | 2D Python limit done (`docs/eo_field_treatment_test.md`); COMSOL `PROPOSED` | 2D Python limit done; COMSOL `PROPOSED` |
 | 3 menisci + transport | `PROPOSED` | `PROPOSED` |
 | 4 evaporation on menisci | `PROPOSED`, blocked for V2019 replication by the accommodation-treatment source gap | `PROPOSED` |
@@ -340,11 +340,13 @@ qualification (`config/data_inventory.yaml`).
    max|K_app/K_Stokes − 1| > 1% the 1D table must be Q(Pc, G) or carry a Forchheimer-type
    correction (`docs/cell_table_contract.md`). Hand estimate at the limit: reference Re_K ≈ 1.7;
    proposed Re_K ≈ 2-8, Re_h ≈ 10-40. **Inertia is likely not negligible for the proposed cell.**
-3. **Interface bracket.** Repeat Δp = 1 Pa with `top_liquid` = no-slip wall. Analytical estimate
-   K_no-slip / K_shear-free ≈ 0.69 (ref), 0.72 (proposed). Fleming et al. (2020, Sec. 3.1,
-   Figs. 4-5) measured meniscus curvature that matched a no-slip interface much better than a
-   shear-free one. V2019 used shear-free. Carry both until an experiment discriminates; never
-   pick one to match a target.
+3. **Interface bracket.** Repeat Δp = 1 Pa with `top_liquid` = no-slip wall. Our analytical
+   estimate is K_no-slip / K_shear-free ≈ 0.69 (ref), 0.72 (proposed). Fleming et al. (2020)
+   measured local meniscus curvature (room temperature, ~20 mbar vapor, φ = 0.35 pillars). By
+   comparing it with a Darcian model using COMSOL K(κ), they inferred that a no-slip interface fits
+   much better (Sec. 3.1, Figs. 4-5, pp. 43269-43270). V2019 used shear-free (p. 172), so the
+   reference replication keeps shear-free. The proposed-device prediction carries both until our
+   own experiment discriminates. Never pick one to match a target.
 
 ---
 
@@ -367,14 +369,17 @@ carries little heat. In an experiment with a **subcooled** feed this fails near 
 
 | Closure | hi at 100 °C [W/(m²K)] | Footprint R''_int, ref [mm²K/W] | Status |
 | --- | --- | --- | --- |
-| reduced linearized BTE, accommodation correction C4 + 2√π(1−a)/a written from memory, a = 0.052 | 4.17e5 (the old guide's "about 4.2e5") | 2.63 | ASSUMED form (Meland & Ytrehus 2003 not held) |
+| reduced linearized BTE, accommodation correction C4 + 2√π(1−a)/a written from memory, a = 0.052 | slope 4.17e5 at 100 °C (our calculation); **Chase's model uses 4.2e5 exactly** | 2.63 | form ASSUMED (Meland & Ytrehus 2003 not held), but at a = 0.052 it reproduces the authors' own q''_e(ΔT) curve (thesis Fig. 7, p. 23) within digitization error |
 | Schrage, a = 0.052 | 4.03e5 | 2.72 | different closure; never a silent substitute |
 | Schrage, a = 1 | 1.51e7 | 0.07 | bound: kinetic resistance nearly removed |
 
 The closure choice matters more through `a` than through the BTE-vs-Schrage form: going from
-a = 0.052 to 1 lowers the reference superheat by ~1.3 K out of ~8 K. a = 0.052 was fitted by
-V2019 to Adera et al. sample A1, measured at ~24 °C / 3 kPa with a 62% heat-loss correction
-(adera2016 Sec. 4). Carrying it to 100 °C or to our surfaces is an assumption.
+a = 0.052 to 1 lowers the reference superheat by ~1.3 K out of ~8 K. V2019 fitted a = 0.052 to the
+last point of Adera device 1 (thesis p. 32). Those fluxes were measured at 24 °C / 3 kPa and carry
+Adera's 62% heat-loss deduction (adera2016 pp. 284, 286). The authors state that `a` "absorbs the
+non-idealities of the experiments" (thesis p. 22). Adera's own Schrage model of the same data used
+a = 0.08 (Eq. 16, p. 289). Carrying `a` to another closure, temperature or surface is an
+assumption.
 
 **COMSOL.** Heat Transfer in Solids and Fluids (`ht`). Liquid: Fluid with k = `kl`, ρ = `rho0`,
 cp = `cpl`, γ = 1, velocity 0 (ρ and cp drop out of a stationary problem with zero velocity).
@@ -401,31 +406,44 @@ roughly as (hmax ratio)³ between levels; if not, a Size node ignores `hmax`.
 | `Q_in` | Surface Integration over `heater` of the inward normal flux (sign-checked) | proves the heater selection carries q0·A |
 | `Q_in_param` | Global Evaluation `q0*(l/2)^2` | the input echo; must equal `Q_in` |
 | `Q_evap_bc` | Surface Integration over `top_liquid` of `hi*(T-Tv)` | implementation check; equals Q_in to solver tolerance |
-| `Q_evap_flux` | Surface Integration over `top_liquid` of the outward normal total flux (`ht.ntflux`, sign-checked) | discretization-sensitive energy balance |
+| `Q_evap_flux` | Surface Integration over `top_liquid` of `ht.ntflux` (outward normal total flux; positive for heat leaving in Chase's model) | on a Robin boundary COMSOL may return the BC flux itself, so this can equal `Q_evap_bc` exactly and then is **not** an independent check |
+| `Q_base` | Surface Integration over `base_plane` (interior faces at z = 0) of `ht.tfluxz` (z-component of the total heat flux; on interior faces evaluate `down(ht.tfluxz)` and `up(ht.tfluxz)` once to see the side difference) | gradient-based flux through the substrate-wick interface; must equal Q_in, and its error is the discretization-sensitive energy balance (unexecuted suggestion; confirm in Help) |
 | `T_base` | Surface Average of T over `base_plane` | V2019 T_e definition |
 | `A_base` | Surface Integration of 1 over `base_plane` | must equal (l/2)² |
 | `T_lv`, `A_lv` | Surface Average of T / Integration of 1 over `top_liquid` | diagnostic only |
 
 ```powershell
-python analysis/heat_transfer_from_comsol.py data/comsol_exports/ref_stage2_flat.csv --qevap-col Q_evap_flux --case reference_d10_l30_h25
+python analysis/heat_transfer_from_comsol.py data/comsol_exports/ref_stage2_flat.csv --qevap-col Q_base --case reference_d10_l30_h25
 ```
 
 The script refuses to write a processed table if rows carry no `hmax`, and checks `A_base`.
 
 **Checks.** A_base = (l/2)² within 1e-6; pillar volume per §4; Q_in = Q_in_param within 1e-6;
-|Q_evap_flux − Q_in|/Q_in ≤ 1e-3 at the finest mesh; finest-pair change of T_base − T_v ≤ 1e-3;
+|Q_base − Q_in|/Q_in ≤ 1e-3 at the finest mesh; finest-pair change of T_base − T_v ≤ 1e-3;
 T_base − T_v inside the hand bounds (reference 2.2-18.2 K, proposed 2.4-27.2 K at the BTE hi).
+Evaluate the derived values on the **parametric** dataset ("Study N/Parametric Solutions 1",
+parameter selection All). The default "Study N/Solution 1" dataset holds only one solution,
+normally the last swept value.
 
 **Status (reference).** Chase reports two Q_in columns (both 1.125e-4 W, the q0·A echo) and two
-T_base columns, 381.19639 K and 381.21757 K (superheats 8.046 and 8.068 K, 0.26% apart). The
-columns carry no mesh or selection identifiers and no Q_evap is part of the report
-(`data/reported/stage2_chase_reported_columns.csv`). They are **not** treated as two meshes,
-averaged, or used for an energy balance. A separately assembled file labels the rows "coarser /
-finer" by inference and picks the Q_evap column that balances exactly. That labelling is not
-evidence, and `data/processed/h_evap_stage2_flat_d10_l30_h25.csv` derived from it is unqualified
-(`config/data_inventory.yaml`). Before reuse, open `stage2_flat_interface.mph` and record: the
-`hi` value and formula, whether the pillar was trimmed (Measure), which faces form the T_base
-selection (and their area), and which study/mesh produced each column.
+T_base columns, 381.19639 K and 381.21757 K (superheats 8.046 and 8.068 K, 0.26% apart)
+(`data/reported/stage2_chase_reported_columns.csv`). Inspection of the model tree and action
+history inside `stage2_flat_interface.mph` (`data/reported/stage2_chase_identified_from_model_file.md`)
+shows:
+
+- hi = 4.2e5 W/(m²K) exactly; heater on boundary 3; meniscus boundary 11; T_base over
+  boundaries 6 and 10.
+- The pillar is trimmed.
+- An hmax = 2/1/0.5/0.25 µm Parametric Sweep was solved.
+- Column 1 of every table comes from an earlier solve on the **automatic** mesh. Column 2 comes
+  from "Study 2/Solution 1" after the sweep, normally the last swept value (0.25 µm).
+- The 2, 1 and 0.5 µm solutions were never evaluated.
+- The 4e-12 energy balance of column 2 is `ht.ntflux` returning the Robin flux (an identity).
+- `dp_dry` contains a typo (`1/d` for `l/d`).
+
+The two values are therefore not a mesh pair, and `data/processed/h_evap_stage2_flat_d10_l30_h25.csv`
+stays unqualified. Next step in the existing file: evaluate the four sweep solutions on
+"Parametric Solutions 1", add A_base and Q_base, and fix `dp_dry`.
 
 **Next.** `docs/stage2_undergrad_assignment.md` (rebuild on the reference cell, compare with
 Chase, then duplicate for the proposed cell).
@@ -468,7 +486,11 @@ x-planes:   p = 0 on both (no imposed pressure drop), normal flow
 
 Never combine the slip condition with a ρ_e E body force: they represent the same physics, so
 using both double-counts it. A body force needs no-slip walls and a resolved EDL
-(Poisson + Nernst-Planck), which is not justified here.
+(Poisson-Boltzmann or Poisson + Nernst-Planck), which is not justified here. Pujahari et al.
+(2022) took the resolved route: Poisson-Boltzmann with ψ = ζ on floor and pillars, no-slip walls,
+and a ρ_e E body force with a **constant** x-directed E in every cell (Eqs. 5-8, p. 8446). Their
+Case-A-like field is therefore an imposed uniform body-force field, and our slip version is its
+thin-EDL equivalent.
 
 **Exact result to verify against (similitude).** With uniform ζ on pillar and floor, a flat
 insulating top and insulating walls, the field is z-invariant and u = μ_EO E solves the problem
@@ -686,13 +708,18 @@ under a **named** kinetic closure.
   C4* = 2.13204, d4* = 0.44675), Knudsen-layer pressure equal to the far-field pressure, and
   the Meland & Ytrehus (2003) accommodation treatment. That paper is not held and our correction
   form is from memory. **Until it is obtained and checked, no Stage 4 output is labeled a V2019
-  replication** (`docs/cell_table_contract.md`: `accommodation_treatment_verified`).
+  replication** (`docs/cell_table_contract.md`: `accommodation_treatment_verified`). Partial
+  evidence: at a = 0.052 our `reduced_BTE_assumed_MY` law reproduces the authors' own
+  q''_e(ΔT) curve (thesis Fig. 7, p. 23; T_sat = 100 °C inferred) within digitization error
+  (`tests/test_evaporation_thesis_fig7.py`). Reference-cell Stage 4 runs at a = 0.052 may be
+  labeled "closure functionally matched to V2019 thesis Fig. 7". Runs at other `a` may not.
 - Meanwhile, run named closures as separate datasets: `reduced_BTE_assumed_MY` (the
   `comsol_bte_expression` in `src/nanofab/evaporation.py`) and `Schrage`. Never mix closures in
   one table or switch closure to match a number.
-- `a` is a fitted parameter (V2019 Sec. 3.4, to Adera A1 at 3 kPa). Sweep it (0.03-1). For our own
-  surfaces it can only be calibrated on our own pure-vapor data and then tested on a different
-  condition.
+- `a` is a closure-specific fitting parameter (V2019 Sec. 3.4, one point of Adera device 1 at
+  3 kPa; Adera's own Schrage fit of the same data gave 0.08). Never move `a` between closures.
+  Sweep it (0.03-1). For our own surfaces it can only be calibrated on our own pure-vapor data and
+  then tested on a different condition.
 
 **COMSOL.** Stage 2 thermal model on the Stage 3 deformed geometry. Interpolation function `psat`
 (K → Pa) from `data/processed/psat_water.txt` (`python analysis/baseline_estimates.py
@@ -752,8 +779,9 @@ heat:     ∇·(k_s ∇T) = 0 in the substrate;  heater flux map on the bottom/b
           top (pillar-base plane, wetted area): −n·q = h_e(Pc)(T − T_v) + (Joule, if EO)
 ```
 
-T at the top surface is the pillar-base-plane temperature, matching the h_e definition. Do not
-add a through-wick resistance on top of h_e (it already contains it; `docs/whole_wick_assumptions.md` W6).
+T at the top surface is the pillar-base-plane temperature, matching the h_e definition. h_e
+already contains the through-wick conduction resistance (pillar, liquid and interface above the
+base plane), so do not add a through-plane wick resistance on top of it.
 
 **COMSOL (base-package route).** Heat Transfer in Solids on the substrate domain (3D, or 2D x-z
 for a two-edge 1D feed as in V2019); General Form Boundary PDE for Pc on the active-array top
@@ -792,13 +820,15 @@ bulk voltage drop.
 - Analytic limits: constant K and h_e, uniform flux, one feed edge → `dryout.dryout_heat_flux`
   within 1e-3; with constant U_EO → G(Π) of `src/nanofab/electroosmosis/wick1d.py` within 1e-3.
 - Cross-model: the V2019 case with identical tables against `src/nanofab/device/` (Python), and
-  the planform case against `src/nanofab/whole_wick/`. Disagreements are investigated, not
-  averaged. The Python models are cross-checks and have no experimental standing.
-- Mesh: q''_dry and T_max converged ≤ 1e-3; cell size ≥ ~3 pitches (homogenization; W2).
+  the planform case against a local, uncommitted Python planform model (whole_wick), if
+  available. Disagreements are investigated, not averaged. The Python models are cross-checks and
+  have no experimental standing.
+- Mesh: q''_dry and T_max converged ≤ 1e-3; cell size ≥ ~3 pitches (below that a cell is not a
+  representative volume for the homogenized tables).
 
 **Limits other than capillary dryout** (report which one is reached first): boiling incipience
-(Adera et al. 2016 report "boiling before dryout" for several conditions); a T_max limit of the
-chip; flooding (Pc < 0 at a closed end under EO; `docs/electroosmosis_model.md`); and
+(Adera et al. 2016 Table 1, p. 282, lists other groups' wicks that boiled before dryout at 1 atm;
+their own runs were boiling-free); a T_max limit of the chip; flooding (Pc < 0 at a closed end under EO; `docs/electroosmosis_model.md`); and
 electrical/chemical limits (gas evolution blocking pores, pH-driven ζ change, salt enrichment
 toward the closed end, oxide field). Stage 6 detects the hydraulic ones. The others are flagged
 with their diagnostics, not modeled.
@@ -828,7 +858,8 @@ display geometry; never mesh it as simulation geometry.
 | Integral does not change between meshes at all | the Size nodes do not use `hmax`, or an auxiliary sweep was used |
 | K, F or Ũ off by exactly 2 or 4 | quarter vs half vs full cell area or length |
 | T_base selection area ≠ (l/2)² | wrong faces, or untrimmed pillar (§4) |
-| Q_evap equals Q_in to 1e-12 | you integrated the boundary-condition expression; also export the flux-based value |
+| Q_evap equals Q_in to 1e-12 | you integrated the boundary-condition flux (`hi*(T-Tv)`, or `ht.ntflux` on the Robin boundary); use the interior-plane flux `Q_base` for the energy balance |
+| Two exported values that "look like" a mesh pair | check each Derived Value's Dataset: "Solution 1" holds one solution only; use the parametric dataset |
 | Superheat outside the hand bounds | k units, hi value, heater on the wrong face |
 | h_e decreases with Pc | sign of Pc in the meniscus PDE (f > 0) |
 | Result matches a literature number "too well" after a change | check that the change was not made to match it |

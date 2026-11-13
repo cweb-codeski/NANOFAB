@@ -17,6 +17,7 @@ Rules:
 | File | Reported by | Stage / case | Status |
 | --- | --- | --- | --- |
 | `stage1_student_reference_d10_l30_h25.csv` | undergraduate (independent Stage 1 build) | Stage 1, reference | REPORTED_UNVERIFIED |
-| `stage2_chase_reported_columns.csv` | Chase (text exports of `stage2_flat_interface.mph`, COMSOL 6.3.0.420) | Stage 2, reference | REPORTED_UNVERIFIED; columns lack mesh and selection identifiers |
+| `stage2_chase_reported_columns.csv` | Chase (text exports of `stage2_flat_interface.mph`, COMSOL 6.3.0.420) | Stage 2, reference | REPORTED_UNVERIFIED; columns lack mesh and selection identifiers in the export itself |
+| `stage2_chase_identified_from_model_file.md` | model-file inspection (2026-11-13) | Stage 2, reference | settings and column-to-solution mapping from the `.mph` tree and action history; column 1 = automatic mesh, column 2 = probably hmax 0.25 µm |
 
 Comparison script: `python analysis/stage1_crosscheck.py`.

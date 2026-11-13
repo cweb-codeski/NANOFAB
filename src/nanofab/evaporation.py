@@ -105,6 +105,11 @@ def sone_bte_mass_flux(
 
     The flux is within ~3-5% of the Schrage relation at a = 0.052 for water at 100 C. That is a
     cross-model check between two approximate relations, not verification of either.
+
+    Functional check: at a = 0.052 and T_sat = 100 C (inferred), this law reproduces the authors'
+    own q''_e(dT) curve, Vaartstra thesis Fig. 7 (p. 23), within digitization error
+    (tests/test_evaporation_thesis_fig7.py). That supports this implementation at that one value
+    of a; the correction form at other a remains unverified.
     """
     if not (0 < accommodation <= 1):
         raise ValueError(f"accommodation coefficient must be in (0, 1], got {accommodation}")

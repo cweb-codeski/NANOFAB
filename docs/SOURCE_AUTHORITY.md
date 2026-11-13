@@ -165,7 +165,9 @@ No equation, constant or numerical result changed as a result of this audit.
 - Silicon conductivity and water property source used by vaartstra2019. Neither the paper nor
   the thesis states them, so they are probably not recoverable from held sources. Keep sweeping k_Si.
 - Exact Meland-Ytrehus correction form. Neither the paper nor the thesis prints it, so it needs
-  meland_ytrehus2003 itself.
+  meland_ytrehus2003 itself. Partial evidence (2026-11-13): at a = 0.052 our form reproduces the
+  thesis Fig. 7 curve (`tests/test_evaporation_thesis_fig7.py`), so the form is functionally
+  matched at that value only.
 
 Resolved by the thesis page images: Re_h exponent (+1); T_e surface (substrate top at pillar
 base, from the figure); heat input depth 1 µm below the pillar base.
@@ -176,6 +178,7 @@ base, from the figure); heat input depth 1 µm below the pillar base.
   thin-EDL electroosmotic slip vs resolved-EDL choice (`comsol_blog_eof_edl`) and for mesh
   refinement studies (`comsol_kb_1261`). Menu paths and node options remain unchecked against the
   6.3 manuals.
+- Year of SAND92-2347C; DOI of narayanan2024_interpack.
 
 ## Additions from the 2026-11-13 workflow audit
 
@@ -183,17 +186,18 @@ Read from held PDFs (`docs/modeling_audit_2026-11.md`):
 
 | Source | Experiment or simulation | Consequential statement |
 | --- | --- | --- |
-| `vaartstra2019` | simulation | a = 0.052 fitted to Adera A1 (Sec. 3.4); h_e "validation" uses the fitted value; dryout compared to an air-ambient experiment as a trend (Fig. 6b) |
-| `adera2016` | experiment + model | chamber evacuated, then held near saturation at 24 °C / 3 kPa; 62% of heater power lost and subtracted; boiling before dryout in several conditions (Sec. 4, Fig. 6) |
-| `pujahari2022` | simulation only | EO model checked against an analytical channel solution; thermal checks reuse Zhu and Adera data (Sec. 3.1) |
-| `fleming2020` | experiment | no-slip liquid-vapor interface fits measured curvature much better than shear-free (Sec. 3.1, Figs. 4-5) |
+| `vaartstra2019` | simulation | a = 0.052 fitted to the last point of Adera device 1 ("A1") (Sec. 3.4, p. 174; thesis p. 32); h_e "validation" on one further device using the fitted value; dryout compared to an air-ambient experiment as a trend (Fig. 6b) |
+| `adera2016` | experiment + model | chamber at 24 °C / 3 kPa (p. 284); 62% of heater power lost and deducted (p. 286); runs free of nucleate boiling (p. 285); receding angle ≈ 70° (p. 288); own Schrage a = 0.08 (p. 289). The "boiling before dryout" rows in Table 1 (p. 282) are other groups' studies (corrected 2026-11-13 rev. B) |
+| `pujahari2022` | simulation only | Poisson-Boltzmann EDL + ρ_e E body force, no slip, constant E per cell (p. 8446); EO checked against an analytical channel; temperature check reuses the data set V2019 fitted `a` to (Fig. 3b) |
+| `fleming2020` | experiment + model | measured curvature; no-slip interface **inferred** to fit much better via their Darcian model (Sec. 3.1, Figs. 4-5); φ = 0.35, room temperature |
+| `vaartstra2019_thesis` | simulation | Fig. 7 q''_e(ΔT) at a = 0.052, reproduced by our evaporation law within digitization error (functional check of the Meland-Ytrehus implementation at that `a` only) |
 | `ravi2014` | experiment | K and capillary pressure determined separately (abstract) |
 
-Authority note: for **physical behavior of real interfaces**, an experiment on comparable wicks
-(fleming2020) outranks a modeling choice in a simulation paper (vaartstra2019 Sec. 2.2). For
+Authority note: for **physical behavior of real interfaces**, experimental evidence on micropillar
+wicks (fleming2020, though at different geometry and temperature, and through a model inference)
+weighs more than an unexamined modeling choice in a simulation paper (vaartstra2019 Sec. 2.2). For
 **replicating vaartstra2019**, its own choices govern. Keep both, as a bracket, until our own
 measurement decides (rule 9).
-- Year of SAND92-2347C; DOI of narayanan2024_interpack.
 
 ## Rules for Future Modeling Work
 

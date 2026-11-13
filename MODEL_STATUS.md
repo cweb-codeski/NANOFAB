@@ -10,7 +10,8 @@ REPORTED_UNVERIFIED, PROPOSED, ANALYTICAL_ESTIMATE, SYNTHETIC.
 | --- | --- | --- | --- |
 | Stage 1 K = 2.9698e-11 m² (Chase, `permeability1.mph`) | reference | STORED_DERIVED | finest pair 1.02e-3; one low gradient; flat shear-free top |
 | Stage 1 K = 2.9711e-11 m² (student) | reference | REPORTED_UNVERIFIED | agrees with Chase within 0.05% at matching meshes |
-| Stage 2 T_base 381.196 / 381.218 K (Chase, `stage2_flat_interface.mph`) | reference | REPORTED_UNVERIFIED | columns unlabeled; no Q_evap in report; not meshes, not averaged |
+| Stage 2 T_base 381.196 / 381.218 K (Chase, `stage2_flat_interface.mph`) | reference | STORED_DERIVED | model file inspected: hi = 4.2e5, trimmed pillar; the two values are the automatic mesh and probably hmax 0.25 µm (not a sweep pair); the four sweep solutions are stored but unevaluated |
+| Evaporation law vs V2019 thesis Fig. 7 (a = 0.052) | reference | functional match (Python vs digitized author calculation) | not experimental validation; form at other `a` unverified |
 | 2D EO field-treatment test (Python) | both | verified Python model | tall-pillar limit only; COMSOL Stage 2A pending |
 | Stages 1Q, 2A, 3-6 in COMSOL | both | PROPOSED | — |
 | Anything for 20/50/40 µm from COMSOL | proposed | none | reference results must not be transferred |

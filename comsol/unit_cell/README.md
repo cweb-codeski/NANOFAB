@@ -11,7 +11,8 @@ Status labels are defined in guide §0.
 | --- | --- | --- | --- | --- | --- |
 | `permeability1.mph` (Chase) | 1 | reference | STORED_DERIVED | COMSOL 6.3.0.420; quarter cell, dp = 1 Pa, μ = 2.816e-4 Pa s, flat symmetry top; hmax 2/1/0.7/0.5 µm → K 2.9698e-11 m² (`data/processed/permeability_stage1_flow.csv`). Earlier runs in the same export gave K ~ 7.9e-12 ("setup error"; cause not recorded) | `.mph`/`.java`, selections, Stokes vs NS setting |
 | student Stage 1 model | 1 | reference | REPORTED_UNVERIFIED | hmax 2/1/0.5/0.25 µm → K 2.9711e-11 m² (`data/reported/`) | file, export, μ, dp, BC options |
-| `stage2_flat_interface.mph` (Chase) | 2 | reference | REPORTED_UNVERIFIED | COMSOL 6.3.0.420; two Q_in (1.125e-4 W) and two T_base (381.19639, 381.21757 K) columns without identifiers | hi value; pillar trimming (volume 490.9 µm³?); T_base selection and area; mesh/study per column; Q_evap |
+| `stage2_flat_interface.mph` (Chase) | 2 | reference | STORED_DERIVED | COMSOL 6.3.0.420, sha256 `fe4cb245…3de43`. Model tree read 2026-11-13: hi = 4.2e5; trimmed pillar; heater bnd 3, meniscus bnd 11, T_base bnds 6 + 10; hmax sweep 2/1/0.5/0.25 µm solved; exported column 1 = automatic mesh, column 2 = probably 0.25 µm; `dp_dry` typo (`1/d`) (`data/reported/stage2_chase_identified_from_model_file.md`) | evaluation of the four sweep solutions on the parametric dataset; A_base; interior-plane flux; `.java` copy |
+| `model 1.mph` (Chase, D:\NANOFAB\COMSOL) | sketch | — | not a result | unsolved geometry sketch with parameters r = 10 µm, h = 50 µm, pitch 50 µm. Note h = 50, not the stated 40 µm design height | none needed; confirm the intended proposed height |
 
 ## Planned models (one file per stage and case)
 
